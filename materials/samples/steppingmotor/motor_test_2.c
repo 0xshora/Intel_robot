@@ -69,14 +69,14 @@ int main(int argc, char **argv)
 
         if (c == 'p')
         {
-            speed += 100;
+            speed += 1000;
             L6470_run_both(speed);
             // printf("*** Speed %ld ***\n", speed);
         }
 
         if (c == 'q')
         {
-            speed -= 100;
+            speed -= 1000;
             L6470_run_both(speed);
             // printf("*** Speed %ld ***\n", speed);
         }
@@ -92,12 +92,11 @@ int main(int argc, char **argv)
                 printf("*** Speed %ld ***\n", speed);
                 L6470_softstop();
                 L6470_softhiz();
-                return 0;
             }
 
             if (c == 'r')
             {
-                speed = 1000;
+                speed = 10000;
                 L6470_run_turn(speed);
                 // printf("*** Turn right : Speed %ld ***\n", speed);
                 // speed = 0;
@@ -106,7 +105,7 @@ int main(int argc, char **argv)
             }
             else
             {
-                speed = -1000;
+                speed = -10000;
                 L6470_run_turn(speed);
                 // printf("*** Turn right : Speed %ld ***\n", speed);
                 // speed = 0;
@@ -242,7 +241,7 @@ void L6470_run_turn(long speed)
     L6470_SPI_CHANNEL = 0;
     L6470_run(speed);
     L6470_SPI_CHANNEL = 1;
-    L6470_run(0);
+    L6470_run(speed);
 }
 
 void L6470_softstop()
