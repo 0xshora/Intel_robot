@@ -189,7 +189,7 @@ void L6470_turn_speed_change(long speed, int postspeed)
     else if (speed > postspeed)
     {
         //if moving, move more slowly
-        printf("kocchi\n");
+
         int i;
         for (i = speed; i >= postspeed; i -= 100)
         {

@@ -12,8 +12,10 @@
 #include <stdio.h>
 #include <fcntl.h>
 #include <stdlib.h>
+#include <string.h>
 #include <unistd.h>
 #include <arpa/inet.h>
+#include <sys/ioctl.h>
 #include "/usr/include/linux/i2c-dev.h"
 
 #define sample 4
@@ -96,7 +98,7 @@ int main(void)
 	}
 
 	sv_skt.sin_family = AF_INET;
-	sv_skt.sin_addr.s_addr = inet_aton(HOST);
+	inet_aton(HOST, &sv_skt.sin_addr);
 	sv_skt.sin_port = htons(PORT);
 
 	if (connect(s, (struct sockaddr *)&sv_skt, sizeof(sv_skt)) < 0)
@@ -171,7 +173,7 @@ int main(void)
 			//   close(s);
 			//   exit(1);
 			// }
-			printf("[E0]: %d cm\n", range);
+			printf("[E0]: %d cm\n", range[0]);
 			count[0] = 0;
 			reset(tmpE0);
 		}
