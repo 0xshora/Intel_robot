@@ -47,8 +47,9 @@ def server_and_call_main():
             try:
                 connection.settimeout(3)
                 from_client = connection.recv(4096).decode()
+                distance = from_client.split()
                 # call main method
-                main(from_client)
+                main(length = distance)
                 sleep(0.1)
                 #print("クライアントから受信したメッセージ=>{}".format(from_client))
                 # to_client = "あなたは[{}]というメッセージを送信しましたね?".format(from_client)
