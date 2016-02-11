@@ -10,10 +10,10 @@ int BUFSIZE = 32;
 #define MAXDIGIT 100
 #define MAX_SPEED 50000
 #define MIN_SPEED -50000
-#define MAX_ROLL 1000
+#define MAX_ROLL 10000
 #define MIN_ROLL 100
 #define MINUS_MIN_ROLL -100
-#define MINUS_MAX_ROLL -1000
+#define MINUS_MAX_ROLL -10000
 #define MAX_SCALE 3
 #define MIN_SCALE 0.5
 // 関数プロトタイプ。
@@ -63,7 +63,9 @@ int main(int argc, char **argv)
     /*
     Speed Change->p speed (+- 0 ~ 10000)
     Turn Right -->r scale (0.1 ~ 10)
-    Turn Left -->l scale
+    Turn Left -->l scale or r -scale
+    Turn Right (stop) -> r speed
+    Turn Left (stop) --> r -speed
     Stop       -->s
     End        -->e
 	*/
