@@ -2,6 +2,7 @@ import numpy as np
 import cv2
 import socket
 import math
+import traceback
 from time import sleep
 
 # camera center
@@ -55,11 +56,13 @@ def server_and_call_main():
                 # to_client = "signal[{}]".format(from_client)
                 # connection.send(to_client.encode("UTF-8"))
             except Exception as e:
-                print(e)
+                # print(e)
+                traceback.print_exc()
                 continue
     except Exception as e:
-        print(clients)
-        print(e)
+        # print(clients)
+        # print(e)
+        traceback.print_exc()
         connection.close()
         s.close()
     
@@ -103,16 +106,17 @@ def cal_theta_h(rect_a=None, rect_b=None):
     #calculate the theta and h
     #input rect_a, rect_b
 
-
-    if rect_a == None:
+    """
+    if not rect_a:
         h = 500
         theta = -MAX_ANGLE
         return h, theta
-    elif rect_b == None:
+    elif not rect_b:
         h = 500
         theta = MAX_ANGLE
 
         return h, theta
+    """
     a_center_x = (rect_a[3] - rect_a[1]) / 2 + rect_a[1]
     b_center_x = (rect_b[3] - rect_b[1]) / 2 + rect_a[1]
 
@@ -184,6 +188,7 @@ def search_function(default_roll=5000, default_sp=1000):
         cnt += 1
 
 
+
 def main(length, mirror=True, size=None):
     cap_0 = cv2.VideoCapture(0)
     cap_1 = cv2.VideoCapture(1)
@@ -208,15 +213,15 @@ def main(length, mirror=True, size=None):
         print(escape_flg)
         print(boxes_0)
         print(boxes_1)
-        if boxes_0:
-            box_0 = boxes_0[0][0]
-        if boxes_1:
-            box_1 = boxes_1[0][0]
+        if len(boxes_0) != 0:
+            box_0 = boxes_0[0]
+        if len(boxes_1) != 0:
+            box_1 = boxes_1[0]
 
         if escape_flg:
             avoid_function(length)
             # print('just rolling')
-        elif box_0 or box_1:
+        elif len(box_0) != 0 and len(box_1) != 0:
             h, theta = cal_theta_h(box_0, box_1)
             chase_function(h, theta)
             # print('speed')
