@@ -22,6 +22,7 @@ void L6470_softstop();
 void L6470_softhiz();
 void L6470_speed_change(long speed, int postspeed); //change the speed from "speed" to postspeed
 void getargs(int * argc, char * argv[], char * buf);
+// void new_speed_change(long speed, long postspeed);
 
 int main(int argc, char ** argv) {
     long speed = 0;
@@ -87,7 +88,7 @@ int main(int argc, char ** argv) {
 
         char buf[256];
         int buf_len;
-        int ac;
+        int *ac;
         char * av[16];
         memset(buf, 0, 256);
 
@@ -95,7 +96,7 @@ int main(int argc, char ** argv) {
             fprintf(stderr, "read() failed\n");
             continue;
         }
-        getargs( * ac, av, buf);
+        getargs( *ac, av, buf);
 
         if (strcmp(av[0], "p") == 0) {
             long sp = atol(av[1]);
