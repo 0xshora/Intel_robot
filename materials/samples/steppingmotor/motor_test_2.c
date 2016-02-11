@@ -80,6 +80,7 @@ int main(int argc, char **argv)
 		my_argc = 0;
 		const int MAXCOM = 10;
 		const int MAXCHAR = 256;
+		my_argv = malloc(sizeof(char * ) * MAXCOM);
 		for (i = 0; i < MAXCOM; i++) {
 			my_argv[i] = malloc(sizeof(char) * MAXCHAR);
 		}	
@@ -87,7 +88,7 @@ int main(int argc, char **argv)
 		getargs(&my_argc, my_argv);	
 
 		c = my_argv[0][0];
-		prinf("c:%c\n", c);
+		printf("c:%c\n", c);
 
 		if (c == 'p')
 			//speed change
