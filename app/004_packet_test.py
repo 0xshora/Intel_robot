@@ -3,18 +3,23 @@ import time
 
 
 def send_msg(msg):
-    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-        host = '127.0.0.1'
-        port = 50001
-        s.connect((host, port))
-        s.sendall(msg.encode(encoding='ascii'))
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    host = '127.0.0.1'
+    port = 50001
+    s.connect((host, port))
+        # s.sendall(msg.encode(encoding='ascii'))
+    s.send(msg)
 
 
 def main():
-    text = "p 1000"
+    text = "r 10000"
+    send_msg(text)
+    time.sleep(3)
+    text = "r -10000"
     send_msg(text)
 
-    time.sleep(10)
+
+    time.sleep(3)
 
     text = "s"
     send_msg(text)

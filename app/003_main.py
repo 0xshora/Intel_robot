@@ -50,9 +50,9 @@ def server_and_call_main():
                 distance = from_client.split()
                 # call main method
                 main(length = distance)
-                sleep(0.1)
-                #print("クライアントから受信したメッセージ=>{}".format(from_client))
-                # to_client = "あなたは[{}]というメッセージを送信しましたね?".format(from_client)
+                # sleep(0.1)
+                #print("sinal=>{}".format(from_client))
+                # to_client = "signal[{}]".format(from_client)
                 # connection.send(to_client.encode("UTF-8"))
             except Exception as e:
                 print(e)
@@ -68,11 +68,12 @@ def server_and_call_main():
 
 
 def send_msg(msg):
-    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-        host = '127.0.0.1'
-        port = 50001
-        s.connect((host, port))
-        s.sendall(msg.encode(encoding='ascii'))
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    host = '127.0.0.1'
+    port = 50001
+    s.connect((host, port))
+    # s.sendall(msg.encode(encoding='ascii'))
+    s.send(msg)
 
 
 def cascade(img):
@@ -169,7 +170,7 @@ def avoid_function(roll_sp=100):
     # print("just rolling")
 
 
-def search_function(default_roll=100, default_sp=200):
+def search_function(default_roll=5000, default_sp=1000):
     cnt = 0
     if cnt % 100 > 50:
         text = "p {}\n".format(default_sp)
@@ -187,6 +188,7 @@ def main(length, mirror=True, size=None):
     cap_0 = cv2.VideoCapture(0)
     cap_1 = cv2.VideoCapture(1)
     while(cap_0.isOpened()):
+        print ("hi")
         ret_0, frame_0 = cap_0.read()
         ret_1, frame_1 = cap_1.read()
         if mirror is True:
@@ -196,13 +198,21 @@ def main(length, mirror=True, size=None):
         if size is not None and len(size) == 2:
             frame_0 = cv2.resize(frame_0, size)
             frame_1 = cv2.resize(frame_1, size)
-
+        
+        box_0 = []
+        box_1 = []
         boxes_0 = cascade(frame_0)
         boxes_1 = cascade(frame_1)
-
+        print("end cascade")
         escape_flg = is_escape_flg(length)
-        box_0 = boxes_0[0]
-        box_1 = boxes_1[0]
+        print(escape_flg)
+        print(boxes_0)
+        print(boxes_1)
+        if boxes_0:
+            box_0 = boxes_0[0][0]
+        if boxes_1:
+            box_1 = boxes_1[0][0]
+
         if escape_flg:
             avoid_function(length)
             # print('just rolling')
@@ -215,11 +225,11 @@ def main(length, mirror=True, size=None):
             # print('speed')
             # print('roll')
 
-        k = cv2.waitKey(50)
-        if k == org('s'):
+        k = cv2.waitKey(100)
+        if k == ord('s'):
             send_msg("s")
             break
-        if k == 27:  # ESCキーで終了
+        if k == 27:  # ESC end
             break
 
     cap_0.release()

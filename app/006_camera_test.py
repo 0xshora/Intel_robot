@@ -14,16 +14,16 @@ CAMERA_DIS = 20
 
 
 def send_msg(msg):
-    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-        host = '127.0.0.1'
-        port = 50001
-        s.connect((host, port))
-        s.sendall(msg.encode(encoding='ascii'))
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    host = '127.0.0.1'
+    port = 50001
+    s.connect((host, port))
+    s.send(msg)
+    # s.sendall(msg.encode(encoding='ascii'))
 
 
 def cascade(img):
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    # カスケードファイルの読み込み
     face_cascade = cv2.CascadeClassifier(
         '../data/haarcascades/haarcascade_frontalface_default.xml')
     # face_cascade = cv2.CascadeClassifier('../data/haarcascades/haarcascade_upperbody.xml')
@@ -102,7 +102,7 @@ def check_camera(camera_idx=0, mirror=True, size=None):
 
         cv2.imshow('img', frame)
         k = cv2.waitKey(50)
-        if k == 27:  # ESCキーで終了
+        if k == 27:  # ESC
             break
 
     cap.release()
@@ -139,7 +139,7 @@ def main(mirror=True, size=None):
 
         print(text)
         k = cv2.waitKey(50)
-        if k == 27:  # ESCキーで終了
+        if k == 27:  # ESC
             break
 
     cap_0.release()
