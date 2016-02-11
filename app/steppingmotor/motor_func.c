@@ -12,6 +12,7 @@ int BUFSIZE = 32;
 #define MINUS_MAX_DIFF -1000
 #define MAX_SPEED 50000
 #define MIN_SPEED -50000
+#define MAX_ROLL 10000
 #define MIN_ROLL 100
 #define MINUS_MIN_ROLL -100
 #define MINUS_MAX_ROLL -10000

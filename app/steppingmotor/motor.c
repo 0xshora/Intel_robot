@@ -77,23 +77,8 @@ int main(int argc, char ** argv) {
     char **my_argv;
     
     int turn_flg = 0;
-    printf("input a line:\n");
-    while((c = getchar()) != EOF){
-      ungetc(c, stdin);
-      my_argc = 0;
-      const int MAXCOM = 10;
-      const int MAXCHAR = 256;
-      
-      my_argv = (char **)malloc(sizeof(char *) * MAXCOM);
-      
-      for(i = 0; i < MAXCOM; i++){
-        my_argv[i] = (char *)malloc(sizeof(char) * MAXCHAR);
-      }
-      getargs(&my_argc, my_argv);
-      
-      c = my_argv[0][0];
-      printf("c:%c\n", c);
-    }
+ 
+
     //for setting up a tcp server
     int sockfd;
     int new_sockfd;
@@ -121,7 +106,7 @@ int main(int argc, char ** argv) {
         close(sockfd);
         exit(1);
     }
-	int turn_flg = 0;
+
     while (1) {
         clit_len = sizeof(clit_addr);
         if ((new_sockfd = accept(sockfd, (struct sockaddr * ) & clit_addr, & clit_len)) < 0) {
@@ -192,7 +177,7 @@ int main(int argc, char ** argv) {
 
         if (strcmp(buf, "e") == 0) {
             L6470_speed_change(speed, 0);
-			speed = 0
+			speed = 0;
             close(new_sockfd);
             close(sockfd);
             exit(0);
