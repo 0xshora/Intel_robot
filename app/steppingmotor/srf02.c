@@ -90,8 +90,9 @@ int main(void)
 	    exit(1);
 	}
 
+
 	while(1){
-	printf("hi");
+
     // 1つめのセンサに対して
 	
 	{ // read from 0xE0
@@ -148,8 +149,8 @@ int main(void)
 		    char str[17] = {0};
 
 		    sprintf(str, "%d", range[0]);
-		    client(host, PORT, str);
-		    printf("[E0]: %d cm\n",*range);
+		    //client(host, PORT, str);
+		    printf("[E0]: %s cm\n",str);
 		    count[0]=0;
 		    reset(tmpE0);
 		}else{
@@ -204,7 +205,7 @@ int main(void)
 		    range[1]=true_range(tmpE2);
 		    char str[17] = {0};
             sprintf(str, "%d", range[1]);
-            client(host, PORT, str);
+            //client(host, PORT, str);
 		    printf("[E2]: %d cm\n",range[1]);
 		    count[1]=0;
 		    reset(tmpE2);
@@ -265,7 +266,7 @@ int main(void)
 		    range[2]=true_range(tmpE4);
 		    char str[17] = {0};
             sprintf(str, "%d", range[2]);
-            client(host, PORT, str);
+            //client(host, PORT, str);
 		    printf("[E4]: %d cm\n",range[2]);
 		    count[2]=0;
 		    reset(tmpE4);
@@ -326,7 +327,7 @@ int main(void)
 		    range[3]=true_range(tmpE6);
 		    char str[17] = {0};
             sprintf(str, "%d", range[3]);
-            client(host, PORT, str);
+            //client(host, PORT, str);
 		    printf("[E6]: %d cm\n",range[3]);
 		    count[3]=0;
 		    reset(tmpE6);
