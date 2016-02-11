@@ -38,3 +38,20 @@ void getargs(int *argc, char **argv, char *buf)
 
     argv[*argc][charcnt] = '\0';
 }
+
+int main()
+{
+    int ac = 0;
+    char ** argv;
+    argv = malloc(sizeof (char *) * 16);
+    int i;
+    for (i = 0; i < 16; i++) {
+        argv[i] = malloc(sizeof(char)* 256);
+    }
+
+    char buf = "p 1000";
+    getargs(&ac, av, buf)
+
+    printf()
+    return 0;
+}
