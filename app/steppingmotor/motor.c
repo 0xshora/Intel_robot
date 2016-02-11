@@ -25,6 +25,7 @@ extern void L6470_softstop();
 extern void L6470_softhiz();
 extern void L6470_speed_change(long speed, int postspeed); //change the speed from "speed" to postspeed
 extern void getargs(int * argc, char * argv[], char * buf);
+extern void L6470_turn_speed_change(long, int);
 
 
 int main(int argc, char ** argv) {
@@ -106,6 +107,8 @@ int main(int argc, char ** argv) {
         }
 
         getargs(&ac, av, buf);
+
+        fprintf(stderr, "%s:%s\n", av[0], av[1]);
 
         if (strcmp(av[0], "p") == 0) {
             long sp = atol(av[1]);

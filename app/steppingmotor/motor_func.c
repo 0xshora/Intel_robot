@@ -20,6 +20,29 @@ int BUFSIZE = 32;
 
 
 
+
+void L6470_softstop();
+void L6470_softhiz();
+// 関数プロトタイプ。
+void L6470_write(unsigned char data);
+void L6470_init(void);
+void L6470_run(long speed);
+void L6470_run_both(long speed);
+void L6470_run_turn(long speed);
+void L6470_run_turn_moving(long speed, int right, float scale);
+void L6470_softstop();
+void L6470_softhiz();
+void L6470_speed_change(long speed, int postspeed); //change the speed from "speed" to postspeed
+void getargs(int * argc, char * argv[], char * buf);
+
+void L6470_write(unsigned char data)
+{
+    wiringPiSPIDataRW(L6470_SPI_CHANNEL, &data, 1);
+    //wiringPiSPIDataRW(0, &data, 1);
+    //wiringPiSPIDataRW(1, &data, 1);
+}
+
+
 void L6470_init()
 {
     // MAX_SPEED設定。
@@ -159,7 +182,7 @@ void new_speed_change(long speed, long postspeed)
 */
 void L6470_turn_speed_change(long speed, int postspeed)
 {
-    printf("speed: %d, postspeed: %d\n", speed, postspeed);
+    printf("speed: %ld, postspeed: %d\n", speed, postspeed);
     if (postspeed > MAX_SPEED)
     {
         postspeed = MAX_SPEED;
