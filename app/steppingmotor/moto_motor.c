@@ -27,6 +27,7 @@ void L6470_softstop();
 void L6470_softhiz();
 void L6470_speed_change(long speed, int postspeed);
 void new_speed_change(long speed, int postspeed);
+void L6470_turn_speed_change(long speed, int postspeed);
 //change the speed from "speed" to postspeed
 extern void getargs(int *argc, char *argv[]);
 int main(int argc, char **argv)
@@ -131,13 +132,17 @@ int main(int argc, char **argv)
                 long sp = atol(my_argv[1]);
                 if (c == 'r')
                 {
-                    // 					speed = 10000;
+                    // 	speed = 10000;
+                    turn_flg = 1;
                     L6470_run_turn(sp);
+                    speed = sp;
                 }
                 else
                 {
-                    // 					speed = -10000;
+                    // 	speed = -10000;
+                    turn_flg = 1;
                     L6470_run_turn(sp);
+                    speed = sp;
                 }
             }
         }
@@ -146,12 +151,14 @@ int main(int argc, char **argv)
         {
             L6470_speed_change(speed, 0);
             speed = 0;
-        } else if (c == 's' && turn_flg == 1) {
-			
+        } else if (c == 's' && turn_flg == 1) { 
+	        L6470_turn_speed_change(speed, 0);
+            speed = 0;
+            turn_flg = 0;
 		}
         if (c == 'e')
         {
-            L6470_turn_speed_change(speed, 0);
+            L6470_speed_change(speed, 0);
             speed = 0;
             return 0;
         }
@@ -368,6 +375,7 @@ void L6470_speed_change(long speed, int postspeed)
 
 void L6470_turn_speed_change(long speed, int postspeed)
 {
+    printf("speed: %d, postspeed: %d\n", speed, postspeed);
     if (postspeed > MAX_SPEED)
     {
         postspeed = MAX_SPEED;
@@ -394,6 +402,7 @@ void L6470_turn_speed_change(long speed, int postspeed)
     else if (speed > postspeed)
     {
         //if moving, move more slowly
+        printf("kocchi\n");
         int i;
         for (i = speed; i >= postspeed; i -= 100)
         {
