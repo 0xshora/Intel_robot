@@ -4,24 +4,21 @@
 #include "wiringPi.h"
 #include "wiringPiSPI.h"
 
+int L6470_SPI_CHANNEL;
+int BUFSIZE = 32;
 
 #define SLOPE_TIME 10000
 #define MAX_DIFF 1000
 #define MINUS_MAX_DIFF -1000
+#define MAX_SPEED 50000
+#define MIN_SPEED -50000
+#define MIN_ROLL 100
+#define MINUS_MIN_ROLL -100
+#define MINUS_MAX_ROLL -10000
+#define MAX_SCALE 3
+#define MIN_SCALE 0.5
 
-extern int L6470_SPI_CHANNEL;
 
-
-void L6470_softstop();
-void L6470_softhiz();
-
-
-void L6470_write(unsigned char data)
-{
-    wiringPiSPIDataRW(L6470_SPI_CHANNEL, &data, 1);
-    //wiringPiSPIDataRW(0, &data, 1);
-    //wiringPiSPIDataRW(1, &data, 1);
-}
 
 void L6470_init()
 {
