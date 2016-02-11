@@ -13,11 +13,16 @@
 #include <fcntl.h>
 #include <stdlib.h>
 #include "/usr/include/linux/i2c-dev.h"
+#include <arpa/inet.h>
+#include <sys/ioctl.h>
+#include <unistd.h>
 
 #define sample 4
 #define SRF_NUM 4
-#define host "127.0.0.1"
-#define port 50002
+//#define host "127.0.0.1"
+#define PORT 50002
+char *host = "127.0.0.1";
+
 
 int compare_int(const void *a,const void *b);
 int true_range(int *tmp);
@@ -86,7 +91,8 @@ int main(void)
 	}
 
 	while(1){
-	// 1つめのセンサに対して
+	printf("hi");
+    // 1つめのセンサに対して
 	
 	{ // read from 0xE0
 		// コマンドレジスタ0に 0x51:Real Ranging Mode - Result in centimeters を送ることによって測距が始まる
@@ -135,14 +141,15 @@ int main(void)
 		//printf("0xE0 Range=%d cm\n", range);
 
 	}
-                range[0] |= buf[0];
+        range[0] |= buf[0];
 		tmpE0[count[0]]=range[0];
 		if(count[0]==sample){
 		    range[0]=true_range(tmpE0);
 		    char str[17] = {0};
+
 		    sprintf(str, "%d", range[0]);
-		    client(host, port, str);
-		    printf("[E0]: %d cm\n",range);
+		    client(host, PORT, str);
+		    printf("[E0]: %d cm\n",*range);
 		    count[0]=0;
 		    reset(tmpE0);
 		}else{
@@ -196,8 +203,8 @@ int main(void)
 		if(count[1]==sample){
 		    range[1]=true_range(tmpE2);
 		    char str[17] = {0};
-                    sprintf(str, "%d", range[1]);
-                    client(host, port, str);
+            sprintf(str, "%d", range[1]);
+            client(host, PORT, str);
 		    printf("[E2]: %d cm\n",range[1]);
 		    count[1]=0;
 		    reset(tmpE2);
@@ -252,13 +259,13 @@ int main(void)
 		//printf("0xE0 Range=%d cm\n", range);
 
 	}
-                range[2] |= buf[0];
+        range[2] |= buf[0];
 		tmpE4[count[2]]=range[2];
 		if(count[2]==sample){
 		    range[2]=true_range(tmpE4);
 		    char str[17] = {0};
-                    sprintf(str, "%d", range[2]);
-                    client(host, port, str);
+            sprintf(str, "%d", range[2]);
+            client(host, PORT, str);
 		    printf("[E4]: %d cm\n",range[2]);
 		    count[2]=0;
 		    reset(tmpE4);
@@ -266,7 +273,7 @@ int main(void)
 		    count[2]++;
 		}
 
-{ // read from 0xE6
+    { // read from 0xE6
 		// コマンドレジスタ0に 0x51:Real Ranging Mode - Result in centimeters を送ることによって測距が始まる
 		buf[0] = 0x00;
 		buf[1] = 0x51;
@@ -313,13 +320,13 @@ int main(void)
 		//printf("0xE0 Range=%d cm\n", range);
 
 	}
-                range[3] |= buf[0];
+        range[3] |= buf[0];
 		tmpE6[count[3]]=range[3];
 		if(count[3]==sample){
 		    range[3]=true_range(tmpE6);
 		    char str[17] = {0};
-                    sprintf(str, "%d", range[3]);
-                    client(host, port, str);
+            sprintf(str, "%d", range[3]);
+            client(host, PORT, str);
 		    printf("[E6]: %d cm\n",range[3]);
 		    count[3]=0;
 		    reset(tmpE6);

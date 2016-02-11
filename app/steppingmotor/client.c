@@ -32,6 +32,7 @@ void client(char *host, in_port_t port, char *msg){
     exit(1);
   }
 
+
   close(s);
 }
 
