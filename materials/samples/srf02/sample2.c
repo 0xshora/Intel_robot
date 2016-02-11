@@ -46,8 +46,8 @@ int main( void ) {
 		exit( 1 );
 	}
 
-
-	// 1つめのセンサに対して
+    
+    // 1つめのセンサに対して
 	{ // read from 0xE0
 		// コマンドレジスタ0に 0x51:Real Ranging Mode - Result in centimeters を送ることによって測距が始まる
 		buf[ 0 ] = 0x00;
@@ -131,6 +131,7 @@ int main( void ) {
 
 		printf("0xE2 Range=%d cm\n",range);	
 	}
+    
 
 	// 閉じる！！
 	close( fd1 );
