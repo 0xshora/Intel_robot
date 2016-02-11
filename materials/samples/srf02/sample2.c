@@ -110,8 +110,9 @@ int main( void ) {
 		    count[0]++;
 		}
 
-		//printf( "0xE0 Range=%d cm\n", range );
+//	printf( "0xE0 Range=%d cm\n", range[0] );
 	}
+    
 	{ // read from 0xE0
 		// コマンドレジスタ0に 0x51:Real Ranging Mode - Result in centimeters を送ることによって測距が始まる
 		buf[ 0 ] = 0x00;
@@ -224,18 +225,19 @@ int main( void ) {
 		// 上位と下位をくっつける
 		range[3] |= buf[ 3 ];
 
-		tmpE4[count[2]]=range[3];
+		tmpE6[count[3]]=range[3];
 		if(count[3]==sample){
-		    range[3]=true_range(tmpE4);
+		    range[3]=true_range(tmpE6);
 		    printf("		    [E6]: %d cm\n",range[3]);
 		    count[3]=0;
-		    reset(tmpE4);
+		    reset(tmpE6);
 		}else{
 		    count[3]++;
 		}
 		//printf( "0xE0 Range=%d cm\n", range );
 	}
 }
+
 	// 閉じる！！
 	close( fd[0] );
 	close( fd[1] );
@@ -251,7 +253,7 @@ int compare_int(const void *a,const void *b){
 
 int true_range(int *tmp){
 	qsort(tmp,sample+1,sizeof(int),compare_int);
-	return tmp[0];
+	return tmp[1];
 }
 
 void reset(int *tmp){
