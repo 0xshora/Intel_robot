@@ -216,6 +216,9 @@ def main(length, mirror=True, size=None):
             # print('roll')
 
         k = cv2.waitKey(50)
+        if k == org('s'):
+            send_msg("s")
+            break
         if k == 27:  # ESCキーで終了
             break
 
