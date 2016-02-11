@@ -259,4 +259,4 @@ void reset(int *tmp){
 	    tmp[i]=0;
 	}
 }
->>>>>>> 81f345b802660375f47afc32aa230cb76c6112c5
+
