@@ -12,10 +12,11 @@ def draw_detections(img, rects, thickness=1):
 def cascade(img):
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     # カスケードファイルの読み込み
-    face_cascade = cv2.CascadeClassifier(
-        '../data/haarcascades/haarcascade_frontalface_default.xml')
+    # face_cascade = cv2.CascadeClassifier(
+    # '../data/haarcascades/haarcascade_frontalface_default.xml')
     # face_cascade = cv2.CascadeClassifier('../data/haarcascades/haarcascade_upperbody.xml')
-    # face_cascade = cv2.CascadeClassifier('../data/haarcascades/haarcascade_lowerbody.xml')
+    face_cascade = cv2.CascadeClassifier(
+        '../data/haarcascades/haarcascade_lowerbody.xml')
 
     faces = face_cascade.detectMultiScale(gray)
     draw_detections(img, faces)

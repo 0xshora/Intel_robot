@@ -135,14 +135,14 @@ int main(int argc, char **argv)
                     // 	speed = 10000;
                     turn_flg = 1;
                     L6470_run_turn(sp);
-                    speed = sp;
+                    speed = 0;
                 }
                 else
                 {
                     // 	speed = -10000;
                     turn_flg = 1;
                     L6470_run_turn(sp);
-                    speed = sp;
+                    speed = 0;
                 }
             }
         }
