@@ -1,0 +1,24 @@
+pi@raspiri5 ~/work/motor/imcs01_driver_JROBO $ ls -al
+total 72
+drwxr-xr-x 3 pi pi 4096 Sep 16 12:04 .
+drwxr-xr-x 3 pi pi 4096 Jul  9 16:49 ..
+drwxr-xr-x 3 pi pi 4096 Sep 16 12:04 driver
+-rwxr-xr-x 1 pi pi 6619 Sep 16 12:04 h8test
+-rw-r--r-- 1 pi pi 1734 Sep 14  2012 h8test.c
+-rw-r--r-- 1 pi pi  339 Sep 14  2012 Makefile
+-rw-r--r-- 1 pi pi 2898 Sep 14  2012 README.txt
+-rw-r--r-- 1 pi pi 2025 Jul 10  2014 uread.c
+-rw-r--r-- 1 pi pi 2960 Jul 10  2014 urobot_1ch_enc_pos.c
+-rw-r--r-- 1 pi pi 3717 Jul 10  2014 urobotc_ad.c
+-rw-r--r-- 1 pi pi 7466 Jul 10  2014 urobotc_open_loop
+-rw-r--r-- 1 pi pi 3771 Jul 10  2014 urobotc_open_loop.c
+-rw-r--r-- 1 pi pi 4422 Jul 10  2014 urobot_enc_pos.c
+-rw-r--r-- 1 pi pi 4334 Jul 10  2014 urobotm.c
+pi@raspiri5 ~/work/motor/imcs01_driver_JROBO $ sudo ./h8test 
+Vendor 10ff8
+Product 1000
+read status 0
+read status 1
+write status 2
+write status 3
+pi@raspiri5 ~/work/motor/imcs01_driver_JROBO $

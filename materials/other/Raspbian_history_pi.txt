@@ -1,0 +1,804 @@
+    1  cd
+    2  ls l-al
+    3  ls -al
+    4  cd robo
+    5  ls -la
+    6  cd robot
+    7  ls -al
+    8  cd imcs01_driver/
+    9  ls -la
+   10  cd driver/
+   11  ls -al
+   12  vi Makefile
+   13  cd ..
+   14  ls -la
+   15  cd ..
+   16  ls -al
+   17  cd ..
+   18  ls -la
+   19  cd robot
+   20  wget --trust-server-names 'http://sourceforge.jp/frs/redir.php?m=osdn&f=%2Fjulius%2F59049%2Fjulius-4.2.3.tar.gz'
+   21  wget --trust-server-names 'http://sourceforge.jp/frs/redir.php?m=osdn&f=%2Fjulius%2F59050%2Fdictation-kit-v4.2.3.tar.gz'
+   22  wget --trust-server-names 'http://sourceforge.jp/frs/redir.php?m=osdn&f=%2Fjulius%2F51159%2Fgrammar-kit-v4.1.tar.gz'
+   23  apt-get install libopencv-dev
+   24  su
+   25  ls -al
+   26  exit
+   27  cler
+   28  clear
+   29  ls-la
+   30  cd /usr/src/linuxc
+   31  cd /usr/src/linux
+   32  cd drivers/
+   33  ls -al
+   34  cd usb
+   35  ls
+   36  ls -al
+   37  more usb-skeleton.c
+   38  cd ../..
+   39  ls ~la
+   40  cd ..
+   41  lk
+   42  ls -al
+   43  uname -r
+   44  ls -al
+   45  more linux-patch-3.2-rt.patch.bz2
+   46  ls -al
+   47  bzip2 -dc linux-patch-3.2-rt.patch.bz2
+   48  ls -al >
+   49  bzip2 -d linux-patch-3.2-rt.patch.bz2
+   50  su
+   51  exit
+   52  cd /lib/modules/
+   53  ls
+   54  cd 3.12.22+/
+   55  ls
+   56  cd build
+   57  ls
+   58  ls -al
+   59  make menuconfig
+   60  sudo apt-get install ncurses
+   61  sudo apt-get install libncurses
+   62  sudo apt-get search | grep ncurses
+   63  sudo apt-cache search | grep ncurses
+   64  sudo apt-cache search ncurses
+   65  sudo apt-get install libncurses5
+   66  sudo apt-get install libncurses5-dev
+   67  make menuconfig
+   68  sudo su
+   69  exit
+   70  cd /var/tmp
+   71  ls
+   72  ls -al
+   73  clear
+   74  ls
+   75  clear
+   76  ls -la
+   77  cd /usr/src
+   78  ls
+   79  cd linux
+   80  ls -
+   81  ls -al
+   82  find . -name usb-skelton.c -print
+   83  find . -name drivers -type d -print
+   84  cd drivers/
+   85  ls -al
+   86  ls
+   87  cd usb
+   88  ls -^ a
+   89  ls
+   90  ls -al
+   91  more usb-skeleton.c
+   92  ifconfig -a
+   93  export LANG=C
+   94  ifconfig -a
+   95  ls -al
+   96  cd
+   97  ls -al
+   98  cd robot
+   99  ls
+  100  ls -al
+  101  cd imcs01_driver/
+  102  ls -la
+  103  cd driver/
+  104  ls -al
+  105  vi urbtc.c
+  106  ls -al
+  107  make urbtc
+  108  make urbtc.ko
+  109  ls -al
+  110  more urbtc.h
+  111  more urbtc.c
+  112  cd /usr/src/linux/include/
+  113  ls
+  114  cd linux
+  115  ls
+  116  ls -la init.h
+  117  ls
+  118  cd
+  119  cd robot/
+  120  cd imcs01_driver/
+  121  s -
+  122  ls -la
+  123  cd driver/
+  124  ls
+  125  ls -al
+  126  cc -v
+  127  ls -al
+  128  more Makefile
+  129  make urbtc
+  130  make CC=gcc urbtc
+  131  make CC=g++ urbtc
+  132  make CC=g++ urbtc -I/usr/loca
+  133  gcc -o urbtc urbtc.c -I /usr/src/linux/include/
+  134  cd /usr/include
+  135  ls
+  136  cd linux
+  137  ls
+  138  ls -la init.h
+  139  cd
+  140  ls -al
+  141  cd robot/
+  142  cd imcs01_driver/
+  143  cd driver/
+  144  ls
+  145  ls -al
+  146  make
+  147  ls /lib/modules/
+  148  ls /lib/modules/3.12.22+/
+  149  more Makefile
+  150  vi Makefile
+  151  ls -al
+  152  cp Makefile  Makefile.orig
+  153  vi Makefile
+  154  make
+  155  more Makefile
+  156  cd ..
+  157  ls -al
+  158  more README.txt
+  159  clear
+  160  ls -al
+  161  cd /usr/src
+  162  ls -al
+  163  uname -r
+  164  apt-get install kernel-devel
+  165  su
+  166  cd robot
+  167  ls -al
+  168  cd imcs01_driver/
+  169  os
+  170  ls -a
+  171  k
+  172  l
+  173  s
+  174  ls -la
+  175  ls -al
+  176  cd driver/
+  177  ls -la
+  178  mv Makefile.orig Makefile
+  179  ls -al
+  180  more Makefile
+  181  makae
+  182  make
+  183  man err
+  184  make
+  185  man  err
+  186  man err.h
+  187  make
+  188  man err
+  189  man error
+  190  make
+  191  man dbg
+  192  make
+  193  cd ..
+  194  ls
+  195  cd driver/
+  196  ls- al
+  197  ls- la
+  198  ls -la
+  199  cd .
+  200  ls
+  201  make
+  202  ls -al
+  203  cd ..
+  204  ls -al
+  205  make
+  206  make h8test
+  207  ls -al
+  208  cd driver/
+  209  ls -al
+  210  sudo insmod urbtc.ko
+  211  sudo ls mod
+  212  sudo lsmod
+  213  ls -al
+  214  sudo insmod urbtc.ko
+  215  ls -al
+  216  more Makefile
+  217  make modules
+  218  make clean
+  219  make
+  220  sudo su
+  221  ls -al
+  222  cd robot
+  223  ls -la
+  224  cd imcs01_driver/
+  225  ls -la
+  226  cd driver/
+  227  ls  -al
+  228  make clean
+  229  ls -al
+  230  su
+  231  ls-la
+  232  cd
+  233  ls -al
+  234  ls -a
+  235  exit
+  236  uname -r
+  237  w
+  238  clear
+  239  sl -l
+  240  ls -al
+  241  pi@raspberrypi ~ $ sl -l
+  242  bash: sl: コマンドが見つかりません
+  243  pi@raspberrypi ~ $
+  244  pi@raspberrypi ~ $ ls -al
+  245  合計 48
+  246  drwxr-xr-x 5 pi   pi   4096  7月 10 16:04 .
+  247  drwxr-xr-x 3 root root 4096  6月 20 14:48 ..
+  248  -rw------- 1 pi   pi     57  7月 10 16:04 .Xauthority
+  249  -rw------- 1 pi   pi   2789  7月 10 16:04 .bash_history
+  250  -rw-r--r-- 1 pi   pi    220  6月 20 14:48 .bash_logout
+  251  -rw-r--r-- 1 pi   pi   3243  6月 20 14:48 .bashrc
+  252  -rw-r--r-- 1 pi   pi    675  6月 20 14:48 .profile
+  253  drwxr-xr-x 2 pi   pi   4096  6月 20 18:27 Desktop
+  254  -rw-r--r-- 1 pi   pi   5781  2月  3  2013 ocr_pi.png
+  255  drwxrwxr-x 2 pi   pi   4096  3月 10  2013 python_games
+  256  drwxr-xr-x 3 pi   pi   4096  7月 10 15:21 robot
+  257  pi@raspberrypi ~ $
+  258  ls -la
+  259  clear
+  260  ls -al
+  261  sudo apt-get install libopencv-dev
+  262  sudo apt-get install guvcview
+  263  ls /dev
+  264  guvcview
+  265  ls -la
+  266  cd robot
+  267  ls -la
+  268  cat > camcap.c
+  269  vi camcap.c
+  270  ls -al
+  271  mv Makefile.txt Makefile
+  272  ls -al
+  273  vi Makefile
+  274  ls -al
+  275  chown pi:pi Makefile
+  276  ls -al
+  277  chown pi.pi Makefile
+  278  chown pi Makefile
+  279  ls -al
+  280  sudo chown pi:pi Makefile
+  281  ls -al
+  282  vi Makefile
+  283  ls -al
+  284  make
+  285  camcap
+  286  ./camcap
+  287  bg
+  288  sudo su
+  289  ls -l
+  290  su
+  291  ls -al
+  292  su
+  293  cd /var/tmp
+  294  ls -la
+  295  ls -al
+  296  cd /etc
+  297  ls
+  298  df -k
+  299  clear
+  300  ls -al
+  301  ls
+  302  cd
+  303  ls -al
+  304  cd robot
+  305  ls -al
+  306  lsusb
+  307  cat /proc/asound/modules
+  308  more /etc/modprobe.d/alsa-base.conf
+  309  ls
+  310  ls -al
+  311  sudo cp  /etc/modprobe.d/alsa-base.conf /etc/modprobe.d/alsa-base.conf.orig
+  312  sudo vi  /etc/modprobe.d/alsa-base.conf
+  313  reboot
+  314  sudo reboot
+  315  ls -al
+  316  cd pi
+  317  ls -al
+  318  cd
+  319  ls -al
+  320  cd robot
+  321  ls -al
+  322  cat /proc/asound/modules
+  323  amixer sset Mic 12
+  324  alsamixer
+  325  amixer sset Mic 16
+  326  cd
+  327  arecord -r 16000 -f S16_LE test.wav
+  328  ls -al
+  329  cd robot
+  330  ls -al
+  331  tar xvzf julius-4.2.3.tar.gz
+  332  cd julius-4.2.3/
+  333  ls -al
+  334  ./configure
+  335  for i in `find . -name Makefile -print`; vi $i
+  336  for i in `find . -name Makefile -print`; vi $i; done
+  337  for i in `find . -name Makefile -print`  vi $i; done
+  338  sh
+  339  ls -al
+  340  cd ,,
+  341  cd ..
+  342  ls- la
+  343  ls -al
+  344  cd julius-kits/
+  345  ls -al
+  346  tar zxvf ../dictation-kit-v4.2.3.tar.gz
+  347  tar zxvf ../grammar-kit-v4.1.tar.gz
+  348  ls -al
+  349  lsusb
+  350  arecord -l
+  351  export ALSADEV=hw:0
+  352  ~/julius-4.2.3/julius/julius -C ~/julius-kits/dictation-kit-v4.2.3/fast.jconf -charconv EUC-JP UTF-8
+  353  ../julius-4.2.3/julius/julius -C dictation-kit-v4.2.3/fast.jconf -charconv EUC-JP UTF-8
+  354  sudo modprobe snd-pcm-oss
+  355  ../julius-4.2.3/julius/julius -C dictation-kit-v4.2.3/fast.jconf -charconv EUC-JP UTF-8
+  356  ls -al
+  357  vi test.yomi
+  358  ls -al
+  359  man iconv
+  360  cd ../julius-4.2.3/gramtools/yomi2voca/
+  361  ls
+  362  ls -al
+  363  iconv -f utf8 -t sjis ../../../julius-kits/test.yomi  | ./yomi2voca.pl > ../../../julius-kits/dictation-kit-v4.2.3/test.dic
+  364  cat ../../../julius-kits/test.yomi  | ./yomi2voca.pl > ../../../julius-kits/dictation-kit-v4.2.3/test.dic
+  365  cd ../../../julius-kits/
+  366  ls -al
+  367  cd dictation-kit-v4.2.3/
+  368  ls -al
+  369  more test.dic
+  370  ls -al
+  371  cat > test.jconf
+  372  vi test.jconf
+  373  ls -al
+  374  cd ..
+  375  ls -al
+  376  ../julius-4.2.3/julius/julius -C dictation-kit-v4.2.3/test.jconf -charconv EUC-JP UTF-8
+  377  ls -al
+  378  cd dictation-kit-v4.2.3/
+  379  ls -al
+  380  more test.dic
+  381  more fast.jconf
+  382  ls -al
+  383  more test.jconf
+  384  ls -la
+  385  more test.
+  386  more test.dic
+  387  cat ../../../julius-kits/test.yomi  | ./yomi2voca.pl > ../../../julius-kits/dictation-kls -al
+  388  ls -al
+  389  cd ..
+  390  ls -al
+  391  history
+  392  ../julius-4.2.3/gramtools/yomi2voca/yomi2voca.pl test.yomi
+  393  ls -la
+  394  vi test.yomi
+  395  ../julius-4.2.3/gramtools/yomi2voca/yomi2voca.pl test.yomi
+  396  ../julius-4.2.3/gramtools/yomi2voca/yomi2voca.pl < test.yomi
+  397  ls -al
+  398  ../julius-4.2.3/gramtools/yomi2voca/yomi2voca.pl < test.yomi
+  399  ../julius-4.2.3/gramtools/yomi2voca/yomi2voca.pl < test.yomi > dictation-kit-v4.2.3/test.dic
+  400  more dictation-kit-v4.2.3/test.jconf
+  401  ls -al
+  402  history
+  403  ../julius-4.2.3/julius/julius -C dictation-kit-v4.2.3/test.jconf -charconv EUC-JP UTF-8
+  404  ../julius-4.2.3/gramtools/yomi2voca/yomi2voca.pl < test.yomi > dictation-kit-v4.2.3/test.dic
+  405  more dictation-kit-v4.2.3/test.dic
+  406  ls -al
+  407  ../julius-4.2.3/julius/julius -C dictation-kit-v4.2.3/test.jconf -charconv EUC-JP UTF-8
+  408  ../julius-4.2.3/gramtools/yomi2voca/yomi2voca.pl < test.yomi > dictation-kit-v4.2.3/test.dic
+  409  ../julius-4.2.3/julius/julius -C dictation-kit-v4.2.3/test.jconf -charconv EUC-JP UTF-8
+  410  lsusb
+  411  history
+  412  ~/julius-4.2.3/julius/julius -C ~/julius-kits/dictation-kit-v4.2.3/fast.jconf -charconv EUC-JP UTF-8
+  413  ../julius-4.2.3/julius/julius -C ~/julius-kits/dictation-kit-v4.2.3/fast.jconf -charconv EUC-JP UTF-8
+  414  ../julius-4.2.3/julius/julius -C ../julius-kits/dictation-kit-v4.2.3/fast.jconf -charconv EUC-JP UTF-8
+  415  ls
+  416  lsusb
+  417  alsamixer
+  418  ../julius-4.2.3/julius/julius -C ../julius-kits/dictation-kit-v4.2.3/fast.jconf -charconv EUC-JP UTF-8
+  419  ls -al
+  420  clear
+  421  ls -al
+  422  more test.yomi
+  423  ls -al
+  424  cd ..
+  425  ls -al
+  426  sudo shutdown -h now
+  427  gcc
+  428  sudo su
+  429  sudo apt-get install i2c-tools
+  430  sudo i2cdetect-y 1
+  431  sudo i2cdetect -y 1
+  432  sudo i2cdetect -y 0
+  433  sudo i2cdetect -y 2
+  434  sudo i2cdetect -y 1
+  435  ls a-l
+  436  ls -al
+  437  cd robot
+  438  ls -al
+  439  mkdir sfr02
+  440  ls -al
+  441  cd sfr02/
+  442  ls -al
+  443  cat > test.c
+  444  ls  -la
+  445  vi test.c
+  446  ls -al
+  447  sudo i2cdetect -y 0
+  448  sudo i2cdetect -y 1
+  449  man delay
+  450  man deley
+  451  ls -al
+  452  gcc -o test test.c
+  453  ls a-l
+  454  ls -al
+  455  ./test
+  456  ./tes
+  457  gcc -o test test.c
+  458  ./test
+  459  sudo ./test
+  460  gcc -o test test.c
+  461  ./test
+  462  sudo ./test
+  463  sudo i2cdetect -y 1
+  464  ls -al
+  465  ls -al\\
+  466  history
+  467  sudo shutdown -h now
+  468  shutdown -h now
+  469  sudo shutdown -h now
+  470  ls -al
+  471  clear
+  472  ls -la
+  473  cd robot
+  474  ls -la
+  475  shutdown -h now;
+  476  sudo shutdown -h now;
+  477  su
+  478  cd
+  479  ls -al
+  480  su
+  481  ls -al
+  482  cd robot
+  483  ls -al
+  484  alsamixer
+  485  ls -la
+  486  history | more
+  487  ../julius-4.2.3/julius/julius -C ../julius-kits/dictation-kit-v4.2.3/fast.jconf -charconv EUC-JP UTF-8
+  488  ./julius-4.2.3/julius/julius -C ../julius-kits/dictation-kit-v4.2.3/fast.jconf -charconv EUC-JP UTF-8
+  489  ./julius-4.2.3/julius/julius -C ./julius-kits/dictation-kit-v4.2.3/fast.jconf -charconv EUC-JP UTF-8
+  490  alsamixer
+  491  ./julius-4.2.3/julius/julius -C ./julius-kits/dictation-kit-v4.2.3/fast.jconf -charconv EUC-JP UTF-8
+  492  su
+  493  ./julius-4.2.3/julius/julius -C ./julius-kits/dictation-kit-v4.2.3/fast.jconf -charconv EUC-JP UTF-8
+  494  ls -a /dev/dsp
+  495  lsusb
+  496  ls -ls /dev/dsp
+  497  history
+  498  history | more
+  499  ./julius-4.2.3/julius/julius -C dictation-kit-v4.2.3/test.jconf -charconv EUC-JP UTF-8
+  500  ls -al
+  501  cd julius-4.2.3/
+  502  ls -al
+  503  ls
+  504  cd ..
+  505  ls -la
+  506  cd julius-kits/
+  507  ls -al
+  508  more test.yomi
+  509  rm test.yomi
+  510  ls -al
+  511  ../julius-4.2.3/julius/julius -C dictation-kit-v4.2.3/fast.jconf -charconv EUC-JP UTF-8
+  512  cat /proc/asound/modules
+  513  ../julius-4.2.3/julius/julius -C dictation-kit-v4.2.3/fast.jconf -charconv EUC-JP UTF-8
+  514  ls /dev
+  515  more /etc/modprobe.d/alsa-base.conf
+  516  modprobe snd
+  517  cd
+  518  ls- la
+  519  ls -al
+  520  arecord -r 16000 -f S16_LE test.wav
+  521  ls -al
+  522  cd robot
+  523  ls -al
+  524  cd julius-kits/
+  525  ../julius-4.2.3/julius/julius -C dictation-kit-v4.2.3/fast.jconf -charconv EUC-JP UTF-8
+  526  alsamixer
+  527  ../julius-4.2.3/julius/julius -C dictation-kit-v4.2.3/fast.jconf -charconv EUC-JP UTF-8
+  528  arecord -l
+  529  export ALSADEV=hw:0
+  530  ../julius-4.2.3/julius/julius -C dictation-kit-v4.2.3/fast.jconf -charconv EUC-JP UTF-8
+  531  modprobe snd-pcm-oss
+  532  sudo modprobe snd-pcm-oss
+  533  ../julius-4.2.3/julius/julius -C dictation-kit-v4.2.3/fast.jconf -charconv EUC-JP UTF-8
+  534  ls -al
+  535  sudo su
+  536  cd robpot
+  537  ls -al
+  538  cd robot
+  539  ls- al
+  540  cd julius-kits/
+  541  ../julius-4.2.3/julius/julius -C dictation-kit-v4.2.3/fast.jconf -charconv EUC-JP UTF-8
+  542  alsamixer
+  543  ../julius-4.2.3/julius/julius -C dictation-kit-v4.2.3/fast.jconf -charconv EUC-JP UTF-8
+  544  lsmod
+  545  ls -al
+  546  alsamixer
+  547  ../julius-4.2.3/julius/julius -C dictation-kit-v4.2.3/fast.jconf -charconv EUC-JP UTF-8
+  548  alsamixer
+  549  ../julius-4.2.3/julius/julius -C dictation-kit-v4.2.3/fast.jconf -charconv EUC-JP UTF-8
+  550  ls -al
+  551  su
+  552  cd
+  553  ls -al
+  554  su
+  555  ls -al
+  556  cleasr
+  557  ls -la
+  558  clear
+  559  ls -al
+  560  sudo su
+  561  ls -al
+  562  cd robot/
+  563  ls -al
+  564  cd sfr02/
+  565  ls -al
+  566  sudo ./re
+  567  sudo ./test
+  568  sudo ./re
+  569  sudo ./test
+  570  sl -al
+  571  clear
+  572  ls- la
+  573  ls -al
+  574  cd ..
+  575  ls -al
+  576  sudo ./camcap
+  577  bg
+  578  cd sfr02/
+  579  sudo ./test
+  580  ls -al
+  581  history
+  582  ../julius-4.2.3/julius/julius -C dictation-kit-v4.2.3/fast.jconf -charconv EUC-JP UTF-8
+  583  cd robot/
+  584  cd julius-kits/
+  585  ../julius-4.2.3/julius/julius -C dictation-kit-v4.2.3/fast.jconf -charconv EUC-JP UTF-8
+  586  alsamixer
+  587  ../julius-4.2.3/julius/julius -C dictation-kit-v4.2.3/fast.jconf -charconv EUC-JP UTF-8
+  588  cd robot
+  589  ../julius-4.2.3/julius/julius -C dictation-kit-v4.2.3/fast.jconf -charconv EUC-JP UTF-8
+  590  exit
+  591  sudo su
+  592  startx
+  593  ls -al
+  594  sudo raspi-config
+  595  cat /sys/class/thermal/thermal_zone0/temp
+  596  cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_cur_freq
+  597  raspi-config
+  598  sudo raspi-config
+  599  ifconfig -a
+  600  man aplay
+  601  ls -al
+  602  aplay test.wav
+  603  ls -al
+  604  ifconfig -a
+  605  aplay test.wav
+  606  reboot
+  607  sudo reboot
+  608  cpuinfo
+  609  startx
+  610  xterm
+  611  ls -al
+  612  clear
+  613  ls -al
+  614  aplay
+  615  startx
+  616  xterm
+  617  ls -al
+  618  aplay test.wav
+  619  alsamixer
+  620  aplay test.wav
+  621  alsamixer
+  622  alsamixer
+  623  eboot
+  624  sudo reboot
+  625  aplay test.wav
+  626  alsamixer
+  627  ls /dev
+  628  startx
+  629  sudo amixer cset numid=3 1
+  630  aplay test.wav
+  631  history
+  632  sudo amixer cset numid=3 1
+  633  aplay test.wav
+  634  sudo amixer cset numid=3 1
+  635  alsamixer
+  636  aplay test.wav
+  637  alsamixer
+  638  aplay test.wav
+  639  alsamixer
+  640  aplay test.wav
+  641  sudo amixer cset numid=3 1
+  642  aplay test.wav
+  643  sudo amixer cset numid=3 1
+  644  aplay test.wav
+  645  exit
+  646  history
+  647  aplay test.wav
+  648  alsamixer
+  649  cd robot
+  650  ../julius-4.2.3/julius/julius -C dictation-kit-v4.2.3/fast.jconf -charconv EUC-JP UTF-8
+  651  cd julius-kits/
+  652  ../julius-4.2.3/julius/julius -C dictation-kit-v4.2.3/fast.jconf -charconv EUC-JP UTF-8
+  653  modprobe snd-pcm-oss
+  654  sudo modprobe snd-pcm-oss
+  655  ../julius-4.2.3/julius/julius -C dictation-kit-v4.2.3/fast.jconf -charconv EUC-JP UTF-8
+  656  sudo reboot
+  657  startx
+  658  pwd
+  659  aplay test.wav
+  660  aplay test.wav
+  661  aplay test.wav ]
+  662  sudo amixer cset numid=3 2
+  663  aplay test.wav ]
+  664  aplay test.wav
+  665  sudo amixer cset numid=3 1
+  666  aplay test.wav
+  667  sudo apt-get --purge remove pulseaudio
+  668  sudo amixer cset numid=3 1
+  669  aplay test.wav
+  670  man amixer
+  671  alsamixer
+  672  aplay test.wav
+  673  sudo amixer cset numid=3 1
+  674  amixer
+  675  alsamixer
+  676  sudo amixer cset numid=3 1
+  677  aplay test.wav
+  678  cd /etc/modprobe.d/
+  679  ls -l
+  680  more alsa-base.conf
+  681  clear
+  682  ls -al
+  683  diff alsa-base.conf alsa-base.conf.orig
+  684  vi alsa-base.conf
+  685  sudo vi alsa-base.conf
+  686  raspi-conf
+  687  sudo raspi-config
+  688  history
+  689  sudo amixer cset numid=3 1
+  690  alsamixer
+  691  sudo amixer cset numid=3 1
+  692  alsamixer
+  693  sudo amixer cset numid=3 1
+  694  ls -al
+  695  aplay test.wav
+  696  clear
+  697  ls -al
+  698  cd /etc
+  699  cd modprobe.d/
+  700  ls -la
+  701  vi alsa-base.conf
+  702  sudo vi alsa-base.conf
+  703  reboot
+  704  sudo reboot
+  705  ls -al
+  706  history
+  707  modprobe snd-pcm-oss
+  708  sudo modprobe snd-pcm-oss
+  709  sudo amixer cset numid=3 1
+  710  aplay test.wav
+  711  sudo aplay test.wav
+  712  amixer
+  713  alsamixer
+  714  aplay test.wav
+  715  ../julius-4.2.3/julius/julius -C dictation-kit-v4.2.3/fast.jconf -charconv EUC-JP UTF-8
+  716  cd robo
+  717  cd
+  718  cd robo
+  719  cd robot
+  720  cd julius-kits/
+  721  ../julius-4.2.3/julius/julius -C dictation-kit-v4.2.3/fast.jconf -charconv EUC-JP UTF-8
+  722  ls -al
+  723  alsamixer
+  724  sudo amixer cset numid=3 1
+  725  alsamixer
+  726  amixer
+  727  cd /boot
+  728  ls -al
+  729  more config.txt
+  730  aplay /usr/share/sounds/alsa/Front_Center.wav
+  731  history | grep cat
+  732  cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_cur_freq
+  733  more config.txt
+  734  sudo raspi-config
+  735  cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_cur_freq
+  736  aplay /usr/share/sounds/alsa/Front_Center.wav
+  737  ls -al
+  738  aplay test.wav
+  739  ls -al
+  740  pwd
+  741  cd
+  742  cd roboto
+  743  cd robot
+  744  cd julius-kits/
+  745  ../julius-4.2.3/julius/julius -C dictation-kit-v4.2.3/fast.jconf -charconv EUC-JP UTF-8
+  746  sudo modprobe snd-pcm-oss
+  747  ../julius-4.2.3/julius/julius -C dictation-kit-v4.2.3/fast.jconf -charconv EUC-JP UTF-8
+  748  alsamixer
+  749  lsusb
+  750  sudo reboot
+  751  aplay test.wav
+  752  alsamixer
+  753  aplay test.wav
+  754  alsamixer
+  755  lsusb
+  756  alsamixer
+  757  aplay test.wav
+  758  modprobe snd-pcm-oss
+  759  sudo modprobe snd-pcm-oss
+  760  alsamixer
+  761  aplay test.wav
+  762  ls -al
+  763  startx
+  764  alsamixer
+  765  cd /etc/modprobe.d/
+  766  ls -al
+  767  vi alsa-base.conf
+  768  sudo vi alsa-base.conf
+  769  reboot
+  770  sudo reboot
+  771  alsamixer
+  772  aplay test.wav
+  773  alsamixer
+  774  export LANG=C
+  775  alsamixer
+  776  aplay -D systemdefault test.wav
+  777  aplay -D sysdefault test.wav
+  778  alsamixer
+  779  sudo shutdown -h now
+  780  alsamixer
+  781  sudo aplay -L
+  782  cd
+  783  aplay -D default test.wav
+  784  cat /proc/asound/modules
+  785  speaker-test
+  786  alsamixer
+  787  speaker-test
+  788  ls -al
+  789  sudo shutdown -h now
+  790  exit
+  791  xterm &
+  792  sudo
+  793  su
+  794  cd
+  795  ls -la
+  796  aplay test.wav
+  797  alsamixer
+  798  aplay test.wav
+  799  lsusb
+  800  clear
+  801  su
+  802  ls -al
+  803  history
+pi@raspberrypi ~ $

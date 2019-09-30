@@ -1,0 +1,39 @@
+pi@raspiri5 ~ $ arecord -l
+**** List of CAPTURE Hardware Devices ****
+card 0: Device [USB PnP Sound Device], device 0: USB Audio [USB Audio]
+  Subdevices: 1/1
+  Subdevice #0: subdevice #0
+pi@raspiri5 ~ $ 
+pi@raspiri5 ~ $ 
+pi@raspiri5 ~ $ arecord -f S16_LE -D hw:0,0 test.wav
+Recording WAVE 'test.wav' : Signed 16 bit Little Endian, Rate 8000 Hz, Mono
+Warning: rate is not accurate (requested = 8000Hz, got = 44100Hz)
+         please, try the plug plugin 
+^CAborted by signal Interrupt...
+pi@raspiri5 ~ $ 
+pi@raspiri5 ~ $ 
+pi@raspiri5 ~ $ aplay -l
+**** List of PLAYBACK Hardware Devices ****
+card 0: Device [USB PnP Sound Device], device 0: USB Audio [USB Audio]
+  Subdevices: 1/1
+  Subdevice #0: subdevice #0
+card 1: ALSA [bcm2835 ALSA], device 0: bcm2835 ALSA [bcm2835 ALSA]
+  Subdevices: 8/8
+  Subdevice #0: subdevice #0
+  Subdevice #1: subdevice #1
+  Subdevice #2: subdevice #2
+  Subdevice #3: subdevice #3
+  Subdevice #4: subdevice #4
+  Subdevice #5: subdevice #5
+  Subdevice #6: subdevice #6
+  Subdevice #7: subdevice #7
+card 1: ALSA [bcm2835 ALSA], device 1: bcm2835 ALSA [bcm2835 IEC958/HDMI]
+  Subdevices: 1/1
+  Subdevice #0: subdevice #0
+pi@raspiri5 ~ $ 
+pi@raspiri5 ~ $ aplay -D hw:0,0 test.wav 
+Playing WAVE 'test.wav' : Signed 16 bit Little Endian, Rate 44100 Hz, Mono
+aplay: set_params:1087: Channels count non available
+pi@raspiri5 ~ $ aplay -D plughw:0,0 test.wav 
+Playing WAVE 'test.wav' : Signed 16 bit Little Endian, Rate 44100 Hz, Mono
+pi@raspiri5 ~ $ 
