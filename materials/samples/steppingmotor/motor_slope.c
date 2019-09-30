@@ -7,7 +7,7 @@
 #include <wiringPi.h>
 #include <wiringPiSPI.h>
 
-int L6470_SPI_CHANNEL; 
+int L6470_SPI_CHANNEL;
 int BUFSIZE = 32;
 
 // 関数プロトタイプ。
@@ -20,92 +20,98 @@ void L6470_softhiz();
 
 int main(int argc, char **argv)
 {
-        int i,j;
+        int i, j;
         long speed = 0;
 
-        char*str = (char*)malloc ( BUFSIZE*sizeof( char ));
+        char *str = (char *)malloc(BUFSIZE * sizeof(char));
         char c;
-		long s;
-		float sl;
-		long S = 0;
-			
+        long s;
+        float sl;
+        long S = 0;
 
         printf("***** start spi test program *****\n");
 
         // SPI channel 0 を 1MHz で開始。
         //if (wiringPiSPISetup(L6470_SPI_CHANNEL, 1000000) < 0)
-        if (wiringPiSPISetup(0, 1000000) < 0){
+        if (wiringPiSPISetup(0, 1000000) < 0)
+        {
                 printf("SPI Setup failed:\n");
         }
-        if (wiringPiSPISetup(1, 1000000) < 0){
+        if (wiringPiSPISetup(1, 1000000) < 0)
+        {
                 printf("SPI Setup failed:\n");
         }
 
         // L6470の初期化。
-		L6470_SPI_CHANNEL = 0;
+        L6470_SPI_CHANNEL = 0;
         L6470_init();
-		L6470_SPI_CHANNEL = 1;
-		L6470_init();
+        L6470_SPI_CHANNEL = 1;
+        L6470_init();
 
-        while(1)
+        while (1)
         {
-				printf( "speed?? (Maximum: +-40000)\n");
-				scanf( "%ld", &s );
-				printf( "slope time? \n");
-				scanf( "%f", &sl );
-				
-				//　順方向のスピードを与えられたとき
-				if(  s != 0 && s > speed ){
-					for(i = speed; i <= s; i=i+100 ) {
-						speed = i;
-						usleep(75*1000000*sl/s);  // 100-->75 下五行のプログラム実行時間を考慮して。
-						printf("%d\n", i ); 
-						L6470_run_both(speed);
-					}
-					
-				}
+                printf("speed?? (Maximum: +-40000)\n");
+                scanf("%ld", &s);
+                printf("slope time? \n");
+                scanf("%f", &sl);
 
-				//　逆方向のスピードを与えられたとき
-				if(  s != 0 && s < speed ){
-					for(i = speed; i >= s; i=i-100 ) {
-						speed = i;
-						usleep(abs(75*1000000*sl/s));
-						printf("%d\n", i ); 
-						L6470_run_both(speed);
-					}
-				}
+                //　順方向のスピードを与えられたとき
+                if (s != 0 && s > speed)
+                {
+                        for (i = speed; i <= s; i = i + 100)
+                        {
+                                speed = i;
+                                usleep(75 * 1000000 * sl / s); // 100-->75 下五行のプログラム実行時間を考慮して。
+                                printf("%d\n", i);
+                                L6470_run_both(speed);
+                        }
+                }
 
-				//　順方向のスピードのとき、停止の命令を与えられたとき
-				if( s == 0 && speed > 0){
-					for(j = speed; j >= 0; j=j-100 ) {
-						speed = j;
-						usleep(75*1000000*sl/i);
-						printf("%d\n", j ); 
-						L6470_run_both(speed);
-					}
-				}
+                //　逆方向のスピードを与えられたとき
+                if (s != 0 && s < speed)
+                {
+                        for (i = speed; i >= s; i = i - 100)
+                        {
+                                speed = i;
+                                usleep(abs(75 * 1000000 * sl / s));
+                                printf("%d\n", i);
+                                L6470_run_both(speed);
+                        }
+                }
 
-				//　逆方向のスピードのとき、停止の命令を与えられたとき
-				if( s == 0 && speed < 0){
-					for(j = speed; j <= 0; j=j+100 ) {
-						speed = j;
-						usleep(75*-1000000*sl/i);
-						printf("%d\n", j ); 
-						L6470_run_both(speed);
-					}
-				}
-         
+                //　順方向のスピードのとき、停止の命令を与えられたとき
+                if (s == 0 && speed > 0)
+                {
+                        for (j = speed; j >= 0; j = j - 100)
+                        {
+                                speed = j;
+                                usleep(75 * 1000000 * sl / i);
+                                printf("%d\n", j);
+                                L6470_run_both(speed);
+                        }
+                }
+
+                //　逆方向のスピードのとき、停止の命令を与えられたとき
+                if (s == 0 && speed < 0)
+                {
+                        for (j = speed; j <= 0; j = j + 100)
+                        {
+                                speed = j;
+                                usleep(75 * -1000000 * sl / i);
+                                printf("%d\n", j);
+                                L6470_run_both(speed);
+                        }
+                }
         }
 
         return 0;
 }
 
-
 void L6470_write(unsigned char data)
 {
         wiringPiSPIDataRW(L6470_SPI_CHANNEL, &data, 1);
-		//wiringPiSPIDataRW(0, &data, 1);
-		//wiringPiSPIDataRW(1, &data, 1);
+        //wiringPiSPIDataRW(0, &data, 1);
+        //wiringPiSPIDataRW(1, &data, 1);
 }
 
 void L6470_init()
@@ -153,16 +159,15 @@ void L6470_init()
         // ストール電流スレッショルド設定(4bit)
         L6470_write(0x7F);
 
-		//start slopeデフォルト
+        //start slopeデフォルト
         /// レジスタアドレス。
-		L6470_write(0x0e);
-		L6470_write(0x00);
+        L6470_write(0x0e);
+        L6470_write(0x00);
 
-		//デセラレーション設定
+        //デセラレーション設定
         /// レジスタアドレス。
-		L6470_write(0x10);
-		L6470_write(0x29);
-
+        L6470_write(0x10);
+        L6470_write(0x29);
 }
 
 void L6470_run(long speed)
@@ -200,10 +205,10 @@ void L6470_run(long speed)
 
 void L6470_run_both(long speed)
 {
-		L6470_SPI_CHANNEL = 0;
-	    L6470_run(speed);
-		L6470_SPI_CHANNEL = 1;
-		L6470_run(-1*speed);		
+        L6470_SPI_CHANNEL = 0;
+        L6470_run(speed);
+        L6470_SPI_CHANNEL = 1;
+        L6470_run(-1 * speed);
 }
 
 void L6470_softstop()

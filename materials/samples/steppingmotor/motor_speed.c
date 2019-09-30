@@ -6,7 +6,7 @@
 #include <wiringPi.h>
 #include <wiringPiSPI.h>
 
-int L6470_SPI_CHANNEL; 
+int L6470_SPI_CHANNEL;
 int BUFSIZE = 32;
 
 // 関数プロトタイプ。
@@ -21,68 +21,69 @@ int main(int argc, char **argv)
 {
         int i;
         long speed = 0;
-        char*str = (char*)malloc ( BUFSIZE*sizeof( char ));
+        char *str = (char *)malloc(BUFSIZE * sizeof(char));
         char c;
-		
+
         printf("***** start spi test program *****\n");
 
         // SPI channel 0 を 1MHz で開始。
         //if (wiringPiSPISetup(L6470_SPI_CHANNEL, 1000000) < 0)
-        if (wiringPiSPISetup(0, 1000000) < 0){
+        if (wiringPiSPISetup(0, 1000000) < 0)
+        {
                 printf("SPI Setup failed:\n");
         }
-        if (wiringPiSPISetup(1, 1000000) < 0){
+        if (wiringPiSPISetup(1, 1000000) < 0)
+        {
                 printf("SPI Setup failed:\n");
         }
 
         // L6470の初期化。
-		L6470_SPI_CHANNEL = 0;
+        L6470_SPI_CHANNEL = 0;
         L6470_init();
-		L6470_SPI_CHANNEL = 1;
-		L6470_init();
+        L6470_SPI_CHANNEL = 1;
+        L6470_init();
 
-        while(1)
+        while (1)
         {
-				printf( "Speed Up   --> Press p \n");
-				printf( "Speed Down --> Press q \n");
-				printf( "Stop       --> Press s \n");
+                printf("Speed Up   --> Press p \n");
+                printf("Speed Down --> Press q \n");
+                printf("Stop       --> Press s \n");
 
-				c = getchar();
+                c = getchar();
 
-				if( c =='p'){
-					speed += 10000;
-					L6470_run_both(speed);					
-                    printf("*** Speed %ld ***\n", speed);
-				}
+                if (c == 'p')
+                {
+                        speed += 10000;
+                        L6470_run_both(speed);
+                        printf("*** Speed %ld ***\n", speed);
+                }
 
+                if (c == 'q')
+                {
+                        speed -= 10000;
+                        L6470_run_both(speed);
+                        printf("*** Speed %ld ***\n", speed);
+                }
 
-				if( c =='q'){
-					speed -= 10000;
-					L6470_run_both(speed);
-                    printf("*** Speed %ld ***\n", speed);
-				}
-
-				if( c =='s'){
-					speed = 0;
-					L6470_run_both(speed);
-					printf("*** Speed %ld ***\n", speed);
-                	L6470_softstop();
-                	L6470_softhiz();
-                return 0;
-				}
-
-             
+                if (c == 's')
+                {
+                        speed = 0;
+                        L6470_run_both(speed);
+                        printf("*** Speed %ld ***\n", speed);
+                        L6470_softstop();
+                        L6470_softhiz();
+                        return 0;
+                }
         }
 
         return 0;
 }
 
-
 void L6470_write(unsigned char data)
 {
         wiringPiSPIDataRW(L6470_SPI_CHANNEL, &data, 1);
-		//wiringPiSPIDataRW(0, &data, 1);
-		//wiringPiSPIDataRW(1, &data, 1);
+        //wiringPiSPIDataRW(0, &data, 1);
+        //wiringPiSPIDataRW(1, &data, 1);
 }
 
 void L6470_init()
@@ -130,16 +131,15 @@ void L6470_init()
         // ストール電流スレッショルド設定(4bit)
         L6470_write(0x7F);
 
-		//start slopeデフォルト
+        //start slopeデフォルト
         /// レジスタアドレス。
-		L6470_write(0x0e);
-		L6470_write(0x00);
+        L6470_write(0x0e);
+        L6470_write(0x00);
 
-		//デセラレーション設定
+        //デセラレーション設定
         /// レジスタアドレス。
-		L6470_write(0x10);
-		L6470_write(0x29);
-
+        L6470_write(0x10);
+        L6470_write(0x29);
 }
 
 void L6470_run(long speed)
@@ -177,10 +177,10 @@ void L6470_run(long speed)
 
 void L6470_run_both(long speed)
 {
-		L6470_SPI_CHANNEL = 0;
-	    L6470_run(speed);
-		L6470_SPI_CHANNEL = 1;
-		L6470_run(-1*speed);		
+        L6470_SPI_CHANNEL = 0;
+        L6470_run(speed);
+        L6470_SPI_CHANNEL = 1;
+        L6470_run(-1 * speed);
 }
 
 void L6470_softstop()

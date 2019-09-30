@@ -6,7 +6,7 @@
 #include <wiringPi.h>
 #include <wiringPiSPI.h>
 
-int L6470_SPI_CHANNEL; 
+int L6470_SPI_CHANNEL;
 
 // 関数プロトタイプ。
 void L6470_write(unsigned char data);
@@ -19,54 +19,54 @@ int main(int argc, char **argv)
 {
         int i;
         long speed = 0;
-		long c;
-		int stp;	
+        long c;
+        int stp;
 
         printf("***** start spi test program *****\n");
 
         // SPI channel 0 を 1MHz で開始。
         //if (wiringPiSPISetup(L6470_SPI_CHANNEL, 1000000) < 0)
-        if (wiringPiSPISetup(0, 1000000) < 0){
+        if (wiringPiSPISetup(0, 1000000) < 0)
+        {
                 printf("SPI Setup failed:\n");
         }
-        if (wiringPiSPISetup(1, 1000000) < 0){
+        if (wiringPiSPISetup(1, 1000000) < 0)
+        {
                 printf("SPI Setup failed:\n");
         }
 
         // L6470の初期化。
-		L6470_SPI_CHANNEL = 0;
+        L6470_SPI_CHANNEL = 0;
         L6470_init();
-		L6470_SPI_CHANNEL = 1;
-		L6470_init();
+        L6470_SPI_CHANNEL = 1;
+        L6470_init();
 
-        while(1)
+        while (1)
         {
 
-				printf( "How many steps ?? \n" );
+                printf("How many steps ?? \n");
 
-		        scanf( "%ld", &c );
-				c = c*128;         
-				//stepからmicrostepに変換
-				delay (100);
+                scanf("%ld", &c);
+                c = c * 128;
+                //stepからmicrostepに変換
+                delay(100);
 
-				L6470_SPI_CHANNEL = 0;
-				L6470_run(c);
-				L6470_SPI_CHANNEL = 1;
-				L6470_run(-1*c);	
+                L6470_SPI_CHANNEL = 0;
+                L6470_run(c);
+                L6470_SPI_CHANNEL = 1;
+                L6470_run(-1 * c);
                 printf("***  %ld microsteps ***\n", c);
-                delay (1000);
-             
+                delay(1000);
         }
 
         return 0;
 }
 
-
 void L6470_write(unsigned char data)
 {
         wiringPiSPIDataRW(L6470_SPI_CHANNEL, &data, 1);
-		//wiringPiSPIDataRW(0, &data, 1);
-		//wiringPiSPIDataRW(1, &data, 1);
+        //wiringPiSPIDataRW(0, &data, 1);
+        //wiringPiSPIDataRW(1, &data, 1);
 }
 
 void L6470_init()
@@ -115,12 +115,10 @@ void L6470_init()
         L6470_write(0x7F);
 
         L6470_write(0x02);
-        L6470_write(0x00);	
+        L6470_write(0x00);
 
         L6470_write(0x17);
-        L6470_write(0x00);		
-
-
+        L6470_write(0x00);
 }
 
 void L6470_run(long step)
