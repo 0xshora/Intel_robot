@@ -1,13 +1,9 @@
 //モータスピードを指定時間でスロープで上げ下げする
 
 #include <stdio.h>
-
 #include <stdlib.h>
-
 #include <unistd.h>
-
 #include <wiringPi.h>
-
 #include <wiringPiSPI.h>
 
 int L6470_SPI_CHANNEL;
@@ -19,7 +15,7 @@ void L6470_init(void);
 void L6470_run(long speed);
 void L6470_run_both(long speed);
 void L6470_run_turn(long speed);
-void L6470_run_turn_moving(long speed, int right);
+void L6470_run_turn_moving(long speed, int right, float scale);
 void L6470_softstop();
 void L6470_softhiz();
 
@@ -82,10 +78,8 @@ int main(int argc, char **argv)
             // printf("*** Speed %ld ***\n", speed);
         }
 
-        if (c == 'r' || c == 'l')
-        {
-            if (speed != 0)
-            {
+        if (c == 'r' || c == 'l') {
+            if (speed != 0) {
                 printf("This machine have to stop before turn\n");
                 // stop function
                 speed = 0;
@@ -94,73 +88,71 @@ int main(int argc, char **argv)
                 L6470_softstop();
                 L6470_softhiz();
 
-		if (c == 'r') {
-			int right_true = 1;
-			L6470_run_turn_moving(speed, right_true);
-			// printf("*** Turn right : Speed %ld ***\n", speed);
-			// speed = 0;
-			// L6470_softstop();
-			// L6470_softhiz();
-		    }
-		    else {
-			int right_false = 0;
-			
-			L6470_run_turn_moving(speed, right_false);
-			// printf("*** Turn right : Speed %ld ***\n", speed);
-			// speed = 0;
-			// L6470_softstop();
-			// L6470_softhiz();
-		    }
+				if (c == 'r') {
+					int right_true = 1;
+					float scale = 3.0;
+					L6470_run_turn_moving(speed, right_true, scale);
+					// printf("*** Turn right : Speed %ld ***\n", speed);
+					// speed = 0;
+					// L6470_softstop();
+					// L6470_softhiz();
+					}
+				 else {
+					int right_false = 0;
+					float scale = 3.0;
+					L6470_run_turn_moving(speed, right_false, scale);
+					// printf("*** Turn right : Speed %ld ***\n", speed);
+					// speed = 0;
+					// L6470_softstop();
+					// L6470_softhiz();
+				}
 
 
 	   } else {
 		    if (c == 'r') {
-			speed = 10000;
-			L6470_run_turn(speed);
-			// printf("*** Turn right : Speed %ld ***\n", speed);
-			// speed = 0;
-			// L6470_softstop();
-			// L6470_softhiz();
-		    }
-		    else {
-			speed = -10000;
-			L6470_run_turn(speed);
-			// printf("*** Turn right : Speed %ld ***\n", speed);
-			// speed = 0;
-			// L6470_softstop();
-			// L6470_softhiz();
-		    }
-
-	    }
-    		    
+				speed = 10000;
+				L6470_run_turn(speed);
+				// printf("*** Turn right : Speed %ld ***\n", speed);
+				// speed = 0;
+				// L6470_softstop();
+				// L6470_softhiz();
+		    } else {
+				speed = -10000;
+				L6470_run_turn(speed);
+				// printf("*** Turn right : Speed %ld ***\n", speed);
+				// speed = 0;
+				// L6470_softstop();
+				// L6470_softhiz();
+		    	}
+	    	}   
         }
 
         if (c == 's')
         { 		    
-	    const long SLOPE_TIME = 1000000; 
-	    // if the robot moves in the positive direction
-	    if (speed > 0) {
-		int j;
-		for (j = speed; j >= 0; j = j - 100) {
-		    speed = j;
+			const long SLOPE_TIME = 1000000; 
+			// if the robot moves in the positive direction
+			if (speed > 0) {
+			int j;
+			for (j = speed; j >= 0; j = j - 100) {
+				speed = j;
 
-		    usleep(SLOPE_TIME);
-		    printf("%d\n", j);
-		    L6470_run_both(speed);
-		    L6470_softstop();
-		    L6470_softhiz();
-		}
+				usleep(SLOPE_TIME);
+				printf("%d\n", j);
+				L6470_run_both(speed);
+				L6470_softstop();
+				L6470_softhiz();
+			}
 
 	    } else {
-		int j;
-		for (j = speed; j <=0; j = j + 100) {
-		    speed = j;
-		    usleep(SLOPE_TIME);
-		    printf("%d\n", j);
-		    L6470_run_both(speed);
-		    L6470_softstop();
-		    L6470_softhiz();
-		}
+			int j;
+			for (j = speed; j <=0; j = j + 100) {
+				speed = j;
+				usleep(SLOPE_TIME);
+				printf("%d\n", j);
+				L6470_run_both(speed);
+				L6470_softstop();
+				L6470_softhiz();
+			}
 	    }
         }
         if (c == 'e')
@@ -290,16 +282,16 @@ void L6470_run_turn(long speed, int right)
     L6470_run(speed);
 }
 
-void L6470_run_turn_moving(long speed, int right)
+void L6470_run_turn_moving(long speed, int right, float scale)
 {
    if (right == 1) {
 	L6470_SPI_CHANNEL = 0;
 	L6470_run(speed);
 	L6470_SPI_CHANNEL = 1;
-	L6470_run(speed/3.0);
+	L6470_run(speed/scale);
    } else {
 	L6470_SPI_CHANNEL = 0;
-	L6470_run(speed/3.0);
+	L6470_run(speed/scale);
 	L6470_SPI_CHANNEL = 1;
 	L6470_run(speed);
    }
