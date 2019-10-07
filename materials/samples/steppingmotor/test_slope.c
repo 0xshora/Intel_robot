@@ -18,16 +18,15 @@ void L6470_write(unsigned char data);
 void L6470_init(void);
 void L6470_run(long speed);
 void L6470_run_both(long speed);
-void L6470_run_turn(long speed);
 void L6470_softstop();
 void L6470_softhiz();
+void L6470_run_right(long speed);
 
-int main(int argc, char **argv)
-{
+int main(int argc, char ** argv) {
     int i, j;
     long speed = 0;
 
-    char *str = (char *)malloc(BUFSIZE * sizeof(char));
+    char * str = (char * ) malloc(BUFSIZE * sizeof(char));
     char c;
     long s;
     float sl;
@@ -37,12 +36,10 @@ int main(int argc, char **argv)
 
     // SPI channel 0 を 1MHz で開始。
     //if (wiringPiSPISetup(L6470_SPI_CHANNEL, 1000000) < 0)
-    if (wiringPiSPISetup(0, 1000000) < 0)
-    {
+    if (wiringPiSPISetup(0, 1000000) < 0) {
         printf("SPI Setup failed:\n");
     }
-    if (wiringPiSPISetup(1, 1000000) < 0)
-    {
+    if (wiringPiSPISetup(1, 1000000) < 0) {
         printf("SPI Setup failed:\n");
     }
 
@@ -52,96 +49,63 @@ int main(int argc, char **argv)
     L6470_SPI_CHANNEL = 1;
     L6470_init();
 
-    printf("Speed Up   --> Press p \n");
-    printf("Speed Down --> Press q \n");
-    printf("Turn Right --> Press r \n");
-    printf("Turn Light --> Press l \n");
-    printf("Stop       --> Press s \n");
-    printf("End        --> Press e \n");
+    while (1) {
+        printf("speed?? (Maximum: +-40000)\n");
+        scanf("%ld", & s);
+        printf("slope time? \n");
+        scanf("%f", & sl);
 
-    while ((c = getchar()) != EOF)
-    {
-
-        // printf("speed?? (Maximum: +-40000)\n");
-        // scanf("%ld", &s);
-        // printf("slope time? \n");
-        // scanf("%f", &sl);
-
-        if (c == 'p')
-        {
-            speed += 100;
-            L6470_run_both(speed);
-            // printf("*** Speed %ld ***\n", speed);
-        }
-
-        if (c == 'q')
-        {
-            speed -= 100;
-            L6470_run_both(speed);
-            // printf("*** Speed %ld ***\n", speed);
-        }
-
-        if (c == 'r' || c == 'l')
-        {
-            if (speed != 0)
-            {
-                printf("This machine have to stop before turn\n");
-                // stop function
-                speed = 0;
+        //　順方向のスピードを与えられたとき
+        if (s != 0 && s > speed) {
+            for (i = speed; i <= s; i = i + 100) {
+                speed = i;
+                usleep(75 * 1000000 * sl / s); // 100-->75 下五行のプログラム実行時間を考慮して。
+                printf("%d\n", i);
                 L6470_run_both(speed);
-                printf("*** Speed %ld ***\n", speed);
-                L6470_softstop();
-                L6470_softhiz();
-                return 0;
-            }
-
-            if (c == 'r')
-            {
-                speed = 10000;
-                L6470_run_turn(speed);
-                // printf("*** Turn right : Speed %ld ***\n", speed);
-                // speed = 0;
-                // L6470_softstop();
-                // L6470_softhiz();
-            }
-            else
-            {
-                speed = -10000;
-                L6470_run_turn(speed);
-                // printf("*** Turn right : Speed %ld ***\n", speed);
-                // speed = 0;
-                // L6470_softstop();
-                // L6470_softhiz();
             }
         }
 
-        if (c == 's')
-        {
-            speed = 0;
-            L6470_run_both(speed);
-            printf("*** Speed %ld ***\n", speed);
-            L6470_softstop();
-            L6470_softhiz();
+        //　逆方向のスピードを与えられたとき
+        if (s != 0 && s < speed) {
+            for (i = speed; i >= s; i = i - 100) {
+                speed = i;
+                usleep(abs(75 * 1000000 * sl / s));
+                printf("%d\n", i);
+                L6470_run_both(speed);
+            }
         }
-        if (c == 'e')
-        {
-            printf("Good job !\n");
-            return 0;
+
+        //　順方向のスピードのとき、停止の命令を与えられたとき
+        if (s == 0 && speed > 0) {
+            for (j = speed; j >= 0; j = j - 100) {
+                speed = j;
+                usleep(75 * 1000000 * sl / i);
+                printf("%d\n", j);
+                L6470_run_both(speed);
+            }
+        }
+
+        //　逆方向のスピードのとき、停止の命令を与えられたとき
+        if (s == 0 && speed < 0) {
+            for (j = speed; j <= 0; j = j + 100) {
+                speed = j;
+                usleep(75 * -1000000 * sl / i);
+                printf("%d\n", j);
+                L6470_run_both(speed);
+            }
         }
     }
 
     return 0;
 }
 
-void L6470_write(unsigned char data)
-{
-    wiringPiSPIDataRW(L6470_SPI_CHANNEL, &data, 1);
+void L6470_write(unsigned char data) {
+    wiringPiSPIDataRW(L6470_SPI_CHANNEL, & data, 1);
     //wiringPiSPIDataRW(0, &data, 1);
     //wiringPiSPIDataRW(1, &data, 1);
 }
 
-void L6470_init()
-{
+void L6470_init() {
     // MAX_SPEED設定。
     /// レジスタアドレス。
     L6470_write(0x07);
@@ -196,8 +160,7 @@ void L6470_init()
     L6470_write(0x29);
 }
 
-void L6470_run(long speed)
-{
+void L6470_run(long speed) {
     unsigned short dir;
     unsigned long spd;
     unsigned char spd_h;
@@ -205,13 +168,10 @@ void L6470_run(long speed)
     unsigned char spd_l;
 
     // 方向検出。
-    if (speed < 0)
-    {
+    if (speed < 0) {
         dir = 0x50;
         spd = -1 * speed;
-    }
-    else
-    {
+    } else {
         dir = 0x51;
         spd = speed;
     }
@@ -229,24 +189,23 @@ void L6470_run(long speed)
     L6470_write(spd_l);
 }
 
-void L6470_run_both(long speed)
-{
+void L6470_run_both(long speed) {
     L6470_SPI_CHANNEL = 0;
     L6470_run(speed);
     L6470_SPI_CHANNEL = 1;
     L6470_run(-1 * speed);
 }
 
-void L6470_run_turn(long speed)
-{
+//
+void L6470_run_right(long speed) {
     L6470_SPI_CHANNEL = 0;
     L6470_run(speed);
     L6470_SPI_CHANNEL = 1;
-    L6470_run(speed);
+    L6470_run(1 * speed);
 }
+//
 
-void L6470_softstop()
-{
+void L6470_softstop() {
     unsigned short dir;
     printf("***** SoftStop. *****\n");
     dir = 0xB0;
@@ -255,8 +214,7 @@ void L6470_softstop()
     delay(1000);
 }
 
-void L6470_softhiz()
-{
+void L6470_softhiz() {
     unsigned short dir;
     printf("***** Softhiz. *****\n");
     dir = 0xA8;
