@@ -19,6 +19,7 @@ void L6470_init(void);
 void L6470_run(long speed);
 void L6470_run_both(long speed);
 void L6470_run_turn(long speed);
+void L6470_run_turn_moving(long speed, int right);
 void L6470_softstop();
 void L6470_softhiz();
 
@@ -92,26 +93,50 @@ int main(int argc, char **argv)
                 printf("*** Speed %ld ***\n", speed);
                 L6470_softstop();
                 L6470_softhiz();
-            }
+
+		if (c == 'r')
+		    {
+			int right_true = 1;
+			L6470_run_turn_moving(speed, right_true);
+			// printf("*** Turn right : Speed %ld ***\n", speed);
+			// speed = 0;
+			// L6470_softstop();
+			// L6470_softhiz();
+		    }
+		    else
+		    {
+			int right_false = 0;
+			
+			L6470_run_turn_moving(speed, right_false);
+			// printf("*** Turn right : Speed %ld ***\n", speed);
+			// speed = 0;
+			// L6470_softstop();
+			// L6470_softhiz();
+		    }
+
+
+	   } else {
+		    if (c == 'r')
+		    {
+			speed = 10000;
+			L6470_run_turn(speed);
+			// printf("*** Turn right : Speed %ld ***\n", speed);
+			// speed = 0;
+			// L6470_softstop();
+			// L6470_softhiz();
+		    }
+		    else
+		    {
+			speed = -10000;
+			L6470_run_turn(speed);
+			// printf("*** Turn right : Speed %ld ***\n", speed);
+			// speed = 0;
+			// L6470_softstop();
+			// L6470_softhiz();
+		    }
+
+	    }
     		    
-            if (c == 'r')
-            {
-                speed = 10000;
-                L6470_run_turn(speed);
-                // printf("*** Turn right : Speed %ld ***\n", speed);
-                // speed = 0;
-                // L6470_softstop();
-                // L6470_softhiz();
-            }
-            else
-            {
-                speed = -10000;
-                L6470_run_turn(speed);
-                // printf("*** Turn right : Speed %ld ***\n", speed);
-                // speed = 0;
-                // L6470_softstop();
-                // L6470_softhiz();
-            }
         }
 
         if (c == 's')
@@ -241,12 +266,28 @@ void L6470_run_both(long speed)
     L6470_run(-1 * speed);
 }
 
-void L6470_run_turn(long speed)
+void L6470_run_turn(long speed, int right)
 {
     L6470_SPI_CHANNEL = 0;
     L6470_run(speed);
     L6470_SPI_CHANNEL = 1;
     L6470_run(speed);
+}
+
+void L6470_run_turn_moving(long speed, int right)
+{
+   if (right == 1) {
+	L6470_SPI_CHANNEL = 0;
+	L6470_run(speed);
+	L6470_SPI_CHANNEL = 1;
+	L6470_run(speed/3.0);
+   } else {
+	L6470_SPI_CHANNEL = 0;
+	L6470_run(speed/3.0);
+	L6470_SPI_CHANNEL = 1;
+	L6470_run(speed);
+   }
+
 }
 
 void L6470_softstop()
