@@ -18,6 +18,7 @@ void L6470_write(unsigned char data);
 void L6470_init(void);
 void L6470_run(long speed);
 void L6470_run_both(long speed);
+void L6470_run_turn(long speed);
 void L6470_softstop();
 void L6470_softhiz();
 
@@ -53,57 +54,76 @@ int main(int argc, char **argv)
 
     while (1)
     {
-        printf("speed?? (Maximum: +-40000)\n");
-        scanf("%ld", &s);
-        printf("slope time? \n");
-        scanf("%f", &sl);
 
-        //　順方向のスピードを与えられたとき
-        if (s != 0 && s > speed)
+        printf("Speed Up   --> Press p \n");
+        printf("Speed Down --> Press q \n");
+        printf("Turn Right --> Press r \n");
+        printf("Turn Light --> Press l \n");
+        printf("Stop       --> Press s \n");
+
+        c = getchar();
+
+        // printf("speed?? (Maximum: +-40000)\n");
+        // scanf("%ld", &s);
+        // printf("slope time? \n");
+        // scanf("%f", &sl);
+
+        if (c == 'p')
         {
-            for (i = speed; i <= s; i = i + 100)
+            speed += 10000;
+            L6470_run_both(speed);
+            printf("*** Speed %ld ***\n", speed);
+        }
+
+        if (c == 'q')
+        {
+            speed -= 10000;
+            L6470_run_both(speed);
+            printf("*** Speed %ld ***\n", speed);
+        }
+
+        if (c == 'r' || c == 'r')
+        {
+            if (speed != 0)
             {
-                speed = i;
-                usleep(75 * 1000000 * sl / s); // 100-->75 下五行のプログラム実行時間を考慮して。
-                printf("%d\n", i);
+                printf("This machine have to stop before turn\n");
+                // stop function
+                speed = 0;
                 L6470_run_both(speed);
+                printf("*** Speed %ld ***\n", speed);
+                L6470_softstop();
+                L6470_softhiz();
+                return 0;
+            }
+
+            if (c == 'r')
+            {
+                speed = 10000;
+                L6470_run_turn(speed);
+                printf("*** Turn right : Speed %ld ***\n", speed);
+                speed = 0;
+                L6470_softstop();
+                L6470_softhiz();
+            }
+            else
+            {
+                speed = -10000;
+                L6470_run_turn(speed);
+                printf("*** Turn right : Speed %ld ***\n", speed);
+                speed = 0;
+                L6470_softstop();
+                L6470_softhiz();
             }
         }
 
-        //　逆方向のスピードを与えられたとき
-        if (s != 0 && s < speed)
+        if (c == 's')
         {
-            for (i = speed; i >= s; i = i - 100)
-            {
-                speed = i;
-                usleep(abs(75 * 1000000 * sl / s));
-                printf("%d\n", i);
-                L6470_run_both(speed);
-            }
-        }
-
-        //　順方向のスピードのとき、停止の命令を与えられたとき
-        if (s == 0 && speed > 0)
-        {
-            for (j = speed; j >= 0; j = j - 100)
-            {
-                speed = j;
-                usleep(75 * 1000000 * sl / i);
-                printf("%d\n", j);
-                L6470_run_both(speed);
-            }
-        }
-
-        //　逆方向のスピードのとき、停止の命令を与えられたとき
-        if (s == 0 && speed < 0)
-        {
-            for (j = speed; j <= 0; j = j + 100)
-            {
-                speed = j;
-                usleep(75 * -1000000 * sl / i);
-                printf("%d\n", j);
-                L6470_run_both(speed);
-            }
+            speed = 0;
+            L6470_run_both(speed);
+            printf("*** Speed %ld ***\n", speed);
+            L6470_softstop();
+            L6470_softhiz();
+            return 0;
         }
     }
 
@@ -212,6 +232,14 @@ void L6470_run_both(long speed)
     L6470_run(speed);
     L6470_SPI_CHANNEL = 1;
     L6470_run(-1 * speed);
+}
+
+void L6470_run_turn(long speed)
+{
+    L6470_SPI_CHANNEL = 0;
+    L6470_run(speed);
+    L6470_SPI_CHANNEL = 1;
+    L6470_run(speed);
 }
 
 void L6470_softstop()
