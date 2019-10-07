@@ -81,7 +81,7 @@ int main(int argc, char **argv)
             // printf("*** Speed %ld ***\n", speed);
         }
 
-        if (c == 'r' || c == 'r')
+        if (c == 'r' || c == 'l')
         {
             if (speed != 0)
             {
