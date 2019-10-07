@@ -1,4 +1,4 @@
-//モータスピードを指定時間でスロープで上げ下げする
+z //モータスピードを指定時間でスロープで上げ下げする
 
 #include <stdio.h>
 
@@ -10,7 +10,7 @@
 
 #include <wiringPiSPI.h>
 
-int L6470_SPI_CHANNEL;
+    int L6470_SPI_CHANNEL;
 int BUFSIZE = 32;
 
 // 関数プロトタイプ。
