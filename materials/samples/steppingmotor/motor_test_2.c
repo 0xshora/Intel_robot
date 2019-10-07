@@ -94,8 +94,7 @@ int main(int argc, char **argv)
                 L6470_softstop();
                 L6470_softhiz();
 
-		if (c == 'r')
-		    {
+		if (c == 'r') {
 			int right_true = 1;
 			L6470_run_turn_moving(speed, right_true);
 			// printf("*** Turn right : Speed %ld ***\n", speed);
@@ -103,8 +102,7 @@ int main(int argc, char **argv)
 			// L6470_softstop();
 			// L6470_softhiz();
 		    }
-		    else
-		    {
+		    else {
 			int right_false = 0;
 			
 			L6470_run_turn_moving(speed, right_false);
@@ -116,8 +114,7 @@ int main(int argc, char **argv)
 
 
 	   } else {
-		    if (c == 'r')
-		    {
+		    if (c == 'r') {
 			speed = 10000;
 			L6470_run_turn(speed);
 			// printf("*** Turn right : Speed %ld ***\n", speed);
@@ -125,8 +122,7 @@ int main(int argc, char **argv)
 			// L6470_softstop();
 			// L6470_softhiz();
 		    }
-		    else
-		    {
+		    else {
 			speed = -10000;
 			L6470_run_turn(speed);
 			// printf("*** Turn right : Speed %ld ***\n", speed);
@@ -140,12 +136,32 @@ int main(int argc, char **argv)
         }
 
         if (c == 's')
-        {
-            speed = 0;
-            L6470_run_both(speed);
-            printf("*** Speed %ld ***\n", speed);
-            L6470_softstop();
-            L6470_softhiz();
+        { 		    
+	    const long SLOPE_TIME = 1000000; 
+	    // if the robot moves in the positive direction
+	    if (speed > 0) {
+		int j;
+		for (j = speed; j >= 0; j = j - 100) {
+		    speed = j;
+
+		    usleep(SLOPE_TIME);
+		    printf("%d\n", j);
+		    L6470_run_both(speed);
+		    L6470_softstop();
+		    L6470_softhiz();
+		}
+
+	    } else {
+		int j;
+		for (j = speed; j <=0; j = j + 100) {
+		    speed = j;
+		    usleep(SLOPE_TIME);
+		    printf("%d\n", j);
+		    L6470_run_both(speed);
+		    L6470_softstop();
+		    L6470_softhiz();
+		}
+	    }
         }
         if (c == 'e')
         {
