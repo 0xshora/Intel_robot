@@ -92,9 +92,8 @@ int main(int argc, char **argv)
                 printf("*** Speed %ld ***\n", speed);
                 L6470_softstop();
                 L6470_softhiz();
-                return 0;
             }
-
+    		    
             if (c == 'r')
             {
                 speed = 1000;
@@ -126,6 +125,11 @@ int main(int argc, char **argv)
         if (c == 'e')
         {
             printf("Good job !\n");
+	    speed = 0;
+            L6470_run_both(speed);
+            printf("*** Speed %ld ***\n", speed);
+            L6470_softstop();
+            L6470_softhiz();
             return 0;
         }
     }
