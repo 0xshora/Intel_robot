@@ -97,7 +97,7 @@ int main(int argc, char **argv)
 
             if (c == 'r')
             {
-                speed = 10000;
+                speed = 1000;
                 L6470_run_turn(speed);
                 // printf("*** Turn right : Speed %ld ***\n", speed);
                 // speed = 0;
@@ -106,7 +106,7 @@ int main(int argc, char **argv)
             }
             else
             {
-                speed = -10000;
+                speed = -1000;
                 L6470_run_turn(speed);
                 // printf("*** Turn right : Speed %ld ***\n", speed);
                 // speed = 0;
@@ -242,7 +242,7 @@ void L6470_run_turn(long speed)
     L6470_SPI_CHANNEL = 0;
     L6470_run(speed);
     L6470_SPI_CHANNEL = 1;
-    L6470_run(speed);
+    L6470_run(0);
 }
 
 void L6470_softstop()
