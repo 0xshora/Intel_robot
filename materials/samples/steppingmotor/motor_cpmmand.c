@@ -62,6 +62,14 @@ int main(int argc, char **argv)
 
     while ((c = getchar()) != EOF)
     {
+
+        // printf("speed?? (Maximum: +-40000)\n");
+        // scanf("%ld", &s);
+        // printf("slope time? \n");
+        // scanf("%f", &sl);
+
+		
+
         if (c == 'p')
 			//speed up
         {
@@ -80,36 +88,91 @@ int main(int argc, char **argv)
 
         if (c == 'r' || c == 'l') { //turn right or left
             if (speed != 0) {
+                printf("This machine have to stop before turn\n");
+                // stop function
+                speed = 0;
+                L6470_run_both(speed);
+                printf("*** Speed %ld ***\n", speed);
+                L6470_softstop();
+                L6470_softhiz();
 
 				if (c == 'r') {
 					int right_true = 1;
 					float scale = 3.0; //default scale
 					L6470_run_turn_moving(speed, right_true, scale);
-				}
+					// printf("*** Turn right : Speed %ld ***\n", speed);
+					// speed = 0;
+					// L6470_softstop();
+					// L6470_softhiz();
+					}
 				 else {
 					int right_false = 0;
 					float scale = 3.0;
 					L6470_run_turn_moving(speed, right_false, scale);
+					// printf("*** Turn right : Speed %ld ***\n", speed);
+					// speed = 0;
+					// L6470_softstop();
+					// L6470_softhiz();
 				}
+
 
 		   	} else {
 				if (c == 'r') {
 					speed = 10000;
 					L6470_run_turn(speed);
+					// printf("*** Turn right : Speed %ld ***\n", speed);
+					// speed = 0;
+					// L6470_softstop();
+					// L6470_softhiz();
 				} else {
 					speed = -10000;
 					L6470_run_turn(speed);
-				}
-			}
+					// printf("*** Turn right : Speed %ld ***\n", speed);
+					// speed = 0;
+					// L6470_softstop();
+					// L6470_softhiz();
+					}
+				}   
         }
 
-        if (c == 's') { 		    		
+        if (c == 's') { 		    
+
+			// if the robot moves in the positive direction
+			if (speed > 0) {
+				int j;
+				for (j = speed; j >= 0; j = j - 100) {
+					speed = j;
+
+					usleep(SLOPE_TIME);
+					printf("%d\n", j);
+					L6470_run_both(speed);
+					L6470_softstop();
+					L6470_softhiz();
+				}
+
+			} else {
+				int j;
+				for (j = speed; j <=0; j = j + 100) {
+					speed = j;
+					usleep(SLOPE_TIME);
+					printf("%d\n", j);
+					L6470_run_both(speed);
+					L6470_softstop();
+					L6470_softhiz();
+				}
+			}
+		
 			L6470_speed_change(speed, 0);	
         }
         if (c == 'e')
         {
-			L6470_speed_change(speed, 0);
-			return 0;
+            printf("Good job !\n");
+	    speed = 0;
+            L6470_run_both(speed);
+            printf("*** Speed %ld ***\n", speed);
+            L6470_softstop();
+            L6470_softhiz();
+            return 0;
         }
     }
 
@@ -241,12 +304,6 @@ void L6470_speed_change(long speed, int postspeed)
 		}
 	}
 
-	if (postspeed == 0) {
-		L6470_softstop();
-		L6470_softhiz();
-	}
-
-
     L6470_SPI_CHANNEL = 0;
     L6470_run(speed);
     L6470_SPI_CHANNEL = 1;
@@ -254,7 +311,7 @@ void L6470_speed_change(long speed, int postspeed)
 }
 
 
-void L6470_run_turn(long speed)
+void L6470_run_turn(long speed, int right)
 {
     L6470_SPI_CHANNEL = 0;
     L6470_run(speed);
