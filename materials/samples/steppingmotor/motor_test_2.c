@@ -23,6 +23,8 @@ void L6470_softhiz();
 void L6470_speed_change(long speed, int postspeed);
 //change the speed from "speed" to postspeed
 
+extern void getargs(int *argc, char *argv[]);
+
 int main(int argc, char **argv)
 {
     int i, j;
@@ -53,58 +55,56 @@ int main(int argc, char **argv)
     L6470_SPI_CHANNEL = 1;
     L6470_init();
 
-	printf("Start      --> Press space\n");
-    printf("Speed Up   --> Press p \n");
-    printf("Speed Down --> Press q \n");
-    printf("Turn Right --> Press r \n");
-    printf("Turn Light --> Press l \n");
-    printf("Stop       --> Press s \n");
-    printf("End        --> Press e \n");
+	/*
+	Start      -->space
+    Speed Change->p speed (+- 0 ~ 10000)
+    Turn Right -->r scale (0.1 ~ 10)
+    Turn Light -->l scale
+    Stop       -->s
+    End        -->e
+	*/
 
 	// command + argument
 	// turn right => scale
 	// speed up => postspeed
 	char *num = malloc(sizeof (char) * MAXDIGIT);
-	int cnt = 0;
 
-    while ((c = getchar()) != EOF)
-    {
+	int my_argc;
+    char **my_argv;
+	
+    printf("input a line:\n");
+	while ((c = getchar()) != EOF) {
+		ungetc(c, stdin);
+    	//initialization
+		my_argc = 0;
+		const int MAXCOM = 10;
+		const int MAXCHAR = 256;
+		for (i = 0; i < MAXCOM; i++) {
+			my_argv[i] = malloc(sizeof(char) * MAXCHAR);
+		}	
 
-		if (('0' <= c && c <= '9') || c == '.') {
-			num[cnt++] = c;
-		}
+		getargs(&my_argc, my_argv);	
 
-		if (0 < cnt && (c == EOF || c == '\n')) {
-			num[cnt] == '\0';
-		}
+		c = my_argv[0][0];
 
-        if (c == 'p')
-			//speed up
+		if (c == 'p')
+			//speed change
         {
-            speed += 1000;
-            L6470_run_both(speed);
-            // printf("*** Speed %ld ***\n", speed);
-        }
-
-        if (c == 'q')
-			//speed down
-        {
-            speed -= 1000;
-            L6470_run_both(speed);
-            // printf("*** Speed %ld ***\n", speed);
+			long sp = atol(my_argv[1]);
+			L6470_speed_change(speed, sp);
+            speed = sp;
         }
 
         if (c == 'r' || c == 'l') { //turn right or left
+			double scale = atof(my_argv[1]);
             if (speed != 0) {
 
 				if (c == 'r') {
 					int right_true = 1;
-					float scale = 3.0; //default scale
 					L6470_run_turn_moving(speed, right_true, scale);
 				}
 				 else {
 					int right_false = 0;
-					float scale = 3.0;
 					L6470_run_turn_moving(speed, right_false, scale);
 				}
 
@@ -120,14 +120,16 @@ int main(int argc, char **argv)
         }
 
         if (c == 's') { 		    		
-			L6470_speed_change(speed, 0);	
+			L6470_speed_change(speed, 0);
+			speed = 0;
         }
         if (c == 'e')
         {
 			L6470_speed_change(speed, 0);
+			speed = 0;
 			return 0;
-        }
-    }
+        }		
+	}
 
     return 0;
 }

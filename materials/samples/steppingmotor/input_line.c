@@ -7,7 +7,7 @@
 
 void getargs(int *argc, char *argv[])
 {
-    printf("input a line:");
+
 	
 	char c;
 	int cnt = 0;
@@ -19,6 +19,10 @@ void getargs(int *argc, char *argv[])
 		c = getchar();
 
 		if (cnt++ == MAXCHAR-1) {
+			break;
+		}
+
+		if (c == EOF) {
 			break;
 		}
 
@@ -44,18 +48,25 @@ int main()
     int my_argc;
     char **my_argv;
     
-    //initialization
-    my_argc = 0;
-	int i;
-	for (i = 0; i < MAXCOM; i++) {
-		my_argv[i] = malloc(sizeof(char) * MAXCHAR);
-	}
-    
-    getargs(&my_argc, my_argv);
 
-    for (i = 0; i < my_argc; i++) {
-        printf("argv[%d]: %s\n", i, my_argv[i]);
-    }
+	char c;
+    printf("input a line:\n");
+	while ((c = getchar()) != EOF) {
+		ungetc(c, stdin);
+    //initialization
+		my_argc = 0;
+		int i;
+		for (i = 0; i < MAXCOM; i++) {
+			my_argv[i] = malloc(sizeof(char) * MAXCHAR);
+		}	
+
+		getargs(&my_argc, my_argv);	
+
+		for (i = 0; i < my_argc; i++) {
+			printf("argv[%d]: %s\n", i, my_argv[i]);
+		}	
+
+	}
     
 
     return 0;
