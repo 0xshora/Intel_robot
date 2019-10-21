@@ -9,6 +9,7 @@
 int L6470_SPI_CHANNEL;
 int BUFSIZE = 32;
 #define SLOPE_TIME 1000000
+#define MAXDIGIT 100
 
 // 関数プロトタイプ。
 void L6470_write(unsigned char data);
@@ -60,8 +61,23 @@ int main(int argc, char **argv)
     printf("Stop       --> Press s \n");
     printf("End        --> Press e \n");
 
+	// command + argument
+	// turn right => scale
+	// speed up => postspeed
+	char *num = malloc(sizeof (char) * MAXDIGIT);
+	int cnt = 0;
+
     while ((c = getchar()) != EOF)
     {
+
+		if (('0' <= c && c <= '9') || c == '.') {
+			num[cnt++] = c;
+		}
+
+		if (0 < cnt && (c == EOF || c == '\n')) {
+			num[cnt] == '\0';
+		}
+
         if (c == 'p')
 			//speed up
         {
