@@ -68,7 +68,7 @@ int main(int argc, char **argv)
 	// command + argument
 	// turn right => scale
 	// speed up => postspeed
-	char *num = malloc(sizeof (char) * MAXDIGIT);
+
 
 	int my_argc;
     char **my_argv;
@@ -87,6 +87,7 @@ int main(int argc, char **argv)
 		getargs(&my_argc, my_argv);	
 
 		c = my_argv[0][0];
+		prinf("c:%c\n", c);
 
 		if (c == 'p')
 			//speed change

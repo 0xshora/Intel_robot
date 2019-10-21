@@ -53,8 +53,9 @@ int main()
     printf("input a line:\n");
 	while ((c = getchar()) != EOF) {
 		ungetc(c, stdin);
-    //initialization
+    	//initialization
 		my_argc = 0;
+		my_argv = malloc(sizeof(char *) * MAXCOM);
 		int i;
 		for (i = 0; i < MAXCOM; i++) {
 			my_argv[i] = malloc(sizeof(char) * MAXCHAR);

@@ -8,6 +8,8 @@ cd wiringPi
 
 // wiringPiを使ってのコンパイル方法
 gcc -o xxxx xxxx.c -I /usr/include -L /usr/lib -l wiringPi
+gcc motor_test_2.c -I /usr/include -L /usr/lib -l wiringPi
+
 
 ./xxxx
 
