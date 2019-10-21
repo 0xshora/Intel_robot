@@ -44,6 +44,7 @@ int main(int argc, char **argv)
     {
         printf("SPI Setup failed:\n");
     }
+	
     if (wiringPiSPISetup(1, 1000000) < 0)
     {
         printf("SPI Setup failed:\n");
