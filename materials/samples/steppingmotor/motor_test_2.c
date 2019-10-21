@@ -23,6 +23,9 @@ void L6470_softhiz();
 void L6470_speed_change(long speed, int postspeed);
 //change the speed from "speed" to postspeed
 
+extern void getargs(int *, char **);
+
+
 int main(int argc, char **argv)
 {
     int i, j;
@@ -65,18 +68,11 @@ int main(int argc, char **argv)
 	// turn right => scale
 	// speed up => postspeed
 	char *num = malloc(sizeof (char) * MAXDIGIT);
-	int cnt = 0;
 
     while ((c = getchar()) != EOF)
     {
 
-		if (('0' <= c && c <= '9') || c == '.') {
-			num[cnt++] = c;
-		}
 
-		if (0 < cnt && (c == EOF || c == '\n')) {
-			num[cnt] == '\0';
-		}
 
         if (c == 'p')
 			//speed up
