@@ -28,7 +28,7 @@ extern void getargs(int *argc, char *argv[]);
 int main(int argc, char **argv)
 {
     int i, j;
-    long speed = 0;    
+    long speed = 0;
 
     char *str = (char *)malloc(BUFSIZE * sizeof(char));
     char c;
@@ -44,7 +44,7 @@ int main(int argc, char **argv)
     {
         printf("SPI Setup failed:\n");
     }
-	
+
     if (wiringPiSPISetup(1, 1000000) < 0)
     {
         printf("SPI Setup failed:\n");
@@ -81,7 +81,7 @@ int main(int argc, char **argv)
 
     int my_argc;
     char **my_argv;
-	
+
     printf("input a line:\n");
 	while ((c = getchar()) != EOF) {
 		ungetc(c, stdin);
@@ -97,9 +97,9 @@ int main(int argc, char **argv)
 
 		for (i = 0; i < MAXCOM; i++) {
 			my_argv[i] = malloc(sizeof(char) * MAXCHAR);
-		}	
+		}
 
-		getargs(&my_argc, my_argv);	
+		getargs(&my_argc, my_argv);
 
 		c = my_argv[0][0];
 		printf("c:%c\n", c);
@@ -138,7 +138,7 @@ int main(int argc, char **argv)
 			}
         }
 
-        if (c == 's') { 		    		
+        if (c == 's') {
 			L6470_speed_change(speed, 0);
 			speed = 0;
         }
@@ -147,7 +147,7 @@ int main(int argc, char **argv)
 			L6470_speed_change(speed, 0);
 			speed = 0;
 			return 0;
-        }		
+        }
 	}
 
     return 0;
