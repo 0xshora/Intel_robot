@@ -22,6 +22,7 @@ void L6470_run_turn_moving(long speed, int right, float scale);
 void L6470_softstop();
 void L6470_softhiz();
 void L6470_speed_change(long speed, int postspeed);//change the speed from "speed" to postspeed
+void getargs(int *argc, char *argv[], char *buf);
 
 int main(int argc, char **argv){
     long speed = 0;
