@@ -47,6 +47,35 @@ def is_escape_flg(length):
     return flg
 
 
+def chase_function(d, theta, A=10, B=10, max_rolling=200, max_sp=100):
+    if theta > 5 or theta < -5:
+        # rolling
+        roll_sp = A * theta
+        # send(r, min(roll_sp, max_rolling))
+    else:
+        # move forward
+        if d < 20 and d > -20:
+            # stop
+            print("stop!")
+        else:
+            move_sp = B * d
+            # send(p, min(move_sp, max_sp))
+
+
+def avoid_function(d, length, roll_sp=100):
+    # send(r, roll_sp)
+    print("just rolling")
+
+
+def search_function():
+    cnt = 0
+    if cnt % 100 < 60:
+        print("move forward")
+    else:
+        # send(p, default_sp)
+        print("just rolling")
+
+
 def main(length, mirror=True, size=None):
     cap = cv2.VideoCapture(0)
     while(cap.isOpened()):
@@ -63,15 +92,15 @@ def main(length, mirror=True, size=None):
         flg = is_escape_flg(length)
         box = boxes[0]
         if flg:
-            # avoid_function(length)
-            print('just rolling')
+            avoid_function(length)
+            # print('just rolling')
         elif box:
-            # search_function(length)
-            print('speed')
-            print('roll')
+            search_function(length)
+            # print('speed')
+            # print('roll')
         else:
-            # chase_function(length)
-            print('speed')
+            chase_function(length)
+            # print('speed')
 
         k = cv2.waitKey(50)
         if k == 27:  # ESCキーで終了
