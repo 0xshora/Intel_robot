@@ -1,5 +1,6 @@
 import numpy as np
 import cv2
+import socket
 
 # camera center
 SCREEN_CENTER_X = 400
@@ -21,6 +22,14 @@ THR_BOXSIZE = 20000
 # length[1] : front left
 # length[2] : side right
 # length[3] : side left
+
+
+def send_msg(msg):
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        host = '127.0.0.1'
+        port = 50001
+        s.connect((host, port))
+        s.sendall(msg.encode(encoding='ascii'))
 
 
 def cascade(img):
@@ -47,35 +56,44 @@ def is_escape_flg(length):
     return flg
 
 
-def chase_function(d, theta, A=10, B=10, max_rolling=200, max_sp=100):
+def chase_function(d, theta, A=10, B=10, max_rolling=200, max_sp=1000):
     if theta > 5 or theta < -5:
         # rolling
         roll_sp = A * theta
-        # send(r, min(roll_sp, max_rolling))
+        if theta > 0:
+            c = 'l'
+        else:
+            c = 'r'
+        text = "{} {}\n".format(c, min(roll_sp, max_rolling))
+        send_msg(text)
     else:
         # move forward
         if d < 20 and d > -20:
             # stop
-            print("stop!")
+            send_msg(text)
         else:
             move_sp = B * d
-            # send(p, min(move_sp, max_sp))
+            text = "p {}\n".format(min(move_sp, max_sp))
+            send_msg()
 
 
-def avoid_function(d, length, roll_sp=100):
-    # send(r, roll_sp)
-    print("just rolling")
+def avoid_function(roll_sp=100):
+    text = "r {}\n".format(roll_sp)
+    send_msg(text)
+    # print("just rolling")
 
 
 def search_function(default_roll=100, default_sp=200):
     cnt = 0
-    if cnt % 100 < 60:
-        # send(p, default_sp)
-        print("move forward")
+    if cnt % 100 > 50:
+        text = "p {}\n".format(default_sp)
+        send_msg(text)
+        # print("move forward")
         cnt += 1
     else:
-        # send(r, default_roll)
-        print("just rolling")
+        text = "r {}\n".format(default_roll)
+        send_msg(text)
+        # print("just rolling")
         cnt += 1
 
 
@@ -101,7 +119,7 @@ def main(length, mirror=True, size=None):
             chase_function(length)
             # print('speed')
         else:
-            search_function(length)
+            search_function()
             # print('speed')
             # print('roll')
 
