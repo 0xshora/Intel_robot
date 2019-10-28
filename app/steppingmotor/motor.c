@@ -92,8 +92,6 @@ int main(int argc, char **argv)
 
         my_argv = malloc(sizeof(char *) * MAXCOM);
 
-        my_argv = malloc(sizeof(char *) * MAXCOM);
-
         for (i = 0; i < MAXCOM; i++)
         {
             my_argv[i] = malloc(sizeof(char) * MAXCHAR);
