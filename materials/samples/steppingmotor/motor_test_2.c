@@ -8,7 +8,7 @@
 
 int L6470_SPI_CHANNEL;
 int BUFSIZE = 32;
-#define SLOPE_TIME 1000000
+#define SLOPE_TIME 100000
 #define MAXDIGIT 100
 
 // 関数プロトタイプ。
@@ -70,7 +70,7 @@ int main(int argc, char **argv)
 	// speed up => postspeed
 
 
-	int my_argc;
+    int my_argc;
     char **my_argv;
 	
     printf("input a line:\n");
@@ -113,12 +113,13 @@ int main(int argc, char **argv)
 				}
 
 		   	} else {
+		   		long sp = atol(my_argv[1]);
 				if (c == 'r') {
-					speed = 10000;
-					L6470_run_turn(speed);
+// 					speed = 10000;
+					L6470_run_turn(sp);
 				} else {
-					speed = -10000;
-					L6470_run_turn(speed);
+// 					speed = -10000;
+					L6470_run_turn(sp);
 				}
 			}
         }
@@ -245,25 +246,38 @@ void new_speed_change(long speed, long postspeed)
 {
 	int diff = postspeed - speed;
 	int MAX_DIFF = 1000;
-	int CNT = 10;
+	int MINUS_MAX_DIFF = -1000;
+	int CNT = 30;
 	int i;
 	long tmp_speed = speed;
-	if (diff / CNT < MAX_DIFF) {
+	if ((diff / CNT < MAX_DIFF) && (diff / cnt > MAX_DIFF)){
 		for (i = 0; i < CNT; i++) {
 			usleep(SLOPE_TIME);
 			L6470_run_both(tmp_speed);
 			tmp_speed += diff / CNT;
 		}
-	} else {
+	} else if (diff > 0){
 		int time = (int)(diff / MAX_DIFF);
 		for (i = 0; i < time; i++) {
 			usleep(SLOPE_TIME);
-			L6470_run_both(speed);
+			L6470_run_both(tmp_speed);
 			tmp_speed += MAX_DIFF;
 		}
-
+	} else {
+		int time = (int)(diff / MINUS_MAX_DIFF);
+		for (i = 0; i < time; i++) {
+			usleep(SLOPE_TIME);
+			L6470_run_both(tmp_speed);
+			tmp_speed += MINUS_MAX_DIFF;
+		}
 	}
-
+	tmp_speed = postspeed;
+	usleep(SLOPE_TIME);
+	L6470_run_both(tmp_speed);
+	if (postspeed == 0) {
+		L6470_softstop();
+		L6470_softhiz();
+	}
 }
 
 
