@@ -251,7 +251,7 @@ void L6470_speed_change(long speed, int postspeed)
 			usleep(SLOPE_TIME);
 			L6470_run_both(speed);
 		}
-	} else  if (speed > postspeed){
+	} else if (speed > postspeed){
 		//if moving, move more slowly
 		int i;
 		for (i = speed; i >= postspeed; i -= 100) {
