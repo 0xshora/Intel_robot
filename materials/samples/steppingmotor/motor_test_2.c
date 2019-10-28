@@ -55,7 +55,7 @@ int main(int argc, char **argv)
     printf("Speed Up   --> Press p \n");
     printf("Speed Down --> Press q \n");
     printf("Turn Right --> Press r \n");
-    printf("Turn Light --> Press l \n");
+    printf("Turn Left --> Press l \n");
     printf("Stop       --> Press s \n");
     printf("End        --> Press e \n");
 

@@ -14,8 +14,8 @@ BOXES = [[365, 75, 453, 453]]
 # define parameters for the control
 # @THR_FROTN_LEN : a threshold in the point of front length
 # @THR_BOXSIZE : a threshold within a bix box or not
-THR_FRONT_LEN = 100
-THR_SIDE_LEN = 100
+THR_FRONT_LEN = 20
+THR_SIDE_LEN = 20
 THR_BOXSIZE = 20000
 
 # length[0] : front rigth
