@@ -67,13 +67,16 @@ def avoid_function(d, length, roll_sp=100):
     print("just rolling")
 
 
-def search_function():
+def search_function(default_roll=100, default_sp=200):
     cnt = 0
     if cnt % 100 < 60:
-        print("move forward")
-    else:
         # send(p, default_sp)
+        print("move forward")
+        cnt += 1
+    else:
+        # send(r, default_roll)
         print("just rolling")
+        cnt += 1
 
 
 def main(length, mirror=True, size=None):
@@ -89,18 +92,18 @@ def main(length, mirror=True, size=None):
 
         boxes = cascade(frame)
 
-        flg = is_escape_flg(length)
+        escape_flg = is_escape_flg(length)
         box = boxes[0]
-        if flg:
+        if escape_flg:
             avoid_function(length)
             # print('just rolling')
         elif box:
+            chase_function(length)
+            # print('speed')
+        else:
             search_function(length)
             # print('speed')
             # print('roll')
-        else:
-            chase_function(length)
-            # print('speed')
 
         k = cv2.waitKey(50)
         if k == 27:  # ESCキーで終了
