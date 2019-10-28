@@ -53,6 +53,7 @@ void getargs(int *argc, char *argv[])
 	} */
 }
 
+/*
 int main()
 {
     
@@ -83,4 +84,4 @@ int main()
 
     return 0;
 }
-
+*/

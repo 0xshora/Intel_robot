@@ -57,10 +57,10 @@ int main(int argc, char **argv)
     L6470_init();
 
 	/*
-	Start      -->space
+
     Speed Change->p speed (+- 0 ~ 10000)
     Turn Right -->r scale (0.1 ~ 10)
-    Turn Light -->l scale
+    Turn Left -->l scale
     Stop       -->s
     End        -->e
 	*/
@@ -80,6 +80,8 @@ int main(int argc, char **argv)
 		my_argc = 0;
 		const int MAXCOM = 10;
 		const int MAXCHAR = 256;
+
+		my_argv = malloc(sizeof(char*) * MAXCOM);
 		for (i = 0; i < MAXCOM; i++) {
 			my_argv[i] = malloc(sizeof(char) * MAXCHAR);
 		}	
@@ -87,7 +89,7 @@ int main(int argc, char **argv)
 		getargs(&my_argc, my_argv);	
 
 		c = my_argv[0][0];
-		prinf("c:%c\n", c);
+
 
 		if (c == 'p')
 			//speed change
@@ -239,6 +241,31 @@ void L6470_run_both(long speed)
     L6470_SPI_CHANNEL = 1;
     L6470_run(-1 * speed);
 }
+void new_speed_change(long speed, long postspeed)
+{
+	int diff = postspeed - speed;
+	int MAX_DIFF = 1000;
+	int CNT = 10;
+	int i;
+	long tmp_speed = speed;
+	if (diff / CNT < MAX_DIFF) {
+		for (i = 0; i < CNT; i++) {
+			usleep(SLOPE_TIME);
+			L6470_run_both(tmp_speed);
+			tmp_speed += diff / CNT;
+		}
+	} else {
+		int time = (int)(diff / MAX_DIFF);
+		for (i = 0; i < time; i++) {
+			usleep(SLOPE_TIME);
+			L6470_run_both(speed);
+			tmp_speed += MAX_DIFF;
+		}
+
+	}
+
+}
+
 
 void L6470_speed_change(long speed, int postspeed)
 {
@@ -288,10 +315,10 @@ void L6470_run_turn_moving(long speed, int right, float scale)
 	L6470_SPI_CHANNEL = 0;
 	L6470_run(speed);
 	L6470_SPI_CHANNEL = 1;
-	L6470_run(speed/scale);
+	L6470_run((long)speed/scale);
    } else {
 	L6470_SPI_CHANNEL = 0;
-	L6470_run(speed/scale);
+	L6470_run((long)speed/scale);
 	L6470_SPI_CHANNEL = 1;
 	L6470_run(speed);
    }
