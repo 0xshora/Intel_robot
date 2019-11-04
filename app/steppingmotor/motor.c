@@ -12,16 +12,16 @@
 int L6470_SPI_CHANNEL;
 
 // 関数プロトタイプ。
-void L6470_write(unsigned char data);
-void L6470_init(void);
-void L6470_run(long speed);
-void L6470_run_both(long speed);
-void L6470_run_turn(long speed);
-void L6470_run_turn_moving(long speed, int right, float scale);
-void L6470_softstop();
-void L6470_softhiz();
-void L6470_speed_change(long speed, int postspeed); //change the speed from "speed" to postspeed
-void getargs(int * argc, char * argv[], char * buf);
+extern void L6470_write(unsigned char data);
+extern void L6470_init(void);
+extern void L6470_run(long speed);
+extern void L6470_run_both(long speed);
+extern void L6470_run_turn(long speed);
+extern void L6470_run_turn_moving(long speed, int right, float scale);
+extern void L6470_softstop();
+extern void L6470_softhiz();
+extern void L6470_speed_change(long speed, int postspeed); //change the speed from "speed" to postspeed
+extern void getargs(int * argc, char * argv[], char * buf);
 
 int main(int argc, char ** argv) {
     long speed = 0;
