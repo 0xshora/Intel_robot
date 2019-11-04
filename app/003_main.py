@@ -1,9 +1,15 @@
 import numpy as np
 import cv2
 import socket
+import math
 
 # camera center
 SCREEN_CENTER_X = 400
+SCREEN_WIDE_X = 800
+MAX_W = SCREEN_WIDE_X - SCREEN_CENTER_X
+MAX_ANGLE = 60
+MAX_ANGLE_RAD = 60. * math.pi / 180.
+CAMERA_DIS = 20
 
 # given parameters
 # @LENGTH : distance between the machine and objects
@@ -45,6 +51,29 @@ def cascade(img):
     # print(faces)
     # cv2.imshow('img', img)
     return boxes
+
+
+# MAX_W = SCREEN_WIDE_X - SCREEN_CENTER_X
+# MAX_ANGLE = 60
+# MAX_ANGLE_RAD = 60. * math.pi / 180.
+# CAMERA_DIS = 20
+
+def cal_theta_h(rect_a, rect_b):
+    a_center_x = rect_a[3] - rect_a[1]
+    b_center_x = rect_b[3] - rect_b[1]
+
+    a = a_center_x - SCREEN_CENTER_X
+    b = b_center_x - SCREEN_CENTER_X
+
+    tan_max_angle = math.tan(MAX_ANGLE_RAD)
+
+    h = (MAX_W * CAMERA_DIS) / ((a - b) * tan_max_angle)
+    tan_x1 = tan_max_angle * (a / MAX_W)
+    tan_x2 = tan_max_angle * (b / MAX_W)
+
+    tan_theta = (tan_x1 + tan_x2) / (1 - tan_x1 * tan_x2)
+    theta = math.degrees(math.atan(tan_theta))
+    return h, theta
 
 
 def is_escape_flg(length):
@@ -116,7 +145,8 @@ def main(length, mirror=True, size=None):
             avoid_function(length)
             # print('just rolling')
         elif box:
-            chase_function(length)
+            h, theta = cal_theta_h(box[0], box[1])
+            chase_function(h, theta)
             # print('speed')
         else:
             search_function()

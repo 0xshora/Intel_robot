@@ -22,10 +22,6 @@ def cascade(img):
     print(faces)
     cv2.imshow('img', img)
 
-# def define_direction(rect){
-#     center_x = rect[0][3] - rect[0][1]
-# }
-
 
 def detect_boxes(mirror=True, size=None):
     cap = cv2.VideoCapture(0)
