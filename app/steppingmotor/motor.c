@@ -95,7 +95,7 @@ int main(int argc, char ** argv) {
             fprintf(stderr, "read() failed\n");
             continue;
         }
-        getargs(*ac, av, buf);
+        getargs(&ac, av, buf);
 
         if (strcmp(av[0], "p") == 0) {
             long sp = atol(av[1]);
