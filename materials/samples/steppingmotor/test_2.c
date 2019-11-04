@@ -25,7 +25,6 @@ void L6470_speed_change(long speed, int postspeed);
 
 extern void getargs(int *, char **);
 
-
 int main(int argc, char **argv)
 {
     int i, j;
@@ -56,7 +55,7 @@ int main(int argc, char **argv)
     L6470_SPI_CHANNEL = 1;
     L6470_init();
 
-	printf("Start      --> Press space\n");
+    printf("Start      --> Press space\n");
     printf("Speed Up   --> Press p \n");
     printf("Speed Down --> Press q \n");
     printf("Turn Right --> Press r \n");
@@ -64,18 +63,16 @@ int main(int argc, char **argv)
     printf("Stop       --> Press s \n");
     printf("End        --> Press e \n");
 
-	// command + argument
-	// turn right => scale
-	// speed up => postspeed
-	char *num = malloc(sizeof (char) * MAXDIGIT);
+    // command + argument
+    // turn right => scale
+    // speed up => postspeed
+    char *num = malloc(sizeof(char) * MAXDIGIT);
 
     while ((c = getchar()) != EOF)
     {
 
-
-
         if (c == 'p')
-			//speed up
+        //speed up
         {
             speed += 1000;
             L6470_run_both(speed);
@@ -83,45 +80,54 @@ int main(int argc, char **argv)
         }
 
         if (c == 'q')
-			//speed down
+        //speed down
         {
             speed -= 1000;
             L6470_run_both(speed);
             // printf("*** Speed %ld ***\n", speed);
         }
 
-        if (c == 'r' || c == 'l') { //turn right or left
-            if (speed != 0) {
+        if (c == 'r' || c == 'l')
+        { //turn right or left
+            if (speed != 0)
+            {
 
-				if (c == 'r') {
-					int right_true = 1;
-					float scale = 3.0; //default scale
-					L6470_run_turn_moving(speed, right_true, scale);
-				}
-				 else {
-					int right_false = 0;
-					float scale = 3.0;
-					L6470_run_turn_moving(speed, right_false, scale);
-				}
-
-		   	} else {
-				if (c == 'r') {
-					speed = 10000;
-					L6470_run_turn(speed);
-				} else {
-					speed = -10000;
-					L6470_run_turn(speed);
-				}
-			}
+                if (c == 'r')
+                {
+                    int right_true = 1;
+                    float scale = 3.0; //default scale
+                    L6470_run_turn_moving(speed, right_true, scale);
+                }
+                else
+                {
+                    int right_false = 0;
+                    float scale = 3.0;
+                    L6470_run_turn_moving(speed, right_false, scale);
+                }
+            }
+            else
+            {
+                if (c == 'r')
+                {
+                    speed = 10000;
+                    L6470_run_turn(speed);
+                }
+                else
+                {
+                    speed = -10000;
+                    L6470_run_turn(speed);
+                }
+            }
         }
 
-        if (c == 's') { 		    		
-			L6470_speed_change(speed, 0);	
+        if (c == 's')
+        {
+            L6470_speed_change(speed, 0);
         }
         if (c == 'e')
         {
-			L6470_speed_change(speed, 0);
-			return 0;
+            L6470_speed_change(speed, 0);
+            return 0;
         }
     }
 
@@ -200,13 +206,10 @@ void L6470_run(long speed)
     unsigned char spd_l;
 
     // 方向検出。
-    if (speed < 0)
-    {
+    if (speed < 0) {
         dir = 0x50;
         spd = -1 * speed;
-    }
-    else
-    {
+    } else {
         dir = 0x51;
         spd = speed;
     }
@@ -232,47 +235,52 @@ void L6470_run_both(long speed)
     L6470_run(-1 * speed);
 }
 
-void new_speed_change(long speed, int postspeed) {
+void new_speed_change(long speed, int postspeed)
+{
     int LOOP_NUM = 30;
 }
 
 void L6470_speed_change(long speed, int postspeed)
 {
     int cnt = 0;
-	//change the speed from "speed" to postspeed
-	if (speed < postspeed) {
-		//if moving, move faster
-		int i;
-		for (i = speed; i <= postspeed; i += 100) {
-			speed = i;
-			usleep(SLOPE_TIME);
-			L6470_run_both(speed);
-			cnt++;
-		}
-	} else  if (speed > postspeed){
-		//if moving, move more slowly
-		int i;
-		for (i = speed; i >= postspeed; i -= 100) {
-			speed = i;
-			usleep(SLOPE_TIME);
-			L6470_run_both(speed);
-			cnt++;
-		}
-	}
-	printf("%d", cnt);
+    //change the speed from "speed" to postspeed
+    if (speed < postspeed)
+    {
+        //if moving, move faster
+        int i;
+        for (i = speed; i <= postspeed; i += 100)
+        {
+            speed = i;
+            usleep(SLOPE_TIME);
+            L6470_run_both(speed);
+            cnt++;
+        }
+    }
+    else if (speed > postspeed)
+    {
+        //if moving, move more slowly
+        int i;
+        for (i = speed; i >= postspeed; i -= 100)
+        {
+            speed = i;
+            usleep(SLOPE_TIME);
+            L6470_run_both(speed);
+            cnt++;
+        }
+    }
+    printf("%d", cnt);
 
-	if (postspeed == 0) {
-		L6470_softstop();
-		L6470_softhiz();
-	}
-
+    if (postspeed == 0)
+    {
+        L6470_softstop();
+        L6470_softhiz();
+    }
 
     L6470_SPI_CHANNEL = 0;
     L6470_run(speed);
     L6470_SPI_CHANNEL = 1;
     L6470_run(-1 * speed);
 }
-
 
 void L6470_run_turn(long speed)
 {
@@ -284,18 +292,20 @@ void L6470_run_turn(long speed)
 
 void L6470_run_turn_moving(long speed, int right, float scale)
 {
-   if (right == 1) {
-	L6470_SPI_CHANNEL = 0;
-	L6470_run(speed);
-	L6470_SPI_CHANNEL = 1;
-	L6470_run(speed/scale);
-   } else {
-	L6470_SPI_CHANNEL = 0;
-	L6470_run(speed/scale);
-	L6470_SPI_CHANNEL = 1;
-	L6470_run(speed);
-   }
-
+    if (right == 1)
+    {
+        L6470_SPI_CHANNEL = 0;
+        L6470_run(speed);
+        L6470_SPI_CHANNEL = 1;
+        L6470_run(speed / scale);
+    }
+    else
+    {
+        L6470_SPI_CHANNEL = 0;
+        L6470_run(speed / scale);
+        L6470_SPI_CHANNEL = 1;
+        L6470_run(speed);
+    }
 }
 
 void L6470_softstop()

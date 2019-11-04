@@ -1,15 +1,15 @@
 //モータスピードを指定時間でスロープで上げ下げする
-
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <unistd.h>
-#include "wiringPi.h"
-#include "wiringPiSPI.h"
+#include <wiringPi.h>
+#include <wiringPiSPI.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#define BUFSIZE 32
 
 int L6470_SPI_CHANNEL;
-int BUFSIZE = 32;
-#define SLOPE_TIME 10000
-#define MAXDIGIT 100
 
 // 関数プロトタイプ。
 void L6470_write(unsigned char data);
@@ -20,33 +20,20 @@ void L6470_run_turn(long speed);
 void L6470_run_turn_moving(long speed, int right, float scale);
 void L6470_softstop();
 void L6470_softhiz();
-void L6470_speed_change(long speed, int postspeed);
-//change the speed from "speed" to postspeed
+void L6470_speed_change(long speed, int postspeed); //change the speed from "speed" to postspeed
+void getargs(int * argc, char * argv[], char * buf);
 
-extern void getargs(int *argc, char *argv[]);
-
-int main(int argc, char **argv)
-{
-    int i, j;
-    long speed = 0;    
-
-    char *str = (char *)malloc(BUFSIZE * sizeof(char));
-    char c;
-    long s;
-    float sl;
-    long S = 0;
+int main(int argc, char ** argv) {
+    long speed = 0;
 
     printf("***** start spi test program *****\n");
 
     // SPI channel 0 を 1MHz で開始。
     //if (wiringPiSPISetup(L6470_SPI_CHANNEL, 1000000) < 0)
-    if (wiringPiSPISetup(0, 1000000) < 0)
-    {
+    if (wiringPiSPISetup(0, 1000000) < 0) {
         printf("SPI Setup failed:\n");
     }
-	
-    if (wiringPiSPISetup(1, 1000000) < 0)
-    {
+    if (wiringPiSPISetup(1, 1000000) < 0) {
         printf("SPI Setup failed:\n");
     }
 
@@ -56,310 +43,100 @@ int main(int argc, char **argv)
     L6470_SPI_CHANNEL = 1;
     L6470_init();
 
-	/*
+    //printf("Speed Change --> p speed(-10000 ~ 10000)\n");
+    //printf("Turn Right   --> r scale(0.1 ~ 10)\n");
+    //printf("Turn Left    --> l scale(0.1 ~ 10)\n");
+    //printf("Stop         --> s\n");
+    //printf("End          --> e\n");
 
-    Speed Change->p speed (+- 0 ~ 10000)
-    Turn Right -->r scale (0.1 ~ 10)
-    Turn Left -->l scale
-    Stop       -->s
-    End        -->e
-	*/
+    //for setting up a tcp server
+    int sockfd;
+    int new_sockfd;
+    unsigned int clit_len;
+    unsigned short serv_port = 50001;
+    struct sockaddr_in serv_addr;
+    struct sockaddr_in clit_addr;
 
-	// command + argument
-	// turn right => scale
-	// speed up => postspeed
+    if ((sockfd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)) < 0) {
+        fprintf(stderr, "socket() failed\n");
+        exit(1);
+    }
 
+    serv_addr.sin_family = AF_INET;
+    serv_addr.sin_addr.s_addr = htonl(INADDR_ANY);
+    serv_addr.sin_port = htons(serv_port);
 
-    int my_argc;
-    char **my_argv;
-	
-    printf("input a line:\n");
-	while ((c = getchar()) != EOF) {
-		ungetc(c, stdin);
-    	//initialization
-		my_argc = 0;
-		const int MAXCOM = 10;
-		const int MAXCHAR = 256;
+    if (bind(sockfd, (struct sockaddr * ) & serv_addr, sizeof(serv_addr)) < 0) {
+        fprintf(stderr, "bind() failed\n");
+        exit(1);
+    }
 
-		my_argv = malloc(sizeof(char * ) * MAXCOM);
+    if (listen(sockfd, 1) < 0) {
+        fprintf(stderr, "listen() failed\n");
+        close(sockfd);
+        exit(1);
+    }
 
+    while (1) {
+        clit_len = sizeof(clit_addr);
+        if ((new_sockfd = accept(sockfd, (struct sockaddr * ) & clit_addr, & clit_len)) < 0) {
+            fprintf(stderr, "accept() failed\n");
+            close(sockfd);
+            exit(1);
+        }
 
-		my_argv = malloc(sizeof(char*) * MAXCOM);
+        char buf[256];
+        int buf_len;
+        int ac;
+        char * av[16];
+        memset(buf, 0, 256);
 
-		for (i = 0; i < MAXCOM; i++) {
-			my_argv[i] = malloc(sizeof(char) * MAXCHAR);
-		}	
+        if ((buf_len = read(new_sockfd, buf, 256)) < 0) {
+            fprintf(stderr, "read() failed\n");
+            continue;
+        }
+        getargs( * ac, av, buf);
 
-		getargs(&my_argc, my_argv);	
-
-		c = my_argv[0][0];
-		printf("c:%c\n", c);
-
-
-		if (c == 'p')
-			//speed change
-        {
-			long sp = atol(my_argv[1]);
-			L6470_speed_change(speed, sp);
+        if (strcmp(av[0], "p") == 0) {
+            long sp = atol(av[1]);
+            L6470_speed_change(speed, sp);
             speed = sp;
+            // printf("*** Speed %ld ***\n", speed);
         }
 
-        if (c == 'r' || c == 'l') { //turn right or left
-
+        if (strcmp(av[0], "r") == 0 || strcmp(av[0], "l") == 0) {
             if (speed != 0) {
-			    double scale = atof(my_argv[1]);
-				if (c == 'r') {
-					int right_true = 1;
-					L6470_run_turn_moving(speed, right_true, scale);
-				}
-				 else {
-					int right_false = 0;
-					L6470_run_turn_moving(speed, right_false, scale);
-				}
-
-		   	} else {
-		   		long sp = atol(my_argv[1]);
-				if (c == 'r') {
-// 					speed = 10000;
-					L6470_run_turn(sp);
-				} else {
-// 					speed = -10000;
-					L6470_run_turn(sp);
-				}
-			}
+                double scale = atof(av[1]);
+                if (strcmp(buf, "r") == 0) {
+                    int right_true = 1;
+                    L6470_run_turn_moving(speed, right_true, scale);
+                } else {
+                    int right_false = 0;
+                    L6470_run_turn_moving(speed, right_false, scale);
+                }
+            } else {
+                long sp = atol(av[1]);
+                if (strcmp(buf, "r") == 0) {
+                    speed = 10000;
+                    L6470_run_turn(sp);
+                } else {
+                    speed = -10000;
+                    L6470_run_turn(sp);
+                }
+            }
         }
 
-        if (c == 's') { 		    		
-			L6470_speed_change(speed, 0);
-			speed = 0;
+        if (strcmp(buf, "s") == 0) {
+            L6470_speed_change(speed, 0);
+            speed = 0;
         }
-        if (c == 'e')
-        {
-			L6470_speed_change(speed, 0);
-			speed = 0;
-			return 0;
-        }		
-	}
 
-    return 0;
-}
-
-void L6470_write(unsigned char data)
-{
-    wiringPiSPIDataRW(L6470_SPI_CHANNEL, &data, 1);
-    //wiringPiSPIDataRW(0, &data, 1);
-    //wiringPiSPIDataRW(1, &data, 1);
-}
-
-void L6470_init()
-{
-    // MAX_SPEED設定。
-    /// レジスタアドレス。
-    L6470_write(0x07);
-    // 最大回転スピード値(10bit) 初期値は 0x41
-    L6470_write(0x00);
-    L6470_write(0x25);
-
-    // KVAL_HOLD設定。
-    /// レジスタアドレス。
-    L6470_write(0x09);
-    // モータ停止中の電圧設定(8bit)
-    L6470_write(0xFF);
-
-    // KVAL_RUN設定。
-    /// レジスタアドレス。
-    L6470_write(0x0A);
-    // モータ定速回転中の電圧設定(8bit)
-    L6470_write(0xFF);
-
-    // KVAL_ACC設定。
-    /// レジスタアドレス。
-    L6470_write(0x0B);
-    // モータ加速中の電圧設定(8bit)
-    L6470_write(0xFF);
-
-    // KVAL_DEC設定。
-    /// レジスタアドレス。
-    L6470_write(0x0C);
-    // モータ減速中の電圧設定(8bit) 初期値は 0x8A
-    L6470_write(0x40);
-
-    // OCD_TH設定。
-    /// レジスタアドレス。
-    L6470_write(0x13);
-    // オーバーカレントスレッショルド設定(4bit)
-    L6470_write(0x0F);
-
-    // STALL_TH設定。
-    /// レジスタアドレス。
-    L6470_write(0x14);
-    // ストール電流スレッショルド設定(4bit)
-    L6470_write(0x7F);
-
-    //start slopeデフォルト
-    /// レジスタアドレス。
-    L6470_write(0x0e);
-    L6470_write(0x00);
-
-    //デセラレーション設定
-    /// レジスタアドレス。
-    L6470_write(0x10);
-    L6470_write(0x29);
-}
-
-void L6470_run(long speed)
-{
-    unsigned short dir;
-    unsigned long spd;
-    unsigned char spd_h;
-    unsigned char spd_m;
-    unsigned char spd_l;
-
-    // 方向検出。
-    if (speed < 0)
-    {
-        dir = 0x50;
-        spd = -1 * speed;
+        if (strcmp(buf, "e") == 0) {
+            L6470_speed_change(speed, 0);
+            close(new_sockfd);
+            close(sockfd);
+            exit(0);
+        }
     }
-    else
-    {
-        dir = 0x51;
-        spd = speed;
-    }
-
-    // 送信バイトデータ生成。
-    spd_h = (unsigned char)((0x0F0000 & spd) >> 16);
-    spd_m = (unsigned char)((0x00FF00 & spd) >> 8);
-    spd_l = (unsigned char)(0x00FF & spd);
-
-    // コマンド（レジスタアドレス）送信。
-    L6470_write(dir);
-    // データ送信。
-    L6470_write(spd_h);
-    L6470_write(spd_m);
-    L6470_write(spd_l);
-}
-
-void L6470_run_both(long speed)
-{
-    L6470_SPI_CHANNEL = 0;
-    L6470_run(speed);
-    L6470_SPI_CHANNEL = 1;
-    L6470_run(-1 * speed);
-}
-void new_speed_change(long speed, long postspeed)
-{
-	int diff = postspeed - speed;
-	int MAX_DIFF = 1000;
-	int MINUS_MAX_DIFF = -1000;
-	int CNT = 30;
-	int i;
-	long tmp_speed = speed;
-	if ((diff / CNT < MAX_DIFF) && (diff / CNT > MAX_DIFF)){
-		for (i = 0; i < CNT; i++) {
-			usleep(SLOPE_TIME);
-			L6470_run_both(tmp_speed);
-			tmp_speed += diff / CNT;
-		}
-	} else if (diff > 0){
-		int time = (int)(diff / MAX_DIFF);
-		for (i = 0; i < time; i++) {
-			usleep(SLOPE_TIME);
-			L6470_run_both(tmp_speed);
-			tmp_speed += MAX_DIFF;
-		}
-	} else {
-		int time = (int)(diff / MINUS_MAX_DIFF);
-		for (i = 0; i < time; i++) {
-			usleep(SLOPE_TIME);
-			L6470_run_both(tmp_speed);
-			tmp_speed += MINUS_MAX_DIFF;
-		}
-	}
-	tmp_speed = postspeed;
-	usleep(SLOPE_TIME);
-	L6470_run_both(tmp_speed);
-	if (postspeed == 0) {
-		L6470_softstop();
-		L6470_softhiz();
-	}
-}
-
-
-void L6470_speed_change(long speed, int postspeed)
-{
-	//change the speed from "speed" to postspeed
-	if (speed < postspeed) {
-		//if moving, move faster
-		int i;
-		for (i = speed; i <= postspeed; i += 100) {
-			speed = i;
-			usleep(SLOPE_TIME);
-			L6470_run_both(speed);
-		}
-	} else if (speed > postspeed){
-		//if moving, move more slowly
-		int i;
-		for (i = speed; i >= postspeed; i -= 100) {
-			speed = i;
-			usleep(SLOPE_TIME);
-			L6470_run_both(speed);
-		}
-	}
-
-	if (postspeed == 0) {
-		L6470_softstop();
-		L6470_softhiz();
-	}
-
-
-    L6470_SPI_CHANNEL = 0;
-    L6470_run(speed);
-    L6470_SPI_CHANNEL = 1;
-    L6470_run(-1 * speed);
-}
-
-
-void L6470_run_turn(long speed)
-{
-    L6470_SPI_CHANNEL = 0;
-    L6470_run(speed);
-    L6470_SPI_CHANNEL = 1;
-    L6470_run(speed);
-}
-
-void L6470_run_turn_moving(long speed, int right, float scale)
-{
-   if (right == 1) {
-	L6470_SPI_CHANNEL = 0;
-	L6470_run(speed);
-	L6470_SPI_CHANNEL = 1;
-	L6470_run(-1 * (long)speed/scale);
-   } else {
-	L6470_SPI_CHANNEL = 0;
-	L6470_run((long)speed/scale);
-	L6470_SPI_CHANNEL = 1;
-	L6470_run(-1 * speed);
-   }
-
-}
-
-void L6470_softstop()
-{
-    unsigned short dir;
-    printf("***** SoftStop. *****\n");
-    dir = 0xB0;
-    // コマンド（レジスタアドレス）送信。
-    L6470_write(dir);
-    delay(1000);
-}
-
-void L6470_softhiz()
-{
-    unsigned short dir;
-    printf("***** Softhiz. *****\n");
-    dir = 0xA8;
-    // コマンド（レジスタアドレス）送信。
-    L6470_write(dir);
-    delay(1000);
+	return 0;
 }
