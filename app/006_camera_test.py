@@ -79,7 +79,8 @@ def chase_function(d, theta, A=5, B=5, max_rolling=200, max_sp=5000):
         else:
             move_sp = B * d
             text = "p {}\n".format(min(move_sp, max_sp))
-            send_msg()
+            send_msg(text)
+    return text
 
 
 def stop_function():
@@ -87,7 +88,7 @@ def stop_function():
     print(text)
 
 
-def main(length, mirror=True, size=None):
+def main(mirror=True, size=None):
     cap_0 = cv2.VideoCapture(0)
     cap_1 = cv2.VideoCapture(1)
     while(cap_0.isOpened()):
@@ -109,11 +110,13 @@ def main(length, mirror=True, size=None):
         box_1 = boxes_1[0]
         if box_0 or box_1:
             h, theta = cal_theta_h(box_0, box_1)
-            chase_function(h, theta)
+            text = chase_function(h, theta)
             # print('speed')
         else:
+            text = "s"
             stop_function()
 
+        print(text)
         k = cv2.waitKey(50)
         if k == 27:  # ESCキーで終了
             break
@@ -121,3 +124,7 @@ def main(length, mirror=True, size=None):
     cap_0.release()
     cap_1.release()
     cv2.destroyAllWindows()
+
+
+if __name__ == '__main__':
+    main()
