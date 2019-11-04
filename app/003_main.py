@@ -58,7 +58,15 @@ def cascade(img):
 # MAX_ANGLE_RAD = 60. * math.pi / 180.
 # CAMERA_DIS = 20
 
-def cal_theta_h(rect_a, rect_b):
+def cal_theta_h(rect_a=None, rect_b=None):
+    if rect_a == None:
+        h = 500
+        theta = -60
+        return h, theta
+    elif rect_b == None:
+        h = 500
+        theta = 60
+        return h, theta
     a_center_x = rect_a[3] - rect_a[1]
     b_center_x = rect_b[3] - rect_b[1]
 
@@ -127,25 +135,30 @@ def search_function(default_roll=100, default_sp=200):
 
 
 def main(length, mirror=True, size=None):
-    cap = cv2.VideoCapture(0)
-    while(cap.isOpened()):
-        ret, frame = cap.read()
-
+    cap_0 = cv2.VideoCapture(0)
+    cap_1 = cv2.VideoCapture(1)
+    while(cap_0.isOpened()):
+        ret_0, frame_0 = cap_0.read()
+        ret_1, frame_1 = cap_1.read()
         if mirror is True:
-            frame = frame[:, ::-1]
+            frame_0 = frame_0[:, ::-1]
+            frame_1 = frame_1[:, ::-1]
 
         if size is not None and len(size) == 2:
-            frame = cv2.resize(frame, size)
+            frame_0 = cv2.resize(frame_0, size)
+            frame_1 = cv2.resize(frame_1, size)
 
-        boxes = cascade(frame)
+        boxes_0 = cascade(frame_0)
+        boxes_1 = cascade(frame_1)
 
         escape_flg = is_escape_flg(length)
-        box = boxes[0]
+        box_0 = boxes_0[0]
+        box_1 = boxes_1[0]
         if escape_flg:
             avoid_function(length)
             # print('just rolling')
-        elif box:
-            h, theta = cal_theta_h(box[0], box[1])
+        elif box_0 or box_1:
+            h, theta = cal_theta_h(box_0, box_1)
             chase_function(h, theta)
             # print('speed')
         else:
@@ -157,7 +170,8 @@ def main(length, mirror=True, size=None):
         if k == 27:  # ESCキーで終了
             break
 
-    cap.release()
+    cap_0.release()
+    cap_1.release()
     cv2.destroyAllWindows()
 
 
