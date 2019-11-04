@@ -67,8 +67,8 @@ def cal_theta_h(rect_a=None, rect_b=None):
         h = 500
         theta = 60
         return h, theta
-    a_center_x = rect_a[3] - rect_a[1]
-    b_center_x = rect_b[3] - rect_b[1]
+    a_center_x = (rect_a[3] - rect_a[1]) / 2 + rect_a[1]
+    b_center_x = (rect_b[3] - rect_b[1]) / 2 + rect_a[1]
 
     a = a_center_x - SCREEN_CENTER_X
     b = b_center_x - SCREEN_CENTER_X

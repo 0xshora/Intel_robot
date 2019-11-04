@@ -1,3 +1,4 @@
+import subprocess
 import numpy as np
 import cv2
 import socket
@@ -44,8 +45,8 @@ def cal_theta_h(rect_a=None, rect_b=None):
         h = 500
         theta = 60
         return h, theta
-    a_center_x = rect_a[3] - rect_a[1]
-    b_center_x = rect_b[3] - rect_b[1]
+    a_center_x = (rect_a[3] - rect_a[1]) / 2 + rect_a[1]
+    b_center_x = (rect_b[3] - rect_b[1]) / 2 + rect_a[1]
 
     a = a_center_x - SCREEN_CENTER_X
     b = b_center_x - SCREEN_CENTER_X
@@ -88,6 +89,25 @@ def stop_function():
     print(text)
 
 
+def check_camera(camera_idx=0, mirror=True, size=None):
+    cap = cv2.VideoCapture(camera_idx)
+    while (cap.isOpened()):
+        ret, frame = cap.read()
+        if mirror is True:
+            frame = frame[:, ::-1]
+
+        if size is not None and len(size) == 2:
+            frame = cv2.resize(frame, size)
+
+        cv2.imshow('img', frame)
+        k = cv2.waitKey(50)
+        if k == 27:  # ESCキーで終了
+            break
+
+    cap.release()
+    cv2.destroyAllWindows()
+
+
 def main(mirror=True, size=None):
     cap_0 = cv2.VideoCapture(0)
     cap_1 = cv2.VideoCapture(1)
@@ -127,4 +147,5 @@ def main(mirror=True, size=None):
 
 
 if __name__ == '__main__':
-    main()
+    # main()
+    check_camera(camera_idx=1)
