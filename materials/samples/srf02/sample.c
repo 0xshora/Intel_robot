@@ -128,10 +128,12 @@ int main(void)
 		}
 
 		// 上位と下位をくっつける
-		//printf("0xE0 Range=%d cm\n", range);
+		// printf("0xE0 Range=%d cm\n", range);
 
 	}
-                range[0] |= buf[0];
+    
+    
+        range[0] |= buf[0];
 		tmpE0[count[0]]=range[0];
 		if(count[0]==sample){
 		    range[0]=true_range(tmpE0);
@@ -153,7 +155,7 @@ int main(void)
 		}
 		// Wait for the measurement
 		usleep(66000);
-	//	usleep(200000);
+	
 			
 		buf[0] = 0x02;
 		if ((write(fd2, buf, 1)) != 1)
