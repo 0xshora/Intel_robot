@@ -1,12 +1,12 @@
-//モータスピードを指定時間でスロープで上げ下げする
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include <wiringPi.h>
-#include <wiringPiSPI.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
+#include "wiringPi.h"
+#include "wiringPiSPI.h"
+
 #define BUFSIZE 32
 
 int L6470_SPI_CHANNEL;
@@ -95,7 +95,7 @@ int main(int argc, char ** argv) {
             fprintf(stderr, "read() failed\n");
             continue;
         }
-        getargs( * ac, av, buf);
+        getargs(&ac, av, buf);
 
         if (strcmp(av[0], "p") == 0) {
             long sp = atol(av[1]);

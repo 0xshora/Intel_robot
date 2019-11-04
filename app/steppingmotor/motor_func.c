@@ -1,11 +1,16 @@
-#include <wiringPi.h>
-#include <wiringPiSPI.h>
+#include <stdio.h>
+#include <unistd.h>
+#include "wiringPi.h"
+#include "wiringPiSPI.h"
 
 #define SLOPE_TIME 10000
 #define MAX_DIFF 100
 #define MINUS_MAX_DIFF -100
 
-extern L6470_SPI_CHANNEL;
+extern int L6470_SPI_CHANNEL;
+
+void L6470_softstop();
+void L6470_softhiz();
 
 void L6470_write(unsigned char data)
 {
@@ -113,8 +118,6 @@ void L6470_run_both(long speed)
 void new_speed_change(long speed, long postspeed)
 {
 	int diff = postspeed - speed;
-	int MAX_DIFF = 1000;
-	int MINUS_MAX_DIFF = -1000;
 	int CNT = 30;
 	int i;
 	long tmp_speed = speed;
