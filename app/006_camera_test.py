@@ -87,6 +87,7 @@ def chase_function(d, theta, A=5, B=5, max_rolling=200, max_sp=5000):
 def stop_function():
     text = "s"
     print(text)
+    send_msg(text)
 
 
 def check_camera(camera_idx=0, mirror=True, size=None):
