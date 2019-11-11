@@ -77,6 +77,7 @@ int main(int argc, char **argv)
     int my_argc;
     char **my_argv;
 
+	int turn_flg = 0;
     printf("input a line:\n");
     while ((c = getchar()) != EOF)
     {
@@ -108,7 +109,7 @@ int main(int argc, char **argv)
             speed = sp;
         }
 
-        if (c == 'r' || c == 'l' || c == 'j' || c == 'k')
+        if (c == 'r' || c == 'l')
         { //turn right or left
 
             if (speed != 0)
@@ -141,14 +142,16 @@ int main(int argc, char **argv)
             }
         }
 
-        if (c == 's')
+        if (c == 's' && turn_flg == 0)
         {
             L6470_speed_change(speed, 0);
             speed = 0;
-        }
+        } else if (c == 's' && turn_flg == 1) {
+			
+		}
         if (c == 'e')
         {
-            L6470_speed_change(speed, 0);
+            L6470_turn_speed_change(speed, 0);
             speed = 0;
             return 0;
         }
@@ -348,6 +351,58 @@ void L6470_speed_change(long speed, int postspeed)
             speed = i;
             usleep(SLOPE_TIME);
             L6470_run_both(speed);
+        }
+    }
+
+    if (postspeed == 0)
+    {
+        L6470_softstop();
+        L6470_softhiz();
+    }
+
+    L6470_SPI_CHANNEL = 0;
+    L6470_run(speed);
+    L6470_SPI_CHANNEL = 1;
+    L6470_run(-1 * speed);
+}
+
+void L6470_turn_speed_change(long speed, int postspeed)
+{
+    if (postspeed > MAX_SPEED)
+    {
+        postspeed = MAX_SPEED;
+    }
+    else if (postspeed < MIN_SPEED)
+    {
+        postspeed = MIN_SPEED;
+    }
+    //change the speed from "speed" to postspeed
+    if (speed < postspeed)
+    {
+        //if moving, move faster
+        int i;
+        for (i = speed; i <= postspeed; i += 100)
+        {
+            speed = i;
+            usleep(SLOPE_TIME);
+			L6470_SPI_CHANNEL = 0;
+    		L6470_run(speed);
+    		L6470_SPI_CHANNEL = 1;
+    		L6470_run(speed);
+        }
+    }
+    else if (speed > postspeed)
+    {
+        //if moving, move more slowly
+        int i;
+        for (i = speed; i >= postspeed; i -= 100)
+        {
+            speed = i;
+            usleep(SLOPE_TIME);
+			L6470_SPI_CHANNEL = 0;
+    		L6470_run(speed);
+    		L6470_SPI_CHANNEL = 1;
+    		L6470_run(speed);
         }
     }
 
