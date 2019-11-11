@@ -24,12 +24,12 @@ int main(void)
 {
 
 	int fd1, fd2, fd3, fd4;
-	int count1=0,count2=0;
+	int count[SRF_NUM]={0};
 	int tmpE0[sample]={0},tmpE2[sample]={0},tmpE4[sample]={0},tmpE6[sample]={0};
 	char filename[20];
 	char buf[10];
 	int res;
-	int range = 0;
+	int range[SRF_NUM] = {0};
 
 	// I2Cデータバスをオープン
 	sprintf(filename, "/dev/i2c-1");
@@ -111,7 +111,7 @@ int main(void)
 			printf("0xE0 Error on read the Range High Byte\n");
 			exit(1);
 		}
-		range = buf[0] << 8;
+		range[0] = buf[0] << 8;
 
 		// コマンドレジスタ3に対し測距値データの下位バイトをリクエスト
 		buf[0] = 0x03;
@@ -128,18 +128,20 @@ int main(void)
 		}
 
 		// 上位と下位をくっつける
-		//printf("0xE0 Range=%d cm\n", range);
+		// printf("0xE0 Range=%d cm\n", range);
 
 	}
-                range |= buf[0];
-		tmpE0[count2]=range;
-		if(count2==sample){
-		    range=true_range(tmpE0);
-		    printf("[E0]: %d cm\n",range);
-		    count2=0;
+    
+    
+        range[0] |= buf[0];
+		tmpE0[count[0]]=range[0];
+		if(count[0]==sample){
+		    range[0]=true_range(tmpE0);
+		    printf("[E0]: %d cm\n",range[0]);
+		    count[0]=0;
 		    reset(tmpE0);
 		}else{
-		    count2++;
+		    count[0]++;
 		}
 
 	{ // read from 0xE2
@@ -153,7 +155,7 @@ int main(void)
 		}
 		// Wait for the measurement
 		usleep(66000);
-	//	usleep(200000);
+	
 			
 		buf[0] = 0x02;
 		if ((write(fd2, buf, 1)) != 1)
@@ -167,7 +169,7 @@ int main(void)
 			printf("0xE2 Error on read the Range High Byte\n");
 			exit(1);
 		}
-		range = buf[0] << 8;
+		range[1] = buf[0] << 8;
 
 		buf[0] = 0x03;
 		if ((write(fd2, buf, 1)) != 1)
@@ -181,18 +183,18 @@ int main(void)
 			printf("0xE2 Error on read the Range Low Byte\n");
 			exit(1);
 		}
-		range |= buf[0];	
+		range[1] |= buf[0];	
 
 	//	printf("0xE2 Range=%d cm\n", range);
 	}
-		tmpE2[count2]=range;
-		if(count2==sample){
-		    range=true_range(tmpE2);
-		    printf("	[E2]: %d cm\n",range);
-		    count2=0;
+		tmpE2[count[1]]=range[1];
+		if(count[1]==sample){
+		    range[1]=true_range(tmpE2);
+		    printf("	[E2]: %d cm\n",range[1]);
+		    count[1]=0;
 		    reset(tmpE2);
 		}else{
-		    count2++;
+		    count[1]++;
 		}
 
 	{ // read from 0xE4
@@ -222,7 +224,7 @@ int main(void)
 			printf("0xE4 Error on read the Range High Byte\n");
 			exit(1);
 		}
-		range = buf[0] << 8;
+		range[2] = buf[0] << 8;
 
 		// コマンドレジスタ3に対し測距値データの下位バイトをリクエスト
 		buf[0] = 0x03;
@@ -242,15 +244,15 @@ int main(void)
 		//printf("0xE0 Range=%d cm\n", range);
 
 	}
-                range |= buf[0];
-		tmpE4[count2]=range;
-		if(count2==sample){
-		    range=true_range(tmpE4);
-		    printf("		[E4]: %d cm\n",range);
-		    count2=0;
+                range[2] |= buf[0];
+		tmpE4[count[2]]=range[2];
+		if(count[2]==sample){
+		    range[2]=true_range(tmpE4);
+		    printf("		[E4]: %d cm\n",range[2]);
+		    count[2]=0;
 		    reset(tmpE4);
 		}else{
-		    count2++;
+		    count[2]++;
 		}
 
 { // read from 0xE6
@@ -280,7 +282,7 @@ int main(void)
 			printf("0xE6 Error on read the Range High Byte\n");
 			exit(1);
 		}
-		range = buf[0] << 8;
+		range[3] = buf[0] << 8;
 
 		// コマンドレジスタ3に対し測距値データの下位バイトをリクエスト
 		buf[0] = 0x03;
@@ -300,15 +302,15 @@ int main(void)
 		//printf("0xE0 Range=%d cm\n", range);
 
 	}
-                range |= buf[0];
-		tmpE6[count2]=range;
-		if(count2==sample){
-		    range=true_range(tmpE6);
-		    printf("			[E6]: %d cm\n",range);
-		    count2=0;
+                range[3] |= buf[0];
+		tmpE6[count[3]]=range[3];
+		if(count[3]==sample){
+		    range[3]=true_range(tmpE6);
+		    printf("			[E6]: %d cm\n",range[3]);
+		    count[3]=0;
 		    reset(tmpE6);
 		}else{
-		    count2++;
+		    count[3]++;
 		}
 	}
 
