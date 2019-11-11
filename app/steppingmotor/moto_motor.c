@@ -1,11 +1,9 @@
 //モータスピードを指定時間でスロープで上げ下げする
-​
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include "wiringPi.h"
 #include "wiringPiSPI.h"
-​
 int L6470_SPI_CHANNEL;
 int BUFSIZE = 32;
 #define SLOPE_TIME 10000
@@ -18,7 +16,6 @@ int BUFSIZE = 32;
 #define MINUS_MAX_ROLL -1000
 #define MAX_SCALE 3
 #define MIN_SCALE 0.5
-​
 // 関数プロトタイプ。
 void L6470_write(unsigned char data);
 void L6470_init(void);
@@ -31,40 +28,38 @@ void L6470_softhiz();
 void L6470_speed_change(long speed, int postspeed);
 void new_speed_change(long speed, int postspeed);
 //change the speed from "speed" to postspeed
-​
 extern void getargs(int *argc, char *argv[]);
-​
 int main(int argc, char **argv)
 {
     int i, j;
     long speed = 0;
-​
+
     char *str = (char *)malloc(BUFSIZE * sizeof(char));
     char c;
     long s;
     float sl;
     long S = 0;
-​
+
     printf("***** start spi test program *****\n");
-​
+
     // SPI channel 0 を 1MHz で開始。
     //if (wiringPiSPISetup(L6470_SPI_CHANNEL, 1000000) < 0)
     if (wiringPiSPISetup(0, 1000000) < 0)
     {
         printf("SPI Setup failed:\n");
     }
-​
+
     if (wiringPiSPISetup(1, 1000000) < 0)
     {
         printf("SPI Setup failed:\n");
     }
-​
+
     // L6470の初期化。
     L6470_SPI_CHANNEL = 0;
     L6470_init();
     L6470_SPI_CHANNEL = 1;
     L6470_init();
-​
+
     /*
     Speed Change->p speed (+- 0 ~ 10000)
     Turn Right -->r scale (0.1 ~ 10)
@@ -72,14 +67,14 @@ int main(int argc, char **argv)
     Stop       -->s
     End        -->e
 	*/
-​
+
     // command + argument
     // turn right => scale
     // speed up => postspeed
-​
+
     int my_argc;
     char **my_argv;
-​
+
     printf("input a line:\n");
     while ((c = getchar()) != EOF)
     {
@@ -88,21 +83,21 @@ int main(int argc, char **argv)
         my_argc = 0;
         const int MAXCOM = 10;
         const int MAXCHAR = 256;
-​
+
         my_argv = malloc(sizeof(char *) * MAXCOM);
-​
+
         my_argv = malloc(sizeof(char *) * MAXCOM);
-​
+
         for (i = 0; i < MAXCOM; i++)
         {
             my_argv[i] = malloc(sizeof(char) * MAXCHAR);
         }
-​
+
         getargs(&my_argc, my_argv);
-​
+
         c = my_argv[0][0];
         printf("c:%c\n", c);
-​
+
         if (c == 'p')
         //speed change
         {
@@ -110,10 +105,10 @@ int main(int argc, char **argv)
             L6470_speed_change(speed, sp);
             speed = sp;
         }
-​
+
         if (c == 'r' || c == 'l' || c == 'j' || c == 'k')
         { //turn right or left
-​
+
             if (speed != 0)
             {
                 double scale = atof(my_argv[1]);
@@ -143,7 +138,7 @@ int main(int argc, char **argv)
                 }
             }
         }
-​
+
         if (c == 's')
         {
             L6470_speed_change(speed, 0);
@@ -156,17 +151,17 @@ int main(int argc, char **argv)
             return 0;
         }
     }
-​
+
     return 0;
 }
-​
+
 void L6470_write(unsigned char data)
 {
     wiringPiSPIDataRW(L6470_SPI_CHANNEL, &data, 1);
     //wiringPiSPIDataRW(0, &data, 1);
     //wiringPiSPIDataRW(1, &data, 1);
 }
-​
+
 void L6470_init()
 {
     // MAX_SPEED設定。
@@ -175,54 +170,54 @@ void L6470_init()
     // 最大回転スピード値(10bit) 初期値は 0x41
     L6470_write(0x00);
     L6470_write(0x25);
-​
+
     // KVAL_HOLD設定。
     /// レジスタアドレス。
     L6470_write(0x09);
     // モータ停止中の電圧設定(8bit)
     L6470_write(0xFF);
-​
+
     // KVAL_RUN設定。
     /// レジスタアドレス。
     L6470_write(0x0A);
     // モータ定速回転中の電圧設定(8bit)
     L6470_write(0xFF);
-​
+
     // KVAL_ACC設定。
     /// レジスタアドレス。
     L6470_write(0x0B);
     // モータ加速中の電圧設定(8bit)
     L6470_write(0xFF);
-​
+
     // KVAL_DEC設定。
     /// レジスタアドレス。
     L6470_write(0x0C);
     // モータ減速中の電圧設定(8bit) 初期値は 0x8A
     L6470_write(0x40);
-​
+
     // OCD_TH設定。
     /// レジスタアドレス。
     L6470_write(0x13);
     // オーバーカレントスレッショルド設定(4bit)
     L6470_write(0x0F);
-​
+
     // STALL_TH設定。
     /// レジスタアドレス。
     L6470_write(0x14);
     // ストール電流スレッショルド設定(4bit)
     L6470_write(0x7F);
-​
+
     //start slopeデフォルト
     /// レジスタアドレス。
     L6470_write(0x0e);
     L6470_write(0x00);
-​
+
     //デセラレーション設定
     /// レジスタアドレス。
     L6470_write(0x10);
     L6470_write(0x29);
 }
-​
+
 void L6470_run(long speed)
 {
     unsigned short dir;
@@ -230,7 +225,7 @@ void L6470_run(long speed)
     unsigned char spd_h;
     unsigned char spd_m;
     unsigned char spd_l;
-​
+
     // 方向検出。
     if (speed < 0)
     {
@@ -242,12 +237,12 @@ void L6470_run(long speed)
         dir = 0x51;
         spd = speed;
     }
-​
+
     // 送信バイトデータ生成。
     spd_h = (unsigned char)((0x0F0000 & spd) >> 16);
     spd_m = (unsigned char)((0x00FF00 & spd) >> 8);
     spd_l = (unsigned char)(0x00FF & spd);
-​
+
     // コマンド（レジスタアドレス）送信。
     L6470_write(dir);
     // データ送信。
@@ -255,7 +250,7 @@ void L6470_run(long speed)
     L6470_write(spd_m);
     L6470_write(spd_l);
 }
-​
+
 void L6470_run_both(long speed)
 {
     L6470_SPI_CHANNEL = 0;
@@ -319,7 +314,7 @@ void new_speed_change(long speed, int postspeed)
     L6470_run_both(tmp_speed);
     return;
 }
-​
+
 void L6470_speed_change(long speed, int postspeed)
 {
     if (postspeed > MAX_SPEED)
@@ -353,19 +348,19 @@ void L6470_speed_change(long speed, int postspeed)
             L6470_run_both(speed);
         }
     }
-​
+
     if (postspeed == 0)
     {
         L6470_softstop();
         L6470_softhiz();
     }
-​
+
     L6470_SPI_CHANNEL = 0;
     L6470_run(speed);
     L6470_SPI_CHANNEL = 1;
     L6470_run(-1 * speed);
 }
-​
+
 void L6470_run_turn(long speed)
 {
     if (speed > MAX_ROLL)
@@ -389,7 +384,7 @@ void L6470_run_turn(long speed)
     L6470_SPI_CHANNEL = 1;
     L6470_run(speed);
 }
-​
+
 void L6470_run_turn_moving(long speed, int right, float scale)
 {
     if (scale > MAX_SCALE)
@@ -415,7 +410,7 @@ void L6470_run_turn_moving(long speed, int right, float scale)
         L6470_run(-1 * speed);
     }
 }
-​
+
 void L6470_softstop()
 {
     unsigned short dir;
@@ -425,7 +420,7 @@ void L6470_softstop()
     L6470_write(dir);
     delay(1000);
 }
-​
+
 void L6470_softhiz()
 {
     unsigned short dir;
