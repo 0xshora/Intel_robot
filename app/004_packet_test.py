@@ -13,7 +13,9 @@ def send_msg(msg):
 def main():
     text = "p 1000"
     send_msg(text)
+
     time.sleep(10)
+
     text = "s"
     send_msg(text)
 

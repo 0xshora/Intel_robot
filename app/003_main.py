@@ -40,7 +40,9 @@ def send_msg(msg):
 
 def cascade(img):
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    # カスケードファイルの読み込み
+
+    # load the cascade file
+
     face_cascade = cv2.CascadeClassifier(
         '../data/haarcascades/haarcascade_frontalface_default.xml')
     # face_cascade = cv2.CascadeClassifier('../data/haarcascades/haarcascade_upperbody.xml')
@@ -59,6 +61,11 @@ def cascade(img):
 # CAMERA_DIS = 20
 
 def cal_theta_h(rect_a=None, rect_b=None):
+
+    #calculate the theta and h
+    #input rect_a, rect_b
+
+
     if rect_a == None:
         h = 500
         theta = -MAX_ANGLE
@@ -66,6 +73,7 @@ def cal_theta_h(rect_a=None, rect_b=None):
     elif rect_b == None:
         h = 500
         theta = MAX_ANGLE
+
         return h, theta
     a_center_x = (rect_a[3] - rect_a[1]) / 2 + rect_a[1]
     b_center_x = (rect_b[3] - rect_b[1]) / 2 + rect_a[1]
@@ -97,12 +105,14 @@ def chase_function(d, theta, A=10, B=10, max_rolling=200, max_sp=1000):
     if theta > 10 or theta < -10:
         # rolling
         roll_sp = A * theta
+
         c = 'r'
         if theta > 0:
             roll_sp *= -1
             # c = 'l'
         # else:
             # c = 'r'
+
         text = "{} {}\n".format(c, min(roll_sp, max_rolling))
         send_msg(text)
     else:
