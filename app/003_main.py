@@ -61,11 +61,11 @@ def cascade(img):
 def cal_theta_h(rect_a=None, rect_b=None):
     if rect_a == None:
         h = 500
-        theta = -60
+        theta = -MAX_ANGLE
         return h, theta
     elif rect_b == None:
         h = 500
-        theta = 60
+        theta = MAX_ANGLE
         return h, theta
     a_center_x = (rect_a[3] - rect_a[1]) / 2 + rect_a[1]
     b_center_x = (rect_b[3] - rect_b[1]) / 2 + rect_a[1]
@@ -97,10 +97,12 @@ def chase_function(d, theta, A=10, B=10, max_rolling=200, max_sp=1000):
     if theta > 10 or theta < -10:
         # rolling
         roll_sp = A * theta
+        c = 'r'
         if theta > 0:
-            c = 'l'
-        else:
-            c = 'r'
+            roll_sp *= -1
+            # c = 'l'
+        # else:
+            # c = 'r'
         text = "{} {}\n".format(c, min(roll_sp, max_rolling))
         send_msg(text)
     else:
