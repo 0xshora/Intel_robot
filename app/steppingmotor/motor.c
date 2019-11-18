@@ -79,7 +79,7 @@ int main(int argc, char ** argv) {
         close(sockfd);
         exit(1);
     }
-
+	int turn_flg = 0;
     while (1) {
         clit_len = sizeof(clit_addr);
         if ((new_sockfd = accept(sockfd, (struct sockaddr * ) & clit_addr, & clit_len)) < 0) {
@@ -126,19 +126,25 @@ int main(int argc, char ** argv) {
             } else {
                 long sp = atol(av[1]);
                 if (strcmp(buf, "r") == 0) {
-                    speed = 10000;
+                    speed = sp;
                     L6470_run_turn(sp);
+					turn_flg = 1;
                 } else {
-                    speed = -10000;
+                    speed = sp;
                     L6470_run_turn(sp);
+					turn_flg = 1;
                 }
             }
         }
 
-        if (strcmp(buf, "s") == 0) {
+        if (strcmp(buf, "s") == 0 && turn_flg == 0) {
             L6470_speed_change(speed, 0);
             speed = 0;
-        }
+        } else if (strcmp(buf, "s") == 0 && turn_flg == 1) {
+			L6470_turn_speed_change(speed, 0);
+			speed = 0;
+			turn_flg = 0;
+		}
 
         if (strcmp(buf, "e") == 0) {
             L6470_speed_change(speed, 0);
