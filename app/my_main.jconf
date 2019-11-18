@@ -1,0 +1,18 @@
+# mkbingramで作成したバイナリ形式 (言語モデル)
+-d model/lang_m/bccwj.60k.bingram
+#　単語辞書ファイル
+-v model/lang_m/bccwj.60k.htkdic
+# 音響モデル(HMM; Hidden Markov Model)
+-h model/phone_m/jnas-tri-3k16-gid.binhmm
+# 音響モデル(Triphoneリスト)
+-hlist model/phone_m/logicalTri-3k16-gid.bin
+
+-lmp  10 0          # 言語モデル重み・単語挿入ペナルティ
+-lmp2 10 0
+
+-n 5                # n個検索する.
+-output 1           # 見つかった候補のうち出力する個数
+-input mic         # マイクから入力
+-zmeanframe         # フレーム単位のDC成分除去
+-rejectshort 800    #　検出した入力が閾値以下なら無視
+-nostrip            # ゼロ続きの無効な入力部の除去をOFFにする.

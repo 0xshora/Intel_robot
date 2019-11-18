@@ -1,3 +1,4 @@
+import subprocess
 import numpy as np
 import cv2
 import socket
@@ -11,24 +12,6 @@ MAX_ANGLE = 60
 MAX_ANGLE_RAD = 60. * math.pi / 180.
 CAMERA_DIS = 20
 
-# given parameters
-# @LENGTH : distance between the machine and objects
-# @BOXES  : boxes which represent detected positions
-LENGTH = [100, 600, 3000, 200]
-BOXES = [[365, 75, 453, 453]]
-
-# define parameters for the control
-# @THR_FROTN_LEN : a threshold in the point of front length
-# @THR_BOXSIZE : a threshold within a bix box or not
-THR_FRONT_LEN = 20
-THR_SIDE_LEN = 20
-THR_BOXSIZE = 20000
-
-# length[0] : front rigth
-# length[1] : front left
-# length[2] : side right
-# length[3] : side left
-
 
 def send_msg(msg):
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
@@ -40,9 +23,7 @@ def send_msg(msg):
 
 def cascade(img):
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-
-    # load the cascade file
-
+    # カスケードファイルの読み込み
     face_cascade = cv2.CascadeClassifier(
         '../data/haarcascades/haarcascade_frontalface_default.xml')
     # face_cascade = cv2.CascadeClassifier('../data/haarcascades/haarcascade_upperbody.xml')
@@ -55,25 +36,14 @@ def cascade(img):
     return boxes
 
 
-# MAX_W = SCREEN_WIDE_X - SCREEN_CENTER_X
-# MAX_ANGLE = 60
-# MAX_ANGLE_RAD = 60. * math.pi / 180.
-# CAMERA_DIS = 20
-
 def cal_theta_h(rect_a=None, rect_b=None):
-
-    #calculate the theta and h
-    #input rect_a, rect_b
-
-
     if rect_a == None:
         h = 500
-        theta = -MAX_ANGLE
+        theta = -60
         return h, theta
     elif rect_b == None:
         h = 500
-        theta = MAX_ANGLE
-
+        theta = 60
         return h, theta
     a_center_x = (rect_a[3] - rect_a[1]) / 2 + rect_a[1]
     b_center_x = (rect_b[3] - rect_b[1]) / 2 + rect_a[1]
@@ -92,61 +62,54 @@ def cal_theta_h(rect_a=None, rect_b=None):
     return h, theta
 
 
-def is_escape_flg(length):
-    flg = 0
-    if length[0] < THR_FRONT_LEN or length[1] < THR_FRONT_LEN:
-        flg = 1
-    elif length[2] < THR_SIDE_LEN or length[3] < THR_FRONT_LEN:
-        flg = 1
-    return flg
-
-
-def chase_function(d, theta, A=10, B=10, max_rolling=200, max_sp=1000):
+def chase_function(d, theta, A=5, B=5, max_rolling=200, max_sp=5000):
     if theta > 10 or theta < -10:
         # rolling
         roll_sp = A * theta
-
-        c = 'r'
         if theta > 0:
-            roll_sp *= -1
-            # c = 'l'
-        # else:
-            # c = 'r'
-
+            c = 'l'
+        else:
+            c = 'r'
         text = "{} {}\n".format(c, min(roll_sp, max_rolling))
         send_msg(text)
     else:
         # move forward
         if d < 20 and d > -20:
-            # stop
+            text = "s"
             send_msg(text)
         else:
             move_sp = B * d
             text = "p {}\n".format(min(move_sp, max_sp))
-            send_msg()
+            send_msg(text)
+    return text
 
 
-def avoid_function(roll_sp=100):
-    text = "r {}\n".format(roll_sp)
+def stop_function():
+    text = "s"
+    print(text)
     send_msg(text)
-    # print("just rolling")
 
 
-def search_function(default_roll=100, default_sp=200):
-    cnt = 0
-    if cnt % 100 > 50:
-        text = "p {}\n".format(default_sp)
-        send_msg(text)
-        # print("move forward")
-        cnt += 1
-    else:
-        text = "r {}\n".format(default_roll)
-        send_msg(text)
-        # print("just rolling")
-        cnt += 1
+def check_camera(camera_idx=0, mirror=True, size=None):
+    cap = cv2.VideoCapture(camera_idx)
+    while (cap.isOpened()):
+        ret, frame = cap.read()
+        if mirror is True:
+            frame = frame[:, ::-1]
+
+        if size is not None and len(size) == 2:
+            frame = cv2.resize(frame, size)
+
+        cv2.imshow('img', frame)
+        k = cv2.waitKey(50)
+        if k == 27:  # ESCキーで終了
+            break
+
+    cap.release()
+    cv2.destroyAllWindows()
 
 
-def main(length, mirror=True, size=None):
+def main(mirror=True, size=None):
     cap_0 = cv2.VideoCapture(0)
     cap_1 = cv2.VideoCapture(1)
     while(cap_0.isOpened()):
@@ -163,21 +126,18 @@ def main(length, mirror=True, size=None):
         boxes_0 = cascade(frame_0)
         boxes_1 = cascade(frame_1)
 
-        escape_flg = is_escape_flg(length)
+        # escape_flg = is_escape_flg(length)
         box_0 = boxes_0[0]
         box_1 = boxes_1[0]
-        if escape_flg:
-            avoid_function(length)
-            # print('just rolling')
-        elif box_0 or box_1:
+        if box_0 or box_1:
             h, theta = cal_theta_h(box_0, box_1)
-            chase_function(h, theta)
+            text = chase_function(h, theta)
             # print('speed')
         else:
-            search_function()
-            # print('speed')
-            # print('roll')
+            text = "s"
+            stop_function()
 
+        print(text)
         k = cv2.waitKey(50)
         if k == 27:  # ESCキーで終了
             break
@@ -188,28 +148,5 @@ def main(length, mirror=True, size=None):
 
 
 if __name__ == '__main__':
-    main(length)
-
-
-"""
-# using transitions
-# from transitions import Machine
-class StateMachine(object):
-    states = ['search', 'chase', 'escape']
-
-    def __init__(self, name):
-        self.name = name
-        self.machine = Machine(
-            model=self, states=StateMachine.states, initial='search', auto_transitions=False)
-        self.machine.add_transition(
-            trigger='near',     source='search',    dest='escape')
-        self.machine.add_transition(
-            trigger='near', source='chase', dest='escape')
-        self.machine.add_transition(
-            trigger='find', source='search', dest='chase')
-        self.machine.add_transition(
-            trigger='safe', source='escape', dest='search')
-
-
-intel_robot = StateMachine('test')
-"""
+    # main()
+    check_camera(camera_idx=1)
