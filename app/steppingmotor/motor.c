@@ -10,6 +10,16 @@
 #define BUFSIZE 32
 #define MAXCHAR 256
 #define MAXCOM 16
+#define SLOPE_TIME 10000
+#define MAXDIGIT 100
+#define MAX_SPEED 50000
+#define MIN_SPEED -50000
+#define MAX_ROLL 10000
+#define MIN_ROLL 100
+#define MINUS_MIN_ROLL -100
+#define MINUS_MAX_ROLL -10000
+#define MAX_SCALE 3
+#define MIN_SCALE 0.5
 
 int L6470_SPI_CHANNEL;
 
@@ -24,13 +34,22 @@ extern void L6470_run_turn_moving(long speed, int right, float scale);
 extern void L6470_softstop();
 extern void L6470_softhiz();
 extern void L6470_speed_change(long speed, int postspeed); //change the speed from "speed" to postspeed
+extern void new_speed_change(long speed, int postspeed);
 extern void getargs(int * argc, char * argv[], char * buf);
 extern void L6470_turn_speed_change(long, int);
 
 
-int main(int argc, char ** argv) {
-    long speed = 0;
 
+int main(int argc, char ** argv) {
+    int i, j;
+    long speed = 0;
+	
+    char *str = (char *)malloc(BUFSIZE * sizeof(char));
+    char c;
+    long s;
+    float sl;
+    long S = 0;
+    
     printf("***** start spi test program *****\n");
 
     // SPI channel 0 を 1MHz で開始。
@@ -53,7 +72,28 @@ int main(int argc, char ** argv) {
     //printf("Turn Left    --> l scale(0.1 ~ 10)\n");
     //printf("Stop         --> s\n");
     //printf("End          --> e\n");
-
+    
+    int my_argc;
+    char **my_argv;
+    
+    int turn_flg = 0;
+    printf("input a line:\n");
+    while((c = getchar()) != EOF){
+      ungetc(c, stdin);
+      my_argc = 0;
+      const int MAXCOM = 10;
+      const int MAXCHAR = 256;
+      
+      my_argv = (char **)malloc(sizeof(char *) * MAXCOM);
+      
+      for(i = 0; i < MAXCOM; i++){
+        my_argv[i] = (char *)malloc(sizeof(char) * MAXCHAR);
+      }
+      getargs(&my_argc, my_argv);
+      
+      c = my_argv[0][0];
+      printf("c:%c\n", c);
+    }
     //for setting up a tcp server
     int sockfd;
     int new_sockfd;
