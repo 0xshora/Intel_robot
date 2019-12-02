@@ -130,13 +130,13 @@ int main(int argc, char ** argv) {
             } else {
                 long sp = atol(av[1]);
                 if (strcmp(buf, "r") == 0) {
-                    speed = sp;
-                    L6470_run_turn(sp);
 					turn_flg = 1;
+                    L6470_run_turn(sp);
+        			speed = 0;
                 } else {
-                    speed = sp;
-                    L6470_run_turn(sp);
 					turn_flg = 1;
+                    L6470_run_turn(sp);
+                    speed = 0;
                 }
             }
         }
@@ -152,6 +152,7 @@ int main(int argc, char ** argv) {
 
         if (strcmp(buf, "e") == 0) {
             L6470_speed_change(speed, 0);
+			speed = 0
             close(new_sockfd);
             close(sockfd);
             exit(0);
