@@ -236,6 +236,20 @@ void L6470_turn_speed_change(long speed, int postspeed)
 
 void L6470_speed_change(long speed, int postspeed)
 {
+	if ((int)speed == 0) {
+        printf("koko\n");
+        L6470_softstop();
+        L6470_softhiz();
+        return ;
+    }
+    if (postspeed > MAX_SPEED)
+    {
+        postspeed = MAX_SPEED;
+    }
+    else if (postspeed < MIN_SPEED)
+    {
+        postspeed = MIN_SPEED;
+    }
 	//change the speed from "speed" to postspeed
 	if (speed < postspeed) {
 		//if moving, move faster
@@ -270,6 +284,18 @@ void L6470_speed_change(long speed, int postspeed)
 
 void L6470_run_turn(long speed)
 {
+	if (speed > MAX_ROLL) {
+        speed = MAX_ROLL;
+    }
+    else if ((speed < MIN_SPEED) && (speed > 0)) {
+        speed = MIN_SPEED;
+    }
+    else if ((speed > MINUS_MIN_ROLL) && (speed <= 0)) {
+        speed = MINUS_MIN_ROLL;
+    }
+    else if (speed < MINUS_MAX_ROLL) {
+        speed = MINUS_MAX_ROLL;
+    }
     L6470_SPI_CHANNEL = 0;
     L6470_run(speed);
     L6470_SPI_CHANNEL = 1;
@@ -278,6 +304,12 @@ void L6470_run_turn(long speed)
 
 void L6470_run_turn_moving(long speed, int right, float scale)
 {
+	if (scale > MAX_SCALE) {
+        scale = MAX_SCALE;
+    }
+    else if (scale < MIN_SCALE) {
+        scale = MIN_SCALE;
+    }
    if (right == 1) {
 	L6470_SPI_CHANNEL = 0;
 	L6470_run(speed);
