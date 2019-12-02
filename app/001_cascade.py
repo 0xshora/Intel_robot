@@ -24,6 +24,7 @@ def cascade(img):
     cv2.imshow('img', img)
 
 
+
 def detect_boxes(mirror=True, size=None):
     cap = cv2.VideoCapture(0)
     while(cap.isOpened()):

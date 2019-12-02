@@ -2,6 +2,7 @@ import numpy as np
 import cv2
 import socket
 import math
+from time import sleep
 
 # camera center
 SCREEN_CENTER_X = 400
@@ -29,6 +30,41 @@ THR_BOXSIZE = 20000
 # length[2] : side right
 # length[3] : side left
 
+def server_and_call_main():
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    host = "127.0.0.1"
+    port = 50002
+    s.bind((host, port))
+    s.listen(1)
+    
+    clients = []
+
+    try:
+        s.settimeout(10)
+        connection, address = s.accept()
+        clients.append((connection, address))
+        while(True):
+            try:
+                connection.settimeout(3)
+                from_client = connection.recv(4096).decode()
+                # call main method
+                main(from_client)
+                sleep(0.1)
+                #print("クライアントから受信したメッセージ=>{}".format(from_client))
+                # to_client = "あなたは[{}]というメッセージを送信しましたね?".format(from_client)
+                # connection.send(to_client.encode("UTF-8"))
+            except Exception as e:
+                print(e)
+                continue
+    except Exception as e:
+        print(clients)
+        print(e)
+        connection.close()
+        s.close()
+    
+    return from_client
+
+
 
 def send_msg(msg):
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
@@ -40,7 +76,9 @@ def send_msg(msg):
 
 def cascade(img):
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    # カスケードファイルの読み込み
+
+    # load the cascade file
+
     face_cascade = cv2.CascadeClassifier(
         '../data/haarcascades/haarcascade_frontalface_default.xml')
     # face_cascade = cv2.CascadeClassifier('../data/haarcascades/haarcascade_upperbody.xml')
@@ -59,6 +97,11 @@ def cascade(img):
 # CAMERA_DIS = 20
 
 def cal_theta_h(rect_a=None, rect_b=None):
+
+    #calculate the theta and h
+    #input rect_a, rect_b
+
+
     if rect_a == None:
         h = 500
         theta = -MAX_ANGLE
@@ -66,6 +109,7 @@ def cal_theta_h(rect_a=None, rect_b=None):
     elif rect_b == None:
         h = 500
         theta = MAX_ANGLE
+
         return h, theta
     a_center_x = (rect_a[3] - rect_a[1]) / 2 + rect_a[1]
     b_center_x = (rect_b[3] - rect_b[1]) / 2 + rect_a[1]
@@ -97,12 +141,14 @@ def chase_function(d, theta, A=10, B=10, max_rolling=200, max_sp=1000):
     if theta > 10 or theta < -10:
         # rolling
         roll_sp = A * theta
+
         c = 'r'
         if theta > 0:
             roll_sp *= -1
             # c = 'l'
         # else:
             # c = 'r'
+
         text = "{} {}\n".format(c, min(roll_sp, max_rolling))
         send_msg(text)
     else:
@@ -178,7 +224,7 @@ def main(length, mirror=True, size=None):
 
 
 if __name__ == '__main__':
-    main(length)
+    server_and_call_main()
 
 
 """
