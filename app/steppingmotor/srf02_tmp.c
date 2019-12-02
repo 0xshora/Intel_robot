@@ -12,18 +12,21 @@
 #include <stdio.h>
 #include <fcntl.h>
 #include <stdlib.h>
-#include <unistd.h>
-#include <arpa/inet.h>
 #include "/usr/include/linux/i2c-dev.h"
+#include <arpa/inet.h>
+#include <sys/ioctl.h>
+#include <unistd.h>
 
 #define sample 4
 #define SRF_NUM 4
-#define HOST "127.0.0.1"
+//#define host "127.0.0.1"
 #define PORT 50002
+char *host = "127.0.0.1";
 
 int compare_int(const void *a, const void *b);
 int true_range(int *tmp);
 void reset(int *tmp);
+void client(char *host, in_port_t port, char *msg);
 
 int main(void)
 {
@@ -35,9 +38,6 @@ int main(void)
 	char buf[10];
 	int res;
 	int range[SRF_NUM] = {0};
-
-	int s;
-	struct sockaddr_in sv_skt;
 
 	// I2Cデータバスをオープン
 	sprintf(filename, "/dev/i2c-1");
@@ -89,27 +89,11 @@ int main(void)
 		exit(1);
 	}
 
-	if ((s = socket(AF_INET, SOCK_STREAM, 0)) < 0)
-	{
-		perror("socket");
-		exit(1);
-	}
-
-	sv_skt.sin_family = AF_INET;
-	sv_skt.sin_addr.s_addr = inet_aton(HOST);
-	sv_skt.sin_port = htons(PORT);
-
-	if (connect(s, (struct sockaddr *)&sv_skt, sizeof(sv_skt)) < 0)
-	{
-		perror("connect");
-		close(s);
-		exit(1);
-	}
-
 	char str_to_send[256];
 
 	while (1)
 	{
+		printf("hi");
 		// 1つめのセンサに対して
 
 		{ // read from 0xE0
@@ -163,15 +147,12 @@ int main(void)
 		if (count[0] == sample)
 		{
 			range[0] = true_range(tmpE0);
+			char str[17] = {0};
+
 			sprintf(str_to_send, "%d", range[0]);
-			// char str[17] = {0};
 			// sprintf(str, "%d", range[0]);
-			// if(write(s, str, strlen(str)) < 0){
-			//   perror("write");
-			//   close(s);
-			//   exit(1);
-			// }
-			printf("[E0]: %d cm\n", range);
+			// client(host, PORT, str);
+			printf("[E0]: %d cm\n", *range);
 			count[0] = 0;
 			reset(tmpE0);
 		}
@@ -227,14 +208,10 @@ int main(void)
 		if (count[1] == sample)
 		{
 			range[1] = true_range(tmpE2);
+			char str[17] = {0};
 			sprintf(str_to_send, "%s %d", str_to_send, range[1]);
-			// char str[17] = {0};
-			//         sprintf(str, "%d", range[1]);
-			//         if(write(s, str, strlen(str)) < 0){
-			//   perror("write");
-			//   close(s);
-			//   exit(1);
-			// }
+			// sprintf(str, "%d", range[1]);
+			// client(host, PORT, str);
 			printf("[E2]: %d cm\n", range[1]);
 			count[1] = 0;
 			reset(tmpE2);
@@ -295,14 +272,10 @@ int main(void)
 		if (count[2] == sample)
 		{
 			range[2] = true_range(tmpE4);
-			sprintf(str_to_send, "%s %d", str_to_send, range[2]);
 			// char str[17] = {0};
-			//         sprintf(str, "%d", range[2]);
-			//         if(write(s, str, strlen(str)) < 0){
-			//   perror("write");
-			//   close(s);
-			//   exit(1);
-			// }
+			sprintf(str_to_send, "%s %d", str_to_send, range[2]);
+			// sprintf(str, "%d", range[2]);
+			// client(host, PORT, str);
 			printf("[E4]: %d cm\n", range[2]);
 			count[2] = 0;
 			reset(tmpE4);
@@ -363,15 +336,11 @@ int main(void)
 		if (count[3] == sample)
 		{
 			range[3] = true_range(tmpE6);
-			sprintf(str_to_send, "%s %d", str_to_send, range[3]);
 			// char str[17] = {0};
+			sprintf(str_to_send, "%s %d", str_to_send, range[3]);
 			// sprintf(str, "%d", range[3]);
-			if (write(s, str_to_send, strlen(str_to_send)) < 0)
-			{
-				perror("write");
-				close(s);
-				exit(1);
-			}
+			// client(host, PORT, str);
+			client(host, PORT, str_to_send);
 			printf("[E6]: %d cm\n", range[3]);
 			count[3] = 0;
 			reset(tmpE6);
@@ -383,7 +352,6 @@ int main(void)
 	}
 
 	// 閉じる！！
-	close(s);
 	close(fd1);
 	close(fd2);
 	close(fd3);
