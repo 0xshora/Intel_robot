@@ -2,6 +2,7 @@ import numpy as np
 import cv2
 import socket
 import math
+from time import sleep
 
 # camera center
 SCREEN_CENTER_X = 400
@@ -29,7 +30,7 @@ THR_BOXSIZE = 20000
 # length[2] : side right
 # length[3] : side left
 
-def server():
+def server_and_call_main():
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     host = "127.0.0.1"
     port = 50002
@@ -46,6 +47,9 @@ def server():
             try:
                 connection.settimeout(3)
                 from_client = connection.recv(4096).decode()
+                # call main method
+                main(from_client)
+                sleep(0.1)
                 #print("クライアントから受信したメッセージ=>{}".format(from_client))
                 # to_client = "あなたは[{}]というメッセージを送信しましたね?".format(from_client)
                 # connection.send(to_client.encode("UTF-8"))
@@ -220,9 +224,7 @@ def main(length, mirror=True, size=None):
 
 
 if __name__ == '__main__':
-    while(1):
-        length = server()
-        main(length)
+    server_and_call_main()
 
 
 """
