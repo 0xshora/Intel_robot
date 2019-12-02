@@ -31,7 +31,7 @@ THR_BOXSIZE = 20000
 
 def server():
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    host = "192.168.0.209"
+    host = "127.0.0.1"
     port = 50002
     s.bind((host, port))
     s.listen(1)
