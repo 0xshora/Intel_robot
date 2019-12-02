@@ -1,0 +1,13 @@
+# bb2.jconf
+-d julius/kits/dictation/model/lang_m/bccwj.60k.bingram             # 言語モデル
+-v julius/kits/dictation/model/lang_m/bccwj.60k.htkdic              # 発音辞書
+-h julius/kits/dictation/model/phone_m/jnas-tri-3k16-gid.binhmm     # 音響モデル(HMM; Hidden Markov Model)
+-hlist julius/kits/dictation/model/phone_m/logicalTri-3k16-gid.bin  # 音響モデル(Triphoneリスト)
+-n 5                   # n個の検索する
+-output 1              # 見つかった候補のうち出力する個数
+-input mic             # マイクから入力
+-zmeanframe
+-rejectshort 800       # 検出した入力が閾値以下なら無視
+# 注意：文字コードをJuliusが扱うutf-8に変換するオプションですが、
+# これを残すと"invalid multibyte sequence"とエラーになる場合は外して動きました。
+#-charconv EUC-JP UTF-8 # 文字コードutf-8で出力　
