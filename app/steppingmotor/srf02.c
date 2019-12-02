@@ -374,6 +374,7 @@ int main(void)
 			}
 			printf("[E6]: %d cm\n", range[3]);
 			count[3] = 0;
+			memset(str_to_send, '0', sizeof(str_to_send));
 			reset(tmpE6);
 		}
 		else
