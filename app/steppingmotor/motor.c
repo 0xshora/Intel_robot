@@ -8,10 +8,13 @@
 #include "wiringPiSPI.h"
 
 #define BUFSIZE 32
+#define MAXCHAR 256
+#define MAXCOM 16
 
 int L6470_SPI_CHANNEL;
 
 // 関数プロトタイプ。
+
 extern void L6470_write(unsigned char data);
 extern void L6470_init(void);
 extern void L6470_run(long speed);
@@ -22,6 +25,7 @@ extern void L6470_softstop();
 extern void L6470_softhiz();
 extern void L6470_speed_change(long speed, int postspeed); //change the speed from "speed" to postspeed
 extern void getargs(int * argc, char * argv[], char * buf);
+
 
 int main(int argc, char ** argv) {
     long speed = 0;
@@ -76,7 +80,7 @@ int main(int argc, char ** argv) {
         close(sockfd);
         exit(1);
     }
-
+	int turn_flg = 0;
     while (1) {
         clit_len = sizeof(clit_addr);
         if ((new_sockfd = accept(sockfd, (struct sockaddr * ) & clit_addr, & clit_len)) < 0) {
@@ -87,14 +91,20 @@ int main(int argc, char ** argv) {
 
         char buf[256];
         int buf_len;
-        int ac;
-        char * av[16];
+        int ac = 0;
+        char **av;
+        av = malloc(sizeof(char *) * MAXCOM);
+        int i;
+        for (i = 0; i < MAXCOM; i++) {
+            av[i] = malloc(sizeof(char) * MAXCHAR);
+        }
         memset(buf, 0, 256);
 
         if ((buf_len = read(new_sockfd, buf, 256)) < 0) {
             fprintf(stderr, "read() failed\n");
             continue;
         }
+
         getargs(&ac, av, buf);
 
         if (strcmp(av[0], "p") == 0) {
@@ -117,19 +127,25 @@ int main(int argc, char ** argv) {
             } else {
                 long sp = atol(av[1]);
                 if (strcmp(buf, "r") == 0) {
-                    speed = 10000;
+                    speed = sp;
                     L6470_run_turn(sp);
+					turn_flg = 1;
                 } else {
-                    speed = -10000;
+                    speed = sp;
                     L6470_run_turn(sp);
+					turn_flg = 1;
                 }
             }
         }
 
-        if (strcmp(buf, "s") == 0) {
+        if (strcmp(buf, "s") == 0 && turn_flg == 0) {
             L6470_speed_change(speed, 0);
             speed = 0;
-        }
+        } else if (strcmp(buf, "s") == 0 && turn_flg == 1) {
+			L6470_turn_speed_change(speed, 0);
+			speed = 0;
+			turn_flg = 0;
+		}
 
         if (strcmp(buf, "e") == 0) {
             L6470_speed_change(speed, 0);
