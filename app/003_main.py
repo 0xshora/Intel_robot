@@ -57,6 +57,8 @@ def server():
         print(e)
         connection.close()
         s.close()
+    
+    return from_client
 
 
 
