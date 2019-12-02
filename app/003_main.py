@@ -47,8 +47,8 @@ def server():
                 connection.settimeout(3)
                 from_client = connection.recv(4096).decode()
                 #print("クライアントから受信したメッセージ=>{}".format(from_client))
-                #to_client = "あなたは[{}]というメッセージを送信しましたね?".format(from_client)
-                connection.send(to_client.encode("UTF-8"))
+                # to_client = "あなたは[{}]というメッセージを送信しましたね?".format(from_client)
+                # connection.send(to_client.encode("UTF-8"))
             except Exception as e:
                 print(e)
                 continue
