@@ -1,7 +1,7 @@
 # Intel_robot
 This is a laboratory work for the department of Computer Science at Keio
 
-The verision using the cameras are under origin syora_branch
+The verision using the cameras is under origin syora_branch
 app/003_main.py
 
 app/steppingmotor/motor
