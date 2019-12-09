@@ -132,10 +132,12 @@ int main(void)
 
 	}
     
+<<<<<<< HEAD
     /*
         range[0] |= buf[0];
         printf("range [E0):%d\n",range[0]);
         
+
 		tmpE0[count[0]]=range[0];
 		if(count[0]==sample){
 		    range[0]=true_range(tmpE0);

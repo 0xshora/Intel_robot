@@ -135,14 +135,14 @@ int main(int argc, char **argv)
                     // 	speed = 10000;
                     turn_flg = 1;
                     L6470_run_turn(sp);
-                    speed = sp;
+                    speed = 0;
                 }
                 else
                 {
                     // 	speed = -10000;
                     turn_flg = 1;
                     L6470_run_turn(sp);
-                    speed = sp;
+                    speed = 0;
                 }
             }
         }
@@ -278,6 +278,7 @@ void new_speed_change(long speed, int postspeed)
     int CNT = 30;
     int i;
     long tmp_speed = speed;
+
     if (postspeed > MAX_SPEED)
     {
         postspeed = MAX_SPEED;
@@ -329,6 +330,12 @@ void new_speed_change(long speed, int postspeed)
 
 void L6470_speed_change(long speed, int postspeed)
 {
+    if ((int)speed == 0) {
+        printf("koko\n");
+        L6470_softstop();
+        L6470_softhiz();
+        return ;
+    }
     if (postspeed > MAX_SPEED)
     {
         postspeed = MAX_SPEED;
@@ -375,6 +382,13 @@ void L6470_speed_change(long speed, int postspeed)
 
 void L6470_turn_speed_change(long speed, int postspeed)
 {
+/*
+    if ((int)speed == 0) {
+        printf("koko\n");
+        L6470_softstop();
+        L6470_softhiz();
+        return ;
+    }*/
     printf("speed: %d, postspeed: %d\n", speed, postspeed);
     if (postspeed > MAX_SPEED)
     {

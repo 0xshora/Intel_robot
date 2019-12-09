@@ -8,10 +8,23 @@
 #include "wiringPiSPI.h"
 
 #define BUFSIZE 32
+#define MAXCHAR 256
+#define MAXCOM 16
+#define SLOPE_TIME 10000
+#define MAXDIGIT 100
+#define MAX_SPEED 50000
+#define MIN_SPEED -50000
+#define MAX_ROLL 10000
+#define MIN_ROLL 100
+#define MINUS_MIN_ROLL -100
+#define MINUS_MAX_ROLL -10000
+#define MAX_SCALE 3
+#define MIN_SCALE 0.5
 
 int L6470_SPI_CHANNEL;
 
 // 関数プロトタイプ。
+
 extern void L6470_write(unsigned char data);
 extern void L6470_init(void);
 extern void L6470_run(long speed);
@@ -21,11 +34,22 @@ extern void L6470_run_turn_moving(long speed, int right, float scale);
 extern void L6470_softstop();
 extern void L6470_softhiz();
 extern void L6470_speed_change(long speed, int postspeed); //change the speed from "speed" to postspeed
+extern void new_speed_change(long speed, int postspeed);
 extern void getargs(int * argc, char * argv[], char * buf);
+extern void L6470_turn_speed_change(long, int);
+
+
 
 int main(int argc, char ** argv) {
+    int i, j;
     long speed = 0;
-
+	
+    char *str = (char *)malloc(BUFSIZE * sizeof(char));
+    char c;
+    long s;
+    float sl;
+    long S = 0;
+    
     printf("***** start spi test program *****\n");
 
     // SPI channel 0 を 1MHz で開始。
@@ -48,6 +72,12 @@ int main(int argc, char ** argv) {
     //printf("Turn Left    --> l scale(0.1 ~ 10)\n");
     //printf("Stop         --> s\n");
     //printf("End          --> e\n");
+    
+    int my_argc;
+    char **my_argv;
+    
+    int turn_flg = 0;
+ 
 
     //for setting up a tcp server
     int sockfd;
@@ -87,15 +117,23 @@ int main(int argc, char ** argv) {
 
         char buf[256];
         int buf_len;
-        int ac;
-        char * av[16];
+        int ac = 0;
+        char **av;
+        av = malloc(sizeof(char *) * MAXCOM);
+        int i;
+        for (i = 0; i < MAXCOM; i++) {
+            av[i] = malloc(sizeof(char) * MAXCHAR);
+        }
         memset(buf, 0, 256);
 
         if ((buf_len = read(new_sockfd, buf, 256)) < 0) {
             fprintf(stderr, "read() failed\n");
             continue;
         }
+
         getargs(&ac, av, buf);
+
+        fprintf(stderr, "%s:%s\n", av[0], av[1]);
 
         if (strcmp(av[0], "p") == 0) {
             long sp = atol(av[1]);
@@ -117,22 +155,29 @@ int main(int argc, char ** argv) {
             } else {
                 long sp = atol(av[1]);
                 if (strcmp(buf, "r") == 0) {
-                    speed = 10000;
+					turn_flg = 1;
                     L6470_run_turn(sp);
+        			speed = 0;
                 } else {
-                    speed = -10000;
+					turn_flg = 1;
                     L6470_run_turn(sp);
+                    speed = 0;
                 }
             }
         }
 
-        if (strcmp(buf, "s") == 0) {
+        if (strcmp(buf, "s") == 0 && turn_flg == 0) {
             L6470_speed_change(speed, 0);
             speed = 0;
-        }
+        } else if (strcmp(buf, "s") == 0 && turn_flg == 1) {
+			L6470_turn_speed_change(speed, 0);
+			speed = 0;
+			turn_flg = 0;
+		}
 
         if (strcmp(buf, "e") == 0) {
             L6470_speed_change(speed, 0);
+			speed = 0;
             close(new_sockfd);
             close(sockfd);
             exit(0);
