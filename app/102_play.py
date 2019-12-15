@@ -79,7 +79,6 @@ def detect_ball(length):
     	cnts = cv2.findContours(mask.copy(), cv2.RETR_EXTERNAL,
     		cv2.CHAIN_APPROX_SIMPLE)[-2]
     	center = None
-
     	# only proceed if at least one contour was found
     	if len(cnts) > 0:
                 # find the largest contour in the mask, then use
