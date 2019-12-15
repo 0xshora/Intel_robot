@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+import subprocess
+>>>>>>> 9340736132fb29d44ed98a26ac8ff55ca64a3de8
 import numpy as np
 import cv2
 import socket
@@ -13,16 +17,18 @@ CAMERA_DIS = 20
 
 
 def send_msg(msg):
-    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-        host = '127.0.0.1'
-        port = 50001
-        s.connect((host, port))
-        s.sendall(msg.encode(encoding='ascii'))
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    host = '127.0.0.1'
+    port = 50001
+    s.connect((host, port))
+    s.send(msg)
+    # s.sendall(msg.encode(encoding='ascii'))
+
 
 
 def cascade(img):
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    # カスケードファイルの読み込み
+
     face_cascade = cv2.CascadeClassifier(
         '../data/haarcascades/haarcascade_frontalface_default.xml')
     # face_cascade = cv2.CascadeClassifier('../data/haarcascades/haarcascade_upperbody.xml')
@@ -33,6 +39,7 @@ def cascade(img):
     # print(faces)
     # cv2.imshow('img', img)
     return boxes
+
 
 def cal_theta_h(rect_a=None, rect_b=None):
     #calculate the theta and h
@@ -46,8 +53,10 @@ def cal_theta_h(rect_a=None, rect_b=None):
         h = 500
         theta = 60
         return h, theta
-    a_center_x = rect_a[3] - rect_a[1]
-    b_center_x = rect_b[3] - rect_b[1]
+
+    a_center_x = (rect_a[3] - rect_a[1]) / 2 + rect_a[1]
+    b_center_x = (rect_b[3] - rect_b[1]) / 2 + rect_a[1]
+
 
     a = a_center_x - SCREEN_CENTER_X
     b = b_center_x - SCREEN_CENTER_X
@@ -67,15 +76,17 @@ def chase_function(d, theta, A=5, B=5, max_rolling=200, max_sp=5000):
     """input d: distance
             A, B: a coefficient   
     """
+
     if theta > 10 or theta < -10:
         # rolling
         roll_sp = A * theta
         if theta > 0:
-            c = 'r'
-            text = "{} {}\n".format(c, (-1) * min(roll_sp, max_rolling))
+
+            c = 'l'
         else:
             c = 'r'
-            text = "{} {}\n".format(c, min(roll_sp, max_rolling))
+        text = "{} {}\n".format(c, min(roll_sp, max_rolling))
+
         send_msg(text)
     else:
         # move forward
@@ -91,6 +102,27 @@ def chase_function(d, theta, A=5, B=5, max_rolling=200, max_sp=5000):
 def stop_function():
     text = "s"
     print(text)
+    send_msg(text)
+
+
+def check_camera(camera_idx=0, mirror=True, size=None):
+    cap = cv2.VideoCapture(camera_idx)
+    while (cap.isOpened()):
+        ret, frame = cap.read()
+        if mirror is True:
+            frame = frame[:, ::-1]
+
+        if size is not None and len(size) == 2:
+            frame = cv2.resize(frame, size)
+
+        cv2.imshow('img', frame)
+        k = cv2.waitKey(50)
+        if k == 27:  # ESC
+            break
+
+    cap.release()
+    cv2.destroyAllWindows()
+
 
 
 def main(mirror=True, size=None):
@@ -123,7 +155,8 @@ def main(mirror=True, size=None):
 
         print(text)
         k = cv2.waitKey(50)
-        if k == 27:  # ESCキーで終了
+
+        if k == 27:  # ESC
             break
 
     cap_0.release()
@@ -132,4 +165,6 @@ def main(mirror=True, size=None):
 
 
 if __name__ == '__main__':
-    main()
+    # main()
+    check_camera(camera_idx=1)
+

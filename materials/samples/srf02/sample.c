@@ -132,8 +132,12 @@ int main(void)
 
 	}
     
-    
+<<<<<<< HEAD
+    /*
         range[0] |= buf[0];
+        printf("range [E0):%d\n",range[0]);
+        
+
 		tmpE0[count[0]]=range[0];
 		if(count[0]==sample){
 		    range[0]=true_range(tmpE0);
@@ -142,8 +146,9 @@ int main(void)
 		    reset(tmpE0);
 		}else{
 		    count[0]++;
-		}
-
+      
+	}
+    */
 	{ // read from 0xE2
 		buf[0] = 0x00;
 		buf[1] = 0x51;
@@ -185,8 +190,8 @@ int main(void)
 		}
 		range[1] |= buf[0];	
 
-	//	printf("0xE2 Range=%d cm\n", range);
-	}
+		printf("0xE2 Range=%d cm\n", range[1]);
+	}/*
 		tmpE2[count[1]]=range[1];
 		if(count[1]==sample){
 		    range[1]=true_range(tmpE2);
@@ -195,8 +200,8 @@ int main(void)
 		    reset(tmpE2);
 		}else{
 		    count[1]++;
-		}
-
+		}*/
+/*
 	{ // read from 0xE4
 		// コマンドレジスタ0に 0x51:Real Ranging Mode - Result in centimeters を送ることによって測距が始まる
 		buf[0] = 0x00;
@@ -312,6 +317,7 @@ int main(void)
 		}else{
 		    count[3]++;
 		}
+        */
 	}
 
 	// 閉じる！！

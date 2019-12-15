@@ -12,19 +12,15 @@ def send_msg(msg):
 
 
 def main():
-    text = "r 10000"
 
-    send_msg(text)
-    time.sleep(3)
-    text = "r -10000"
-    send_msg(text)
-
-
-    time.sleep(3)
-
-
-    text = "s"
-    send_msg(text)
+    x = raw_input()
+    if x == 'quit':
+        print ("I will quit")
+        text = "s"
+        send_msg(text)
+        time.sleep(5)
+        text = "e"
+        send_msg(text)
 
 
 if __name__ == '__main__':

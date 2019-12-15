@@ -2,6 +2,16 @@ import numpy as np
 import cv2
 import socket
 import math
+import traceback
+from time import sleep
+import string
+
+from collections import deque
+import argparse
+import imutils
+import time
+import pandas as pd
+import matplotlib.pyplot as plt
 
 # camera center
 SCREEN_CENTER_X = 400
@@ -30,91 +40,276 @@ THR_BOXSIZE = 20000
 # length[3] : side left
 
 
+def detect_ball(length):
+    greenLower = (29, 86, 6)
+    greenUpper = (64, 255, 255)
+    pts = deque(maxlen=args["buffer"])
+    camera = cv2.VideoCapture(0)
+
+    Data_Features = ['x', 'y', 'time']
+    Data_Points = pd.DataFrame(data = None, columns = Data_Features , dtype = float)
+    while True:
+        if is_escape_flg(length):
+            avoid_function(length)
+    	# grab the current frame
+    	(grabbed, frame) = camera.read()
+
+    	#Reading The Current Time
+
+    	# if we are viewing a video and we did not grab a frame,
+    	# then we have reached the end of the video
+    	if args.get("video") and not grabbed:
+    		break
+
+    	# resize the frame, blur it, and convert it to the HSV
+    	# color space
+    	frame = imutils.resize(frame, width=1800)
+    	# blurred = cv2.GaussianBlur(frame, (11, 11), 0)
+    	hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+
+    	# construct a mask for the color "green", then perform
+    	# a series of dilations and erosions to remove any small
+    	# blobs left in the mask
+    	mask = cv2.inRange(hsv, greenLower, greenUpper)
+    	mask = cv2.erode(mask, None, iterations=2)
+    	mask = cv2.dilate(mask, None, iterations=2)
+
+    	# find contours in the mask and initialize the current
+    	# (x, y) center of the ball
+    	cnts = cv2.findContours(mask.copy(), cv2.RETR_EXTERNAL,
+    		cv2.CHAIN_APPROX_SIMPLE)[-2]
+    	center = None
+
+    	# only proceed if at least one contour was found
+    	if len(cnts) > 0:
+                # find the largest contour in the mask, then use
+                # it to compute the minimum enclosing circle and
+                # centroid
+                c = max(cnts, key=cv2.contourArea)
+                ((x, y), radius) = cv2.minEnclosingCircle(c)
+                M = cv2.moments(c)
+                center = (int(M["m10"] / M["m00"]), int(M["m01"] / M["m00"]))
+                print(center)
+
+                if radius >= 100:
+                    #the object is close enough
+                    text = "s\n"
+                    send_msg(text)
+                    continue
+
+
+                if 800 <= center and center <= 1000:
+                    text = "p {}\n".format(1000)
+                elif center >= 900:
+                    #the object is right
+                    #ex. 1500
+                    text = "r {}\n".format((center-900) * 100)
+                else:
+                    #the object is left
+                    #ex. 100
+                    text = "r {}\n".format((center-900) * 100)
+                send_msg(text)
+                continue
+
+
+                # only proceed if the radius meets a minimum size
+                if (radius < 300) & (radius > 10 ) :
+                    # draw the circle and centroid on the frame,
+                    # then update the list of tracked points
+                    cv2.circle(frame, (int(x), int(y)), int(radius),
+                            (0, 255, 255), 2)
+                    cv2.circle(frame, center, 5, (0, 0, 255), -1)
+
+                    #Save The Data Points
+        else:
+            #not found
+            text = "r 1000"
+            send_msg(text)
+            continue
+    	# update the points queue
+    	pts.appendleft(center)
+
+    	# loop over the set of tracked points
+    	for i in range(1, len(pts)):
+                # if either of the tracked points are None, ignore
+                # them
+                if pts[i - 1] is None or pts[i] is None:
+                        continue
+
+                # otherwise, compute the thickness of the line and
+                # draw the connecting lines
+                thickness = int(np.sqrt(args["buffer"] / float(i + 1)) * 2.5)
+                cv2.line(frame, pts[i - 1], pts[i], (0, 0, 255), thickness)
+
+    	# show the frame to our screen
+    	cv2.imshow("Frame", frame)
+    	key = cv2.waitKey(1) & 0xFF
+
+    	# if the 'q' key is pressed, stop the loop
+    	if key == ord("q"):
+                break
+
+def voice(cmd = None):
+    if cmd is None:
+        return
+
+    if string.find(cmd, "まがれ") != -1:
+        text = "r {}\n".format(5000)
+        send_msg(text)
+    else if string.find(cmd, "まえにすすめ") != -1:
+        text = "p {}\n".format(1000)
+        send_msg(text)
+    else if string.find(cmd, "うしろにすすめ") != -1:
+        text = "p {}\n".format(-1000)
+        send_msg(text)
+    else if string.find(cmd, "とまれ") != -1:
+        text = "s\n"
+        send_msg(text)
+
+"""
+def go_around(length = 1):
+    #the distance to the object is 1 m
+    # if possible, the voice might be a part of the command
+    # turn right
+    move_x = 2
+    move_y = 4
+    text = "r {}\n".format(5000)
+    send_msg(text)
+    time.sleep(1)
+    text = "s\n"
+    send_msg(text)
+
+    #move straight
+    text = "p {}\n".format(1000)
+    send_msg(text)
+    time.sleep(move_x)
+    text = "s\n"
+    send_msg(text)
+
+    #turn left
+    text = "r {}\n".format(-5000)
+    send_msg(text)
+    time.sleep(1)
+    text = "s\n"
+    send_msg(text)
+
+    #move straight
+    text = "p {}\n".format(1000)
+    send_msg(text)
+    time.sleep(move_y)
+    text = "s\n"
+    send_msg(text)
+
+    #turn left
+    text = "r {}\n".format(-5000)
+    send_msg(text)
+    time.sleep(1)
+    text = "s\n"
+    send_msg(text)
+
+    #move straight
+    text = "p {}\n".format(1000)
+    send_msg(text)
+    time.sleep(move_x)
+    text = "s\n"
+    send_msg(text)
+
+    #turn right
+    text = "r {}\n".format(5000)
+    send_msg(text)
+    time.sleep(1)
+    text = "s\n"
+    send_msg(text)
+
+    #move_straight
+    text = "p {}\n".format(1000)
+    send_msg(text)
+    time.sleep(move_y)
+    text = "s\n"
+    send_msg(text)
+"""
+
+def server_and_call_main():
+    s = socket.socket(socket.af_inet, socket.sock_stream)
+    host = "127.0.0.1"
+    port = 50002
+    s.bind((host, port))
+    s.listen(1)
+
+    clients = []
+
+    try:
+        s.settimeout(10)
+        connection, address = s.accept()
+        clients.append((connection, address))
+        while(true):
+            try:
+                connection.settimeout(3)
+                from_client = connection.recv(4096).decode()
+                distance = from_client.split()
+                # call main method
+                #main(length = distance)
+                detect_ball(length = distance)
+                # sleep(0.1)
+                #print("sinal=>{}".format(from_client))
+                # to_client = "signal[{}]".format(from_client)
+                # connection.send(to_client.encode("utf-8"))
+            except exception as e:
+                # print(e)
+                traceback.print_exc()
+                continue
+    except exception as e:
+        # print(clients)
+        # print(e)
+        traceback.print_exc()
+        connection.close()
+        s.close()
+
+    return from_client
+
+
 def send_msg(msg):
-    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-        host = '127.0.0.1'
-        port = 50001
-        s.connect((host, port))
-        s.sendall(msg.encode(encoding='ascii'))
+    s = socket.socket(socket.af_inet, socket.sock_stream)
+    host = '127.0.0.1'
+    port = 50001
+    s.connect((host, port))
+    # s.sendall(msg.encode(encoding='ascii'))
+    s.send(msg)
 
 
 def cascade(img):
-    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    # load the cascade file
-    face_cascade = cv2.CascadeClassifier(
-        '../data/haarcascades/haarcascade_frontalface_default.xml')
-    # face_cascade = cv2.CascadeClassifier('../data/haarcascades/haarcascade_upperbody.xml')
-    # face_cascade = cv2.CascadeClassifier('../data/haarcascades/haarcascade_lowerbody.xml')
+    gray = cv2.cvtcolor(img, cv2.color_bgr2gray)
 
-    boxes = face_cascade.detectMultiScale(gray)
+    # load the cascade file
+
+    face_cascade = cv2.cascadeclassifier(
+        '../data/haarcascades/haarcascade_frontalface_default.xml')
+    # face_cascade = cv2.cascadeclassifier('../data/haarcascades/haarcascade_upperbody.xml')
+    # face_cascade = cv2.cascadeclassifier('../data/haarcascades/haarcascade_lowerbody.xml')
+
+    boxes = face_cascade.detectmultiscale(gray)
     # draw_detections(img, boxes)
     # print(faces)
     # cv2.imshow('img', img)
     return boxes
 
 
-# MAX_W = SCREEN_WIDE_X - SCREEN_CENTER_X
-# MAX_ANGLE = 60
-# MAX_ANGLE_RAD = 60. * math.pi / 180.
-# CAMERA_DIS = 20
+# max_w = screen_wide_x - screen_center_x
+# max_angle = 60
+# max_angle_rad = 60. * math.pi / 180.
+# camera_dis = 20
 
-def cal_theta_h(rect_a=None, rect_b=None):
-    #calculate the theta and h
-    #input rect_a, rect_b
 
-    if rect_a == None:
-        h = 500
-        theta = -60
-        return h, theta
-    elif rect_b == None:
-        h = 500
-        theta = 60
-        return h, theta
-    a_center_x = (rect_a[3] - rect_a[1]) / 2 + rect_a[1]
-    b_center_x = (rect_b[3] - rect_b[1]) / 2 + rect_a[1]
-
-    a = a_center_x - SCREEN_CENTER_X
-    b = b_center_x - SCREEN_CENTER_X
-
-    tan_max_angle = math.tan(MAX_ANGLE_RAD)
-
-    h = (MAX_W * CAMERA_DIS) / ((a - b) * tan_max_angle)
-    tan_x1 = tan_max_angle * (a / MAX_W)
-    tan_x2 = tan_max_angle * (b / MAX_W)
-
-    tan_theta = (tan_x1 + tan_x2) / (1 - tan_x1 * tan_x2)
-    theta = math.degrees(math.atan(tan_theta))
-    return h, theta
 
 
 def is_escape_flg(length):
     flg = 0
-    if length[0] < THR_FRONT_LEN or length[1] < THR_FRONT_LEN:
+    if length[0] < thr_front_len or length[1] < thr_front_len:
         flg = 1
-    elif length[2] < THR_SIDE_LEN or length[3] < THR_FRONT_LEN:
+    elif length[2] < thr_side_len or length[3] < thr_front_len:
         flg = 1
     return flg
 
-
-def chase_function(d, theta, A=10, B=10, max_rolling=200, max_sp=1000):
-    if theta > 10 or theta < -10:
-        # rolling
-        roll_sp = A * theta
-        if theta > 0:
-            c = 'l'
-        else:
-            c = 'r'
-        text = "{} {}\n".format(c, min(roll_sp, max_rolling))
-        send_msg(text)
-    else:
-        # move forward
-        if d < 20 and d > -20:
-            # stop
-            send_msg(text)
-        else:
-            move_sp = B * d
-            text = "p {}\n".format(min(move_sp, max_sp))
-            send_msg()
 
 
 def avoid_function(roll_sp=100):
@@ -123,7 +318,7 @@ def avoid_function(roll_sp=100):
     # print("just rolling")
 
 
-def search_function(default_roll=100, default_sp=200):
+def search_function(default_roll=5000, default_sp=1000):
     cnt = 0
     if cnt % 100 > 50:
         text = "p {}\n".format(default_sp)
@@ -136,11 +331,11 @@ def search_function(default_roll=100, default_sp=200):
         # print("just rolling")
         cnt += 1
 
-
 def main(length, mirror=True, size=None):
     cap_0 = cv2.VideoCapture(0)
     cap_1 = cv2.VideoCapture(1)
     while(cap_0.isOpened()):
+        print ("hi")
         ret_0, frame_0 = cap_0.read()
         ret_1, frame_1 = cap_1.read()
         if mirror is True:
@@ -151,16 +346,24 @@ def main(length, mirror=True, size=None):
             frame_0 = cv2.resize(frame_0, size)
             frame_1 = cv2.resize(frame_1, size)
 
+        box_0 = []
+        box_1 = []
         boxes_0 = cascade(frame_0)
         boxes_1 = cascade(frame_1)
-
+        print("end cascade")
         escape_flg = is_escape_flg(length)
-        box_0 = boxes_0[0]
-        box_1 = boxes_1[0]
+        print(escape_flg)
+        print(boxes_0)
+        print(boxes_1)
+        if len(boxes_0) != 0:
+            box_0 = boxes_0[0]
+        if len(boxes_1) != 0:
+            box_1 = boxes_1[0]
+
         if escape_flg:
             avoid_function(length)
             # print('just rolling')
-        elif box_0 or box_1:
+        elif len(box_0) != 0 and len(box_1) != 0:
             h, theta = cal_theta_h(box_0, box_1)
             chase_function(h, theta)
             # print('speed')
@@ -169,8 +372,11 @@ def main(length, mirror=True, size=None):
             # print('speed')
             # print('roll')
 
-        k = cv2.waitKey(50)
-        if k == 27:  # ESCキーで終了
+        k = cv2.waitKey(100)
+        if k == ord('s'):
+            send_msg("s")
+            break
+        if k == 27:  # ESC end
             break
 
     cap_0.release()
@@ -179,7 +385,7 @@ def main(length, mirror=True, size=None):
 
 
 if __name__ == '__main__':
-    main(length)
+    server_and_call_main()
 
 
 """

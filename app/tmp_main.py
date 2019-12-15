@@ -2,8 +2,6 @@ import numpy as np
 import cv2
 import socket
 import math
-import traceback
-from time import sleep
 
 # camera center
 SCREEN_CENTER_X = 400
@@ -31,59 +29,18 @@ THR_BOXSIZE = 20000
 # length[2] : side right
 # length[3] : side left
 
-def server_and_call_main():
-    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    host = "127.0.0.1"
-    port = 50002
-    s.bind((host, port))
-    s.listen(1)
-    
-    clients = []
-
-    try:
-        s.settimeout(10)
-        connection, address = s.accept()
-        clients.append((connection, address))
-        while(True):
-            try:
-                connection.settimeout(3)
-                from_client = connection.recv(4096).decode()
-                distance = from_client.split()
-                # call main method
-                main(length = distance)
-                # sleep(0.1)
-                #print("sinal=>{}".format(from_client))
-                # to_client = "signal[{}]".format(from_client)
-                # connection.send(to_client.encode("UTF-8"))
-            except Exception as e:
-                # print(e)
-                traceback.print_exc()
-                continue
-    except Exception as e:
-        # print(clients)
-        # print(e)
-        traceback.print_exc()
-        connection.close()
-        s.close()
-    
-    return from_client
-
-
 
 def send_msg(msg):
-    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    host = '127.0.0.1'
-    port = 50001
-    s.connect((host, port))
-    # s.sendall(msg.encode(encoding='ascii'))
-    s.send(msg)
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        host = '127.0.0.1'
+        port = 50001
+        s.connect((host, port))
+        s.sendall(msg.encode(encoding='ascii'))
 
 
 def cascade(img):
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-
-    # load the cascade file
-
+    # カスケードファイルの読み込み
     face_cascade = cv2.CascadeClassifier(
         '../data/haarcascades/haarcascade_frontalface_default.xml')
     # face_cascade = cv2.CascadeClassifier('../data/haarcascades/haarcascade_upperbody.xml')
@@ -102,21 +59,14 @@ def cascade(img):
 # CAMERA_DIS = 20
 
 def cal_theta_h(rect_a=None, rect_b=None):
-
-    #calculate the theta and h
-    #input rect_a, rect_b
-
-    """
-    if not rect_a:
+    if rect_a == None:
         h = 500
         theta = -MAX_ANGLE
         return h, theta
-    elif not rect_b:
+    elif rect_b == None:
         h = 500
         theta = MAX_ANGLE
-
         return h, theta
-    """
     a_center_x = (rect_a[3] - rect_a[1]) / 2 + rect_a[1]
     b_center_x = (rect_b[3] - rect_b[1]) / 2 + rect_a[1]
 
@@ -147,14 +97,12 @@ def chase_function(d, theta, A=10, B=10, max_rolling=200, max_sp=1000):
     if theta > 10 or theta < -10:
         # rolling
         roll_sp = A * theta
-
         c = 'r'
         if theta > 0:
             roll_sp *= -1
             # c = 'l'
         # else:
             # c = 'r'
-
         text = "{} {}\n".format(c, min(roll_sp, max_rolling))
         send_msg(text)
     else:
@@ -174,7 +122,7 @@ def avoid_function(roll_sp=100):
     # print("just rolling")
 
 
-def search_function(default_roll=5000, default_sp=1000):
+def search_function(default_roll=100, default_sp=200):
     cnt = 0
     if cnt % 100 > 50:
         text = "p {}\n".format(default_sp)
@@ -187,11 +135,11 @@ def search_function(default_roll=5000, default_sp=1000):
         # print("just rolling")
         cnt += 1
 
+
 def main(length, mirror=True, size=None):
     cap_0 = cv2.VideoCapture(0)
     cap_1 = cv2.VideoCapture(1)
     while(cap_0.isOpened()):
-        print ("hi")
         ret_0, frame_0 = cap_0.read()
         ret_1, frame_1 = cap_1.read()
         if mirror is True:
@@ -201,25 +149,17 @@ def main(length, mirror=True, size=None):
         if size is not None and len(size) == 2:
             frame_0 = cv2.resize(frame_0, size)
             frame_1 = cv2.resize(frame_1, size)
-        
-        box_0 = []
-        box_1 = []
+
         boxes_0 = cascade(frame_0)
         boxes_1 = cascade(frame_1)
-        print("end cascade")
-        escape_flg = is_escape_flg(length)
-        print(escape_flg)
-        print(boxes_0)
-        print(boxes_1)
-        if len(boxes_0) != 0:
-            box_0 = boxes_0[0]
-        if len(boxes_1) != 0:
-            box_1 = boxes_1[0]
 
+        escape_flg = is_escape_flg(length)
+        box_0 = boxes_0[0]
+        box_1 = boxes_1[0]
         if escape_flg:
             avoid_function(length)
             # print('just rolling')
-        elif len(box_0) != 0 and len(box_1) != 0:
+        elif box_0 or box_1:
             h, theta = cal_theta_h(box_0, box_1)
             chase_function(h, theta)
             # print('speed')
@@ -228,11 +168,8 @@ def main(length, mirror=True, size=None):
             # print('speed')
             # print('roll')
 
-        k = cv2.waitKey(100)
-        if k == ord('s'):
-            send_msg("s")
-            break
-        if k == 27:  # ESC end
+        k = cv2.waitKey(50)
+        if k == 27:  # ESCキーで終了
             break
 
     cap_0.release()
@@ -241,7 +178,7 @@ def main(length, mirror=True, size=None):
 
 
 if __name__ == '__main__':
-    server_and_call_main()
+    main(length)
 
 
 """

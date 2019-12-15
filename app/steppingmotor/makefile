@@ -1,2 +1,9 @@
-motor: motor.c motor_func.c input.c
-	gcc -o motor motor.c motor_func.c input.c -I /usr/include -L /usr/lib -l wiringPi
+INCLUDE= -I ../../materials/wiringPi/wiringPi
+LIBS= -lwiringPi -lm 
+# LIBS= -lwiringPi -lm -lpthread -lrt -lcrypto
+
+motor: motor.c motor_func.c getarg.c
+	gcc -o motor motor.c motor_func.c getarg.c $(INCLUDE) $(LIBS)  
+
+
+
