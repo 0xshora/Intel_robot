@@ -37,7 +37,7 @@ def server_and_call_main():
     port = 50002
     s.bind((host, port))
     s.listen(1)
-    
+
     clients = []
 
     try:
@@ -65,7 +65,7 @@ def server_and_call_main():
         traceback.print_exc()
         connection.close()
         s.close()
-    
+
     return from_client
 
 
@@ -144,7 +144,7 @@ def is_escape_flg(length):
 
 
 def chase_function(d, theta, A=10, B=10, max_rolling=200, max_sp=1000):
-    if theta > 10 or theta < -10:
+    if theta > 15 or theta < -15:
         # rolling
         roll_sp = A * theta
 
@@ -160,12 +160,13 @@ def chase_function(d, theta, A=10, B=10, max_rolling=200, max_sp=1000):
     else:
         # move forward
         if d < 20 and d > -20:
+            print("distance is lower than 20.")
             # stop
             send_msg(text)
         else:
             move_sp = B * d
             text = "p {}\n".format(min(move_sp, max_sp))
-            send_msg()
+            send_msg(text)
 
 
 def avoid_function(roll_sp=100):
@@ -176,7 +177,7 @@ def avoid_function(roll_sp=100):
 
 def search_function(default_roll=5000, default_sp=1000):
     cnt = 0
-    if cnt % 100 > 50:
+    if cnt % 20 > 10:
         text = "p {}\n".format(default_sp)
         send_msg(text)
         # print("move forward")
@@ -203,7 +204,7 @@ def main(length, mirror=True, size=None):
         if size is not None and len(size) == 2:
             frame_0 = cv2.resize(frame_0, size)
             frame_1 = cv2.resize(frame_1, size)
-        
+
         box_0 = []
         box_1 = []
         boxes_0 = cascade(frame_0)
