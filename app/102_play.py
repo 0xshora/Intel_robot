@@ -198,40 +198,13 @@ def send_msg(msg):
     s.send(msg)
 
 
-def cascade(img):
-    gray = cv2.cvtcolor(img, cv2.color_bgr2gray)
-
-    # load the cascade file
-
-    face_cascade = cv2.cascadeclassifier(
-        '../data/haarcascades/haarcascade_frontalface_default.xml')
-    # face_cascade = cv2.cascadeclassifier('../data/haarcascades/haarcascade_upperbody.xml')
-    # face_cascade = cv2.cascadeclassifier('../data/haarcascades/haarcascade_lowerbody.xml')
-
-    boxes = face_cascade.detectmultiscale(gray)
-    # draw_detections(img, boxes)
-    # print(faces)
-    # cv2.imshow('img', img)
-    return boxes
-
-
-# max_w = screen_wide_x - screen_center_x
-# max_angle = 60
-# max_angle_rad = 60. * math.pi / 180.
-# camera_dis = 20
-
-
-
-
 def is_escape_flg(length):
     flg = 0
-    if length[0] < thr_front_len or length[1] < thr_front_len:
+    if length[0] < THR_FRONT_LEN or length[1] < THR_FRONT_LEN:
         flg = 1
-    elif length[2] < thr_side_len or length[3] < thr_front_len:
+    elif length[2] < THR_SIDE_LEN or length[3] < THR_FRONT_LEN:
         flg = 1
     return flg
-
-
 
 def avoid_function(roll_sp=100):
     text = "r {}\n".format(roll_sp)
@@ -239,95 +212,5 @@ def avoid_function(roll_sp=100):
     # print("just rolling")
 
 
-def search_function(default_roll=5000, default_sp=1000):
-    cnt = 0
-    if cnt % 100 > 50:
-        text = "p {}\n".format(default_sp)
-        send_msg(text)
-        # print("move forward")
-        cnt += 1
-    else:
-        text = "r {}\n".format(default_roll)
-        send_msg(text)
-        # print("just rolling")
-        cnt += 1
-
-def main(length, mirror=True, size=None):
-    cap_0 = cv2.VideoCapture(0)
-    cap_1 = cv2.VideoCapture(1)
-    while(cap_0.isOpened()):
-        print ("hi")
-        ret_0, frame_0 = cap_0.read()
-        ret_1, frame_1 = cap_1.read()
-        if mirror is True:
-            frame_0 = frame_0[:, ::-1]
-            frame_1 = frame_1[:, ::-1]
-
-        if size is not None and len(size) == 2:
-            frame_0 = cv2.resize(frame_0, size)
-            frame_1 = cv2.resize(frame_1, size)
-
-        box_0 = []
-        box_1 = []
-        boxes_0 = cascade(frame_0)
-        boxes_1 = cascade(frame_1)
-        print("end cascade")
-        escape_flg = is_escape_flg(length)
-        print(escape_flg)
-        print(boxes_0)
-        print(boxes_1)
-        if len(boxes_0) != 0:
-            box_0 = boxes_0[0]
-        if len(boxes_1) != 0:
-            box_1 = boxes_1[0]
-
-        if escape_flg:
-            avoid_function(length)
-            # print('just rolling')
-        elif len(box_0) != 0 and len(box_1) != 0:
-            h, theta = cal_theta_h(box_0, box_1)
-            chase_function(h, theta)
-            # print('speed')
-        else:
-            search_function()
-            # print('speed')
-            # print('roll')
-
-        k = cv2.waitKey(100)
-        if k == ord('s'):
-            send_msg("s")
-            break
-        if k == 27:  # ESC end
-            break
-
-    cap_0.release()
-    cap_1.release()
-    cv2.destroyAllWindows()
-
-
 if __name__ == '__main__':
     server_and_call_main()
-
-
-"""
-# using transitions
-# from transitions import Machine
-class StateMachine(object):
-    states = ['search', 'chase', 'escape']
-
-    def __init__(self, name):
-        self.name = name
-        self.machine = Machine(
-            model=self, states=StateMachine.states, initial='search', auto_transitions=False)
-        self.machine.add_transition(
-            trigger='near',     source='search',    dest='escape')
-        self.machine.add_transition(
-            trigger='near', source='chase', dest='escape')
-        self.machine.add_transition(
-            trigger='find', source='search', dest='chase')
-        self.machine.add_transition(
-            trigger='safe', source='escape', dest='search')
-
-
-intel_robot = StateMachine('test')
-"""
