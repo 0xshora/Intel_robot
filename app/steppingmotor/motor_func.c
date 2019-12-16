@@ -195,7 +195,7 @@ void L6470_turn_speed_change(long speed, int postspeed)
 void L6470_speed_change(long speed, int postspeed)
 {
 	if ((int)speed == 0) {
-        printf("koko\n");
+
         L6470_softstop();
         L6470_softhiz();
         return ;

@@ -73,6 +73,7 @@ def detect_ball():
     	mask = cv2.inRange(hsv, greenLower, greenUpper)
     	mask = cv2.erode(mask, None, iterations=2)
     	mask = cv2.dilate(mask, None, iterations=2)
+        cv2.imshow("Frame", frame)
 
     	# find contours in the mask and initialize the current
     	# (x, y) center of the ball
@@ -91,14 +92,14 @@ def detect_ball():
                 print(center)
                 print("radius:" + str(radius))
 
-                if radius >= 100:
+                if radius >= 200:
                     #the object is close enough
                     text = "s\n"
                     send_msg(text)
                     continue
 
 
-                if 800 <= center[0] and center[0] <= 1000:
+                if 700 <= center[0] and center[0] <= 1100:
                     text = "p {}\n".format(1000)
                 elif center[0] >= 900:
                     #the object is right
@@ -142,7 +143,7 @@ def detect_ball():
                 cv2.line(frame, pts[i - 1], pts[i], (0, 0, 255), thickness)
 
     	# show the frame to our screen
-    	cv2.imshow("Frame", frame)
+  #  	cv2.imshow("Frame", frame)
     	key = cv2.waitKey(1) & 0xFF
 
     	# if the 'q' key is pressed, stop the loop
