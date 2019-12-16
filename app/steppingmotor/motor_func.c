@@ -10,17 +10,14 @@ int BUFSIZE = 32;
 #define SLOPE_TIME 10000
 #define MAX_DIFF 1000
 #define MINUS_MAX_DIFF -1000
-#define MAX_SPEED 50000
-#define MIN_SPEED -50000
-#define MAX_ROLL 10000
+#define MAX_SPEED 5000
+#define MIN_SPEED -5000
+#define MAX_ROLL 2000
 #define MIN_ROLL 100
 #define MINUS_MIN_ROLL -100
-#define MINUS_MAX_ROLL -10000
+#define MINUS_MAX_ROLL -2000
 #define MAX_SCALE 3
 #define MIN_SCALE 0.5
-
-
-
 
 void L6470_softstop();
 void L6470_softhiz();

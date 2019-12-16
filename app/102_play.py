@@ -89,6 +89,7 @@ def detect_ball():
                 M = cv2.moments(c)
                 center = (int(M["m10"] / M["m00"]), int(M["m01"] / M["m00"]))
                 print(center)
+                print("radius:" + str(radius))
 
                 if radius >= 100:
                     #the object is close enough
@@ -190,7 +191,7 @@ def server_and_call_main():
 
 
 def send_msg(msg):
-    s = socket.socket(socket.af_inet, socket.sock_stream)
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     host = '127.0.0.1'
     port = 50001
     s.connect((host, port))

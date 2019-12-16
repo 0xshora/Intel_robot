@@ -147,7 +147,7 @@ int main(int argc, char ** argv) {
         if (strcmp(av[0], "r") == 0 || strcmp(av[0], "l") == 0) {
             long sp = atol(av[1]);
             L6470_speed_change(speed, 0);
-            speed = 0
+            speed = 0;
             turn_flg = 1;
             L6470_run_turn(sp);
         }

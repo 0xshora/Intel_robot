@@ -36,6 +36,7 @@ THR_BOXSIZE = 20000
 # length[3] : side left
 
 def draw_detections(img, rects, thickness=1):
+    img = np.array(img)
     for x, y, w, h in rects:
         pad_w, pad_h = int(0.15 * w), int(0.05 * h)
         cv2.rectangle(img, (x + pad_w, y + pad_h),

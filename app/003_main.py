@@ -28,7 +28,7 @@ BOXES = [[365, 75, 453, 453]]
 # @THR_BOXSIZE : a threshold within a bix box or not
 THR_FRONT_LEN = 20
 THR_SIDE_LEN = 20
-THR_BOXSIZE = 20000
+THR_BOXSIZE = 40000
 
 # length[0] : front rigth
 # length[1] : front left
@@ -105,6 +105,9 @@ def cascade(img):
 # MAX_ANGLE_RAD = 60. * math.pi / 180.
 # CAMERA_DIS = 20
 
+def cal_area(rect):
+    return (rect[0] - rect[2]) * (rect[1] - rect[3])
+
 def cal_theta_h(rect_a=[], rect_b=[]):
 
     #calculate the theta and h
@@ -112,10 +115,14 @@ def cal_theta_h(rect_a=[], rect_b=[]):
 
     
     if len(rect_a) == 0:
+        if cal_area(rect_b) > THR_BOXSIZE:
+            return 0, 0
         h = 500
         theta = -MAX_ANGLE
         return h, theta
     elif len(rect_b) == 0:
+        if cal_area(rect_a) > THR_BOXSIZE:
+            return 0, 0 
         h = 500
         theta = MAX_ANGLE
         return h, theta
@@ -224,6 +231,7 @@ def main(length, mirror=True, size=None):
             # print('just rolling')
         elif len(box_0) != 0 and len(box_1) != 0:
             h, theta = cal_theta_h(box_0, box_1)
+            print("h, theta:", h, theta)
             chase_function(h, theta)
             # print('speed')
         else:
@@ -267,6 +275,7 @@ def main_no_length(mirror=True, size=None):
 
         if len(box_0) != 0 or len(box_1) != 0:
             h, theta = cal_theta_h(box_0, box_1)
+            print("h, theta: ", h, theta)
             print('chase function')
             print('boxes_0: ', boxes_0, 'boxes_1: ',boxes_1)
             chase_function(h, theta)
