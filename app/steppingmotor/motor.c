@@ -43,13 +43,13 @@ extern void L6470_turn_speed_change(long, int);
 int main(int argc, char ** argv) {
     int i, j;
     long speed = 0;
-	
+
     char *str = (char *)malloc(BUFSIZE * sizeof(char));
     char c;
     long s;
     float sl;
     long S = 0;
-    
+
     printf("***** start spi test program *****\n");
 
     // SPI channel 0 を 1MHz で開始。
@@ -67,17 +67,19 @@ int main(int argc, char ** argv) {
     L6470_SPI_CHANNEL = 1;
     L6470_init();
 
-    //printf("Speed Change --> p speed(-10000 ~ 10000)\n");
-    //printf("Turn Right   --> r scale(0.1 ~ 10)\n");
-    //printf("Turn Left    --> l scale(0.1 ~ 10)\n");
-    //printf("Stop         --> s\n");
-    //printf("End          --> e\n");
-    
+    /*
+        Usage
+        p num: p + 回転数
+        r num: r + 回転数 (負もあり)
+        s:     Stop
+        e:     End
+    */
+
     int my_argc;
     char **my_argv;
-    
+
     int turn_flg = 0;
- 
+
 
     //for setting up a tcp server
     int sockfd;
@@ -135,7 +137,6 @@ int main(int argc, char ** argv) {
 
         fprintf(stderr, "%s:%s\n", av[0], av[1]);
 
-
         if (strcmp(av[0], "p") == 0) {
             long sp = atol(av[1]);
             L6470_speed_change(speed, sp);
@@ -144,27 +145,11 @@ int main(int argc, char ** argv) {
         }
 
         if (strcmp(av[0], "r") == 0 || strcmp(av[0], "l") == 0) {
-            if (speed != 0) {
-                double scale = atof(av[1]);
-                if (strcmp(buf, "r") == 0) {
-                    int right_true = 1;
-                    L6470_run_turn_moving(speed, right_true, scale);
-                } else {
-                    int right_false = 0;
-                    L6470_run_turn_moving(speed, right_false, scale);
-                }
-            } else {
-                long sp = atol(av[1]);
-                if (strcmp(buf, "r") == 0) {
-					turn_flg = 1;
-                    L6470_run_turn(sp);
-        			speed = 0;
-                } else {
-					turn_flg = 1;
-                    L6470_run_turn(sp);
-                    speed = 0;
-                }
-            }
+            long sp = atol(av[1]);
+            L6470_speed_change(speed, 0);
+            speed = 0
+            turn_flg = 1;
+            L6470_run_turn(sp);
         }
 
         if (strcmp(buf, "s") == 0 && turn_flg == 0) {
