@@ -185,7 +185,7 @@ def search_function(default_roll=5000, default_sp=1000):
     else:
         text = "r {}\n".format(default_roll)
         send_msg(text)
-        # print("just rolling")
+        print("just rolling, cnt: {}".format(cnt))
         cnt += 1
 
 def main(length, mirror=True, size=None):
