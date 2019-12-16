@@ -1,4 +1,7 @@
+<<<<<<< HEAD
+=======
 import subprocess
+>>>>>>> 9340736132fb29d44ed98a26ac8ff55ca64a3de8
 import numpy as np
 import cv2
 import socket
@@ -22,8 +25,10 @@ def send_msg(msg):
     # s.sendall(msg.encode(encoding='ascii'))
 
 
+
 def cascade(img):
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+
     face_cascade = cv2.CascadeClassifier(
         '../data/haarcascades/haarcascade_frontalface_default.xml')
     # face_cascade = cv2.CascadeClassifier('../data/haarcascades/haarcascade_upperbody.xml')
@@ -37,6 +42,9 @@ def cascade(img):
 
 
 def cal_theta_h(rect_a=None, rect_b=None):
+    #calculate the theta and h
+    #input rect_a, rect_b
+
     if rect_a == None:
         h = 500
         theta = -60
@@ -45,8 +53,10 @@ def cal_theta_h(rect_a=None, rect_b=None):
         h = 500
         theta = 60
         return h, theta
+
     a_center_x = (rect_a[3] - rect_a[1]) / 2 + rect_a[1]
     b_center_x = (rect_b[3] - rect_b[1]) / 2 + rect_a[1]
+
 
     a = a_center_x - SCREEN_CENTER_X
     b = b_center_x - SCREEN_CENTER_X
@@ -63,14 +73,20 @@ def cal_theta_h(rect_a=None, rect_b=None):
 
 
 def chase_function(d, theta, A=5, B=5, max_rolling=200, max_sp=5000):
+    """input d: distance
+            A, B: a coefficient   
+    """
+
     if theta > 10 or theta < -10:
         # rolling
         roll_sp = A * theta
         if theta > 0:
+
             c = 'l'
         else:
             c = 'r'
         text = "{} {}\n".format(c, min(roll_sp, max_rolling))
+
         send_msg(text)
     else:
         # move forward
@@ -82,7 +98,6 @@ def chase_function(d, theta, A=5, B=5, max_rolling=200, max_sp=5000):
             text = "p {}\n".format(min(move_sp, max_sp))
             send_msg(text)
     return text
-
 
 def stop_function():
     text = "s"
@@ -107,6 +122,7 @@ def check_camera(camera_idx=0, mirror=True, size=None):
 
     cap.release()
     cv2.destroyAllWindows()
+
 
 
 def main(mirror=True, size=None):
@@ -139,6 +155,7 @@ def main(mirror=True, size=None):
 
         print(text)
         k = cv2.waitKey(50)
+
         if k == 27:  # ESC
             break
 
@@ -150,3 +167,4 @@ def main(mirror=True, size=None):
 if __name__ == '__main__':
     # main()
     check_camera(camera_idx=1)
+

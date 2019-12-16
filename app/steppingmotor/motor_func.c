@@ -140,47 +140,7 @@ void L6470_run_both(long speed)
     L6470_SPI_CHANNEL = 1;
     L6470_run(-1 * speed);
 }
-/*
-void new_speed_change(long speed, long postspeed)
-{
-	int diff = postspeed - speed;
 
-	// int MAX_DIFF = 1000;
-	// int MINUS_MAX_DIFF = -1000;
-
-	int CNT = 30;
-	int i;
-	long tmp_speed = speed;
-	if ((diff / CNT < MAX_DIFF) && (diff / CNT > MAX_DIFF)){
-		for (i = 0; i < CNT; i++) {
-			usleep(SLOPE_TIME);
-			L6470_run_both(tmp_speed);
-			tmp_speed += diff / CNT;
-		}
-	} else if (diff > 0){
-		int time = (int)(diff / MAX_DIFF);
-		for (i = 0; i < time; i++) {
-			usleep(SLOPE_TIME);
-			L6470_run_both(tmp_speed);
-			tmp_speed += MAX_DIFF;
-		}
-	} else {
-		int time = (int)(diff / MINUS_MAX_DIFF);
-		for (i = 0; i < time; i++) {
-			usleep(SLOPE_TIME);
-			L6470_run_both(tmp_speed);
-			tmp_speed += MINUS_MAX_DIFF;
-		}
-	}
-	tmp_speed = postspeed;
-	usleep(SLOPE_TIME);
-	L6470_run_both(tmp_speed);
-	if (postspeed == 0) {
-		L6470_softstop();
-		L6470_softhiz();
-	}
-}
-*/
 void L6470_turn_speed_change(long speed, int postspeed)
 {
     printf("speed: %ld, postspeed: %d\n", speed, postspeed);
