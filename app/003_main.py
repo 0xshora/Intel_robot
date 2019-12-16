@@ -192,7 +192,6 @@ def main(length, mirror=True, size=None):
     cap_0 = cv2.VideoCapture(0)
     cap_1 = cv2.VideoCapture(1)
     while(cap_0.isOpened()):
-        print ("hi")
         ret_0, frame_0 = cap_0.read()
         ret_1, frame_1 = cap_1.read()
         if mirror is True:
@@ -240,9 +239,53 @@ def main(length, mirror=True, size=None):
     cap_1.release()
     cv2.destroyAllWindows()
 
+def main_no_length(mirror=True, size=None):
+    cap_0 = cv2.VideoCapture(0)
+    cap_1 = cv2.VideoCapture(1)
+    while(cap_0.isOpened()):
+        ret_0, frame_0 = cap_0.read()
+        ret_1, frame_1 = cap_1.read()
+        if mirror is True:
+            frame_0 = frame_0[:, ::-1]
+            frame_1 = frame_1[:, ::-1]
+
+        if size is not None and len(size) == 2:
+            frame_0 = cv2.resize(frame_0, size)
+            frame_1 = cv2.resize(frame_1, size)
+
+        box_0 = []
+        box_1 = []
+        boxes_0 = cascade(frame_0)
+        boxes_1 = cascade(frame_1)
+        if len(boxes_0) != 0:
+            box_0 = boxes_0[0]
+        if len(boxes_1) != 0:
+            box_1 = boxes_1[0]
+
+        if len(box_0) != 0 and len(box_1) != 0:
+            h, theta = cal_theta_h(box_0, box_1)
+            chase_function(h, theta)
+            # print('speed')
+        else:
+            search_function()
+            # print('speed')
+            # print('roll')
+
+        k = cv2.waitKey(100)
+        if k == ord('s'):
+            send_msg("s")
+            break
+        if k == 27:  # ESC end
+            break
+
+    cap_0.release()
+    cap_1.release()
+    cv2.destroyAllWindows()
 
 if __name__ == '__main__':
-    server_and_call_main()
+    # main without length version
+    main_no_length()
+    # server_and_call_main()
 
 
 """
