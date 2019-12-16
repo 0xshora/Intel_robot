@@ -198,36 +198,11 @@ def send_msg(msg):
     s.send(msg)
 
 
-def cascade(img):
-    gray = cv2.cvtcolor(img, cv2.color_bgr2gray)
-
-    # load the cascade file
-
-    face_cascade = cv2.cascadeclassifier(
-        '../data/haarcascades/haarcascade_frontalface_default.xml')
-    # face_cascade = cv2.cascadeclassifier('../data/haarcascades/haarcascade_upperbody.xml')
-    # face_cascade = cv2.cascadeclassifier('../data/haarcascades/haarcascade_lowerbody.xml')
-
-    boxes = face_cascade.detectmultiscale(gray)
-    # draw_detections(img, boxes)
-    # print(faces)
-    # cv2.imshow('img', img)
-    return boxes
-
-
-# max_w = screen_wide_x - screen_center_x
-# max_angle = 60
-# max_angle_rad = 60. * math.pi / 180.
-# camera_dis = 20
-
-
-
-
 def is_escape_flg(length):
     flg = 0
-    if length[0] < thr_front_len or length[1] < thr_front_len:
+    if length[0] < THR_FRONT_LEN or length[1] < THR_FRONT_LEN:
         flg = 1
-    elif length[2] < thr_side_len or length[3] < thr_front_len:
+    elif length[2] < THR_SIDE_LEN or length[3] < THR_FRONT_LEN:
         flg = 1
     return flg
 
