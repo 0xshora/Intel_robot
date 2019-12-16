@@ -188,8 +188,6 @@ def search_function(default_roll=5000, default_sp=1000):
         # print("just rolling")
         cnt += 1
 
-
-
 def main(length, mirror=True, size=None):
     cap_0 = cv2.VideoCapture(0)
     cap_1 = cv2.VideoCapture(1)
