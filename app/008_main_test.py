@@ -35,6 +35,13 @@ THR_BOXSIZE = 20000
 # length[2] : side right
 # length[3] : side left
 
+def draw_detections(img, rects, thickness=1):
+    for x, y, w, h in rects:
+        pad_w, pad_h = int(0.15 * w), int(0.05 * h)
+        cv2.rectangle(img, (x + pad_w, y + pad_h),
+                      (x + w - pad_w, y + h - pad_h), (0, 255, 0), thickness)
+
+
 def server_and_call_main():
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     host = "127.0.0.1"
@@ -98,6 +105,23 @@ def cascade(img):
     # print(faces)
     # cv2.imshow('img', img)
     return boxes
+
+def now_cascade(img):
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+
+    # load the cascade file
+
+    face_cascade = cv2.CascadeClassifier(
+        '../data/haarcascades/haarcascade_frontalface_default.xml')
+    # face_cascade = cv2.CascadeClassifier('../data/haarcascades/haarcascade_upperbody.xml')
+    # face_cascade = cv2.CascadeClassifier('../data/haarcascades/haarcascade_lowerbody.xml')
+
+    boxes = face_cascade.detectMultiScale(gray)
+    draw_detections(img, boxes)
+    # print(faces)
+    cv2.imshow('img', img)
+    return boxes
+
 
 
 # MAX_W = SCREEN_WIDE_X - SCREEN_CENTER_X
@@ -285,10 +309,35 @@ def main_no_length(mirror=True, size=None):
     cap_1.release()
     cv2.destroyAllWindows()
 
+def detect_boxes(mirror=True, size=None):
+    cap_0 = cv2.VideoCapture(0)
+    cap_1 = cv2.VideoCapture(1)
+    while(cap_0.isOpened()):
+        ret_0, frame_0 = cap_0.read()
+        ret_1, frame_1 = cap_1.read()
+        if mirror is True:
+            frame_0 = frame_0[:, ::-1]
+            frame_1 = frame_1[:, ::-1]
+
+        if size is not None and len(size) == 2:
+            frame_0 = cv2.resize(frame_0, size)
+            frame_1 = cv2.resize(frame_1, size)
+
+        box_0 = []
+        box_1 = []
+        boxes_0 = now_cascade(frame_0)
+        # boxes_1 = cascade(frame_1)
+    cap.release()
+    cv2.destroyAllWindows()
+
+
 if __name__ == '__main__':
     # main without length version
-    main_no_length()
+    # main_no_length()
     # server_and_call_main()
+    
+    # test by cv2 imshow
+    detect_boxes()
 
 
 """

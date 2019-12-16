@@ -10,8 +10,8 @@ from collections import deque
 import argparse
 import imutils
 import time
-import pandas as pd
-import matplotlib.pyplot as plt
+#import pandas as pd
+#import matplotlib.pyplot as plt
 
 # camera center
 SCREEN_CENTER_X = 400
@@ -40,17 +40,17 @@ THR_BOXSIZE = 20000
 # length[3] : side left
 
 
-def detect_ball(length):
+def detect_ball():
     greenLower = (29, 86, 6)
     greenUpper = (64, 255, 255)
-    pts = deque(maxlen=args["buffer"])
+    #pts = deque(maxlen=args["buffer"])
     camera = cv2.VideoCapture(0)
 
-    Data_Features = ['x', 'y', 'time']
-    Data_Points = pd.DataFrame(data = None, columns = Data_Features , dtype = float)
+    #Data_Features = ['x', 'y', 'time']
+    #Data_Points = pd.DataFrame(data = None, columns = Data_Features , dtype = float)
     while True:
-        if is_escape_flg(length):
-            avoid_function(length)
+        #if is_escape_flg(length):
+        #    avoid_function(length)
     	# grab the current frame
     	(grabbed, frame) = camera.read()
 
@@ -58,8 +58,8 @@ def detect_ball(length):
 
     	# if we are viewing a video and we did not grab a frame,
     	# then we have reached the end of the video
-    	if args.get("video") and not grabbed:
-    		break
+    	#if args.get("video") and not grabbed:
+    	#	break
 
     	# resize the frame, blur it, and convert it to the HSV
     	# color space
@@ -97,16 +97,16 @@ def detect_ball(length):
                     continue
 
 
-                if 800 <= center and center <= 1000:
+                if 800 <= center[0] and center[0] <= 1000:
                     text = "p {}\n".format(1000)
-                elif center >= 900:
+                elif center[0] >= 900:
                     #the object is right
                     #ex. 1500
-                    text = "r {}\n".format((center-900) * 100)
+                    text = "r {}\n".format((center[0]-900) * 100)
                 else:
                     #the object is left
                     #ex. 100
-                    text = "r {}\n".format((center-900) * 100)
+                    text = "r {}\n".format((center[0]-900) * 100)
                 send_msg(text)
                 continue
 
@@ -151,7 +151,7 @@ def detect_ball(length):
 
 
 def server_and_call_main():
-    s = socket.socket(socket.af_inet, socket.sock_stream)
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     host = "127.0.0.1"
     port = 50002
     s.bind((host, port))
@@ -213,4 +213,5 @@ def avoid_function(roll_sp=100):
 
 
 if __name__ == '__main__':
-    server_and_call_main()
+    #server_and_call_main()
+    detect_ball()
