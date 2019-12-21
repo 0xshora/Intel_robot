@@ -1,0 +1,115 @@
+#-*- coding: utf-8 -*-
+import cv2
+import numpy as np
+from scipy import stats
+from sklearn.neural_network import MLPClassifier
+from sklearn.linear_model import Perceptron
+from sklearn.externals import joblib
+import sys
+from PIL import Image, ImageTk
+import threading
+import time
+import subprocess
+try:
+    import Tkinter as tk
+except ImportError: # for Python 3
+    import tkinter as tk
+
+version = cv2.__version__.split(".")
+CVversion = int(version[0])
+
+# 学習に用いる縮小画像のサイズ
+sw = 16
+sh = 12
+
+# 手の認識用パラメータ（HチャンネルとSチャンネルとを二値化するための条件）
+hmin = 0
+hmax = 30  # 15-40程度にセット
+smin = 50
+
+# じゃんけんの手のベクトル形式を格納した配列。入力データとして用いる
+# グー [1, 0, 0], チョキ [0, 1, 0], パー [0, 0, 1]
+janken_array = np.array([[1, 0, 0], [0, 1, 0], [0, 0, 1]])
+
+# グー, チョキ, パーの名称を格納した配列
+janken_class =  ['グー', 'チョキ', 'パー']
+
+# 過去何回分の手を覚えているか
+n = 3
+
+# じゃんけんの過去の手の初期化
+# 人間の手とコンピュータの手をそれぞれn回分。さらに1回分につき3個の数字が必要
+Jprev = np.zeros(3*n*2) 
+
+# 過去の手（ベクトル形式）をランダムに初期化
+for i in range(2*n):
+    j = np.random.randint(0, 3)
+    Jprev[3*i:3*i+3] = janken_array[j]
+
+# 現在の手（0～2の整数）をランダムに初期化
+j = np.random.randint(0, 3)
+
+# 過去の手（入力データ）をscikit_learn用の配列に変換
+Jprev_set = np.array([Jprev])
+# 現在の手（ターゲット）をscikit_learn用の配列に変換
+jnow_set = np.array([j])
+
+# 三層ニューラルネットワークを定義
+#clf_janken = MLPClassifier(hidden_layer_sizes=(200, ), random_state=None)
+# 単純パーセプトロンを定義
+clf_janken = Perceptron(random_state=None)
+# ランダムな入力でオンライン学習を1回行う。
+# 初回の学習では、あり得るターゲット(0, 1, 2)を分類器に知らせる必要がある
+clf_janken.partial_fit(Jprev_set, jnow_set, classes=[0, 1, 2])
+
+# 勝敗の回数を初期化
+win = 0
+draw = 0
+lose = 0
+
+# 状態保存用のフラグ
+appliStop = False
+jankenLoop = False
+recognizedHand = 0
+
+# 学習済ファイルの確認
+if len(sys.argv)==2:
+    savefile = sys.argv[1]
+    try:
+        clf = joblib.load(savefile)
+    except IOError:
+        print('学習済ファイル{0}を開けません'.format(savefile))
+        sys.exit()
+else:
+    print('使用法: python ml-09-01-janken.py 学習済ファイル.pkl')
+    sys.exit()
+
+# X:画像から計算したベクトル、y:教師データ
+X = np.empty((0,sw*sh), float) 
+y = np.array([], int)
+
+def getImageVector(img):
+    # 白い領域(ピクセル値が0でない領域)の座標を集める
+    nonzero = cv2.findNonZero(img)
+    # その領域を囲う四角形の座標と大きさを取得
+    xx, yy, ww, hh = cv2.boundingRect(nonzero)
+    # 白い領域を含む最小の矩形領域を取得
+    img_nonzero = img[yy:yy+hh, xx:xx+ww]
+    # 白い領域を(sw, sh)サイズに縮小するための準備
+    img_small = np.zeros((sh, sw), dtype=np.uint8)
+    # 画像のアスペクト比を保ったまま、白い領域を縮小してimg_smallにコピーする
+    if 4*hh < ww*3 and hh > 0:
+        htmp = int(sw*hh/ww)
+        if htmp>0:
+            img_small_tmp = cv2.resize(img_nonzero, (sw, htmp), interpolation=cv2.INTER_LINEAR)
+            img_small[int((sh-htmp)/2):int((sh-htmp)/2)+htmp, 0:sw] = img_small_tmp
+    elif 4*hh >= ww*3 and ww > 0:
+        wtmp = int(sh*ww/hh)
+        if wtmp>0:
+            img_small_tmp = cv2.resize(img_nonzero, (wtmp, sh), interpolation=cv2.INTER_LINEAR)
+            img_small[0:sh, int((sw-wtmp)/2):int((sw-wtmp)/2)+wtmp] = img_small_tmp
+    # 0...1の範囲にスケーリングしてからリターンする
+    return np.array([img_small.ravel()/255.])
+
+def imageProcessing():
+    

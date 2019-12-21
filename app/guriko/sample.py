@@ -77,7 +77,8 @@ while(True):
         hs_all = np.concatenate((hs, hs_bin, hs_final), axis=1)
         
 
-        cv2.imshow('frame',frame)
+        cv2.imshow('hand',hand)
+        
         key = cv2.waitKey(1)
         if key & 0xFF == ord('q'):
             break

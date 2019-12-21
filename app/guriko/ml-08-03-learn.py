@@ -65,7 +65,8 @@ for hand_class in [0, 1, 2]: # 0:グー、1:チョキ、2:パー
         for flip in [0, 1]: # 左右反転なし(0)とあり(1)
             if flip == 1:
                 img = cv2.flip(img, 1)
-            for angle in [-80, -60, -40, -20, 0, 20, 40, 60, 80]: #角度
+            #for angle in [-80, -60, -40, -20, 0, 20, 40, 60, 80]: #角度
+            for angle in [-90,-80,-70,-60,-50,-40,-30,-20,-10,0,10,20,30,40,50,60,70,80,90]:
                 # 回転行列準備
                 rot_mat = cv2.getRotationMatrix2D((cx, cy), angle, 1.0)
                 # 画像の回転
