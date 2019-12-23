@@ -16,7 +16,7 @@ sh = 12
 
 #手の認識パラメータ
 hmin = 0
-hmax = 30
+hmax = 20
 smin = 50
 
 janken_class =  ['グー', 'チョキ', 'パー']

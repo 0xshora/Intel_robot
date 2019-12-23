@@ -24,7 +24,7 @@ sh = 12
 
 # 手の認識用パラメータ（HチャンネルとSチャンネルとを二値化するための条件）
 hmin = 0
-hmax = 15  # 15-40程度にセット
+hmax = 20  # 15-40程度にセット
 smin = 50
 
 # じゃんけんの手のベクトル形式を格納した配列。入力データとして用いる
@@ -262,10 +262,10 @@ class Application(tk.Frame):
 
     # じゃんけんのループ
     def janken_loop(self):
-        w = self.w
-        h = self.h
-        global jankenLoop
-        while jankenLoop == True:
+            w = self.w
+            h = self.h
+            global jankenLoop
+#        while jankenLoop == True:
             time.sleep(1)
             # メッセージ領域に「じゃんけん」と表示
             message_text = 'じゃんけん'
@@ -311,30 +311,48 @@ class Application(tk.Frame):
 
             if your_choice == 0:
                 # 人間のグー画像表示
+                win_point = 1
+                lose_point = 5
                 self.human_canvas.create_image((w/2,h/2), image=self.human_gu_img, state='normal')
                 self.human_canvas.image = self.human_gu_img
             elif your_choice == 1:
                 # 人間のチョキ画像表示
+                win_point = 2
+                lose_point = 1
                 self.human_canvas.create_image((w/2,h/2), image=self.human_choki_img, state='normal')
                 self.human_canvas.image = self.human_choki_img
             else:
                 # 人間のパー画像表示
+                win_point = 5
+                lose_point = 2
                 self.human_canvas.create_image((w/2,h/2), image=self.human_pa_img, state='normal')
                 self.human_canvas.image = self.human_pa_img
 
             # 勝敗結果を更新 
-            global draw, lose, win
+            global draw, lose, win, win_point, lose_point, real_move
             if your_choice == comp_choice:
                 draw += 1
+                result_text = 'あいこ'
+                self.result_canvas.delete('all')
+                self.result_canvas.create_text(200, 15, text=result_text)
             elif your_choice == (comp_choice+1)%3:
                 lose += 1
+                real_move = lose_point
+                result_text = 'あなたの負け  {0}マス進みます'.format(real_move)
+                self.result_canvas.delete('all')
+                self.result_canvas.create_text(200, 15, text=result_text)
             else:
                 win += 1
+                real_move = win_point
+                result_text = 'あなたの勝ち  {0}マス進んでください'.format(real_move)
+                self.result_canvas.delete('all')
+                self.result_canvas.create_text(200, 15, text=result_text)
 
             # 勝敗結果を表示
-            result_text = 'あなたの勝ち: {0}, 負け: {1}, あいこ: {2} '.format(win, lose, draw)
-            self.result_canvas.delete('all')
-            self.result_canvas.create_text(200, 15, text=result_text)
+            #result_text = 'あなたの勝ち: {0}, 負け: {1}, あいこ: {2} '.format(win, lose, draw)
+            #result_text = ''
+            #self.result_canvas.delete('all')
+            #self.result_canvas.create_text(200, 15, text='TEST')
            
             # 過去の手（入力データ）と現在の手（ターゲット）とでオンライン学習 
             clf_janken.partial_fit(Jprev_set, jnow_set)
