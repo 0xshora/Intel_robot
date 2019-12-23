@@ -35,6 +35,10 @@ THR_BOXSIZE = 40000
 # length[2] : side right
 # length[3] : side left
 
+
+face_cascade = cv2.CascadeClassifier(
+        '../data/haarcascades/haarcascade_frontalface_default.xml')
+
 def server_and_call_main():
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     host = "127.0.0.1"
@@ -85,15 +89,16 @@ def send_msg(msg):
 
 def cascade(img):
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    global face_cascade
 
     # load the cascade file
 
-    face_cascade = cv2.CascadeClassifier(
-        '../data/haarcascades/haarcascade_frontalface_default.xml')
+    # face_cascade = cv2.CascadeClassifier(
+    #     '../data/haarcascades/haarcascade_frontalface_default.xml')
     # face_cascade = cv2.CascadeClassifier('../data/haarcascades/haarcascade_upperbody.xml')
     # face_cascade = cv2.CascadeClassifier('../data/haarcascades/haarcascade_lowerbody.xml')
 
-    boxes = face_cascade.detectMultiScale(gray)
+    boxes = face_cascade.detectMultiScale(gray, scaleFactor=1.05, minSize=(30, 30))
     # draw_detections(img, boxes)
     # print(faces)
     # cv2.imshow('img', img)

@@ -1,11 +1,13 @@
+-w /home/ri/Intel_robot/app/words.dic
 # mkbingramで作成したバイナリ形式 (言語モデル)
--d model/lang_m/bccwj.60k.bingram
+-d /home/ri/work/julius/julius-kit/dictation-kit-v4.4/model/lang_m/bccwj.60k.bingram
 #　単語辞書ファイル
--v model/lang_m/bccwj.60k.htkdic
+-v /home/ri/work/julius/julius-kit/dictation-kit-v4.4/model/lang_m/bccwj.60k.htkdic
+
 # 音響モデル(HMM; Hidden Markov Model)
--h model/phone_m/jnas-tri-3k16-gid.binhmm
+-h /home/ri/work/julius/julius-kit/dictation-kit-v4.4/model/phone_m/jnas-tri-3k16-gid.binhmm
 # 音響モデル(Triphoneリスト)
--hlist model/phone_m/logicalTri-3k16-gid.bin
+-hlist /home/ri/work/julius/julius-kit/dictation-kit-v4.4/model/phone_m/logicalTri-3k16-gid.bin
 
 -lmp  10 0          # 言語モデル重み・単語挿入ペナルティ
 -lmp2 10 0

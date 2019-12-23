@@ -23,8 +23,10 @@ def cascade(img):
     # face_cascade = cv2.CascadeClassifier('../data/haarcascades/haarcascade_upperbody.xml')
     # face_cascade = cv2.CascadeClassifier(
     #     '../data/haarcascades/haarcascade_lowerbody.xml')
+
+    # delete minNeighbors=3
    
-    faces = face_cascade.detectMultiScale(gray, scaleFactor=1.05, minNeighbors=3, minSize=(30, 30))
+    faces = face_cascade.detectMultiScale(gray, scaleFactor=1.1, minSize=(30, 20))
     print(faces)
     # draw_detections(img, faces)
     cv2.imshow('img', img)
