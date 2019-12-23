@@ -48,11 +48,11 @@ for hand_class in [0, 1, 2]: # 0:グー、1:チョキ、2:パー
     # 画像番号0から999まで対応
     for i in range(1000):
         if hand_class==0: #グー画像
-            filename = 'ml-learn/img_gu{0:03d}.png'.format(i)
+            filename = 'my_ml-learn/img_gu{0:03d}.png'.format(i)
         elif hand_class==1: #チョキ画像
-            filename = 'ml-learn/img_choki{0:03d}.png'.format(i)
+            filename = 'my_ml-learn/img_choki{0:03d}.png'.format(i)
         elif hand_class==2: #パー画像
-            filename = 'ml-learn/img_pa{0:03d}.png'.format(i)
+            filename = 'my_ml-learn/img_pa{0:03d}.png'.format(i)
 
         img = cv2.imread(filename, cv2.IMREAD_GRAYSCALE)
         if img is None:
