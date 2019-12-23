@@ -41,8 +41,8 @@ THR_BOXSIZE = 20000
 
 
 def detect_ball():
-    greenLower = (29, 86, 6)
-    greenUpper = (64, 255, 255)
+    greenLower = (50, 120, 80)
+    greenUpper = (80, 150, 90)
     #pts = deque(maxlen=args["buffer"])
     camera = cv2.VideoCapture(0)
 
