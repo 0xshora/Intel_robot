@@ -1,8 +1,12 @@
 # coding: utf-8
 import cv2
+import numpy as np
 
+face_cascade = cv2.CascadeClassifier(
+        '../data/haarcascades/haarcascade_lowerbody.xml')
 
 def draw_detections(img, rects, thickness=1):
+    img = np.array(img)
     for x, y, w, h in rects:
         pad_w, pad_h = int(0.15 * w), int(0.05 * h)
         cv2.rectangle(img, (x + pad_w, y + pad_h),
@@ -10,19 +14,20 @@ def draw_detections(img, rects, thickness=1):
 
 
 def cascade(img):
+    global face_cascade
+    # img = cv2.resize(img, (680, 480)) 
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     # カスケードファイルの読み込み
     # face_cascade = cv2.CascadeClassifier(
     # '../data/haarcascades/haarcascade_frontalface_default.xml')
     # face_cascade = cv2.CascadeClassifier('../data/haarcascades/haarcascade_upperbody.xml')
-    face_cascade = cv2.CascadeClassifier(
-        '../data/haarcascades/haarcascade_lowerbody.xml')
-
-    faces = face_cascade.detectMultiScale(gray)
-    draw_detections(img, faces)
+    # face_cascade = cv2.CascadeClassifier(
+    #     '../data/haarcascades/haarcascade_lowerbody.xml')
+   
+    faces = face_cascade.detectMultiScale(gray, scaleFactor=1.05, minNeighbors=3, minSize=(30, 30))
     print(faces)
+    # draw_detections(img, faces)
     cv2.imshow('img', img)
-
 
 
 def detect_boxes(mirror=True, size=None):

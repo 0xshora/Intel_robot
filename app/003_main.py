@@ -13,6 +13,10 @@ MAX_ANGLE = 60
 MAX_ANGLE_RAD = 60. * math.pi / 180.
 CAMERA_DIS = 20
 
+# search_function param
+cnt = 0
+
+
 # given parameters
 # @LENGTH : distance between the machine and objects
 # @BOXES  : boxes which represent detected positions
@@ -24,7 +28,7 @@ BOXES = [[365, 75, 453, 453]]
 # @THR_BOXSIZE : a threshold within a bix box or not
 THR_FRONT_LEN = 20
 THR_SIDE_LEN = 20
-THR_BOXSIZE = 20000
+THR_BOXSIZE = 40000
 
 # length[0] : front rigth
 # length[1] : front left
@@ -37,7 +41,7 @@ def server_and_call_main():
     port = 50002
     s.bind((host, port))
     s.listen(1)
-    
+
     clients = []
 
     try:
@@ -65,7 +69,7 @@ def server_and_call_main():
         traceback.print_exc()
         connection.close()
         s.close()
-    
+
     return from_client
 
 
@@ -101,22 +105,28 @@ def cascade(img):
 # MAX_ANGLE_RAD = 60. * math.pi / 180.
 # CAMERA_DIS = 20
 
-def cal_theta_h(rect_a=None, rect_b=None):
+def cal_area(rect):
+    return (rect[0] - rect[2]) * (rect[1] - rect[3])
+
+def cal_theta_h(rect_a=[], rect_b=[]):
 
     #calculate the theta and h
     #input rect_a, rect_b
 
-    """
-    if not rect_a:
+    
+    if len(rect_a) == 0:
+        if cal_area(rect_b) > THR_BOXSIZE:
+            return 0, 0
         h = 500
         theta = -MAX_ANGLE
         return h, theta
-    elif not rect_b:
+    elif len(rect_b) == 0:
+        if cal_area(rect_a) > THR_BOXSIZE:
+            return 0, 0 
         h = 500
         theta = MAX_ANGLE
-
         return h, theta
-    """
+    
     a_center_x = (rect_a[3] - rect_a[1]) / 2 + rect_a[1]
     b_center_x = (rect_b[3] - rect_b[1]) / 2 + rect_a[1]
 
@@ -143,8 +153,8 @@ def is_escape_flg(length):
     return flg
 
 
-def chase_function(d, theta, A=10, B=10, max_rolling=200, max_sp=1000):
-    if theta > 10 or theta < -10:
+def chase_function(d, theta, A=10, B=10, max_rolling=2000, max_sp=1000):
+    if theta > 30 or theta < -30:
         # rolling
         roll_sp = A * theta
 
@@ -160,12 +170,13 @@ def chase_function(d, theta, A=10, B=10, max_rolling=200, max_sp=1000):
     else:
         # move forward
         if d < 20 and d > -20:
+            print("distance is lower than 20.")
             # stop
             send_msg(text)
         else:
             move_sp = B * d
             text = "p {}\n".format(min(move_sp, max_sp))
-            send_msg()
+            send_msg(text)
 
 
 def avoid_function(roll_sp=100):
@@ -174,9 +185,9 @@ def avoid_function(roll_sp=100):
     # print("just rolling")
 
 
-def search_function(default_roll=5000, default_sp=1000):
-    cnt = 0
-    if cnt % 100 > 50:
+def search_function(default_roll=1000, default_sp=2000):
+    global cnt
+    if cnt % 1000 > 999:
         text = "p {}\n".format(default_sp)
         send_msg(text)
         # print("move forward")
@@ -184,16 +195,13 @@ def search_function(default_roll=5000, default_sp=1000):
     else:
         text = "r {}\n".format(default_roll)
         send_msg(text)
-        # print("just rolling")
+        print("just rolling, cnt: {}".format(cnt))
         cnt += 1
-
-
 
 def main(length, mirror=True, size=None):
     cap_0 = cv2.VideoCapture(0)
     cap_1 = cv2.VideoCapture(1)
     while(cap_0.isOpened()):
-        print ("hi")
         ret_0, frame_0 = cap_0.read()
         ret_1, frame_1 = cap_1.read()
         if mirror is True:
@@ -203,7 +211,7 @@ def main(length, mirror=True, size=None):
         if size is not None and len(size) == 2:
             frame_0 = cv2.resize(frame_0, size)
             frame_1 = cv2.resize(frame_1, size)
-        
+
         box_0 = []
         box_1 = []
         boxes_0 = cascade(frame_0)
@@ -223,6 +231,7 @@ def main(length, mirror=True, size=None):
             # print('just rolling')
         elif len(box_0) != 0 and len(box_1) != 0:
             h, theta = cal_theta_h(box_0, box_1)
+            print("h, theta:", h, theta)
             chase_function(h, theta)
             # print('speed')
         else:
@@ -241,9 +250,54 @@ def main(length, mirror=True, size=None):
     cap_1.release()
     cv2.destroyAllWindows()
 
+def main_no_length(mirror=True, size=None):
+    cap_0 = cv2.VideoCapture(0)
+    cap_1 = cv2.VideoCapture(1)
+    while(cap_0.isOpened()):
+        ret_0, frame_0 = cap_0.read()
+        ret_1, frame_1 = cap_1.read()
+        if mirror is True:
+            frame_0 = frame_0[:, ::-1]
+            frame_1 = frame_1[:, ::-1]
+
+        if size is not None and len(size) == 2:
+            frame_0 = cv2.resize(frame_0, size)
+            frame_1 = cv2.resize(frame_1, size)
+
+        box_0 = []
+        box_1 = []
+        boxes_0 = cascade(frame_0)
+        boxes_1 = cascade(frame_1)
+        if len(boxes_0) != 0:
+            box_0 = boxes_0[0]
+        if len(boxes_1) != 0:
+            box_1 = boxes_1[0]
+
+        if len(box_0) != 0 or len(box_1) != 0:
+            h, theta = cal_theta_h(box_0, box_1)
+            print("h, theta: ", h, theta)
+            print('chase function')
+            print('boxes_0: ', boxes_0, 'boxes_1: ',boxes_1)
+            chase_function(h, theta)
+        else:
+            print('search function')
+            search_function()
+            
+        k = cv2.waitKey(100)
+        if k == ord('s'):
+            send_msg("s")
+            break
+        if k == 27:  # ESC end
+            break
+
+    cap_0.release()
+    cap_1.release()
+    cv2.destroyAllWindows()
 
 if __name__ == '__main__':
-    server_and_call_main()
+    # main without length version
+    main_no_length()
+    # server_and_call_main()
 
 
 """
