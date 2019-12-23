@@ -227,7 +227,8 @@ class Application(tk.Frame):
         lose = 0
         win = 0
         self.message_canvas.delete('all')
-        result_text = 'あなたの勝ち: {0:d}, 負け: {1:d}, あいこ: {2:d} '.format(win, lose, draw)
+        #result_text = 'あなたの勝ち: {0:d}, 負け: {1:d}, あいこ: {2:d} '.format(win, lose, draw)
+        result_text = 'リセット'
         self.result_canvas.delete('all')
         self.result_canvas.create_text(200, 15, text=result_text)
 
