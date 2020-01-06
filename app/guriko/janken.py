@@ -15,6 +15,7 @@ try:
 except ImportError: # for Python 3
     import tkinter as tk
 
+
 version = cv2.__version__.split(".")
 CVversion = int(version[0])
 
