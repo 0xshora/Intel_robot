@@ -41,8 +41,8 @@ THR_BOXSIZE = 20000
 
 
 def detect_ball():
-    greenLower = (29, 86, 6)
-    greenUpper = (64, 255, 255)
+    greenLower = (50, 120, 80)
+    greenUpper = (80, 150, 90)
     #pts = deque(maxlen=args["buffer"])
     camera = cv2.VideoCapture(0)
 
@@ -63,7 +63,11 @@ def detect_ball():
 
     	# resize the frame, blur it, and convert it to the HSV
     	# color space
+
+
     	frame = imutils.resize(frame, width=100)
+
+
     	# blurred = cv2.GaussianBlur(frame, (11, 11), 0)
     	hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
 
@@ -73,6 +77,7 @@ def detect_ball():
     	mask = cv2.inRange(hsv, greenLower, greenUpper)
     	mask = cv2.erode(mask, None, iterations=2)
     	mask = cv2.dilate(mask, None, iterations=2)
+
         cv2.namedWindow("Frame", cv2.WINDOW_NORMAL)
         cv2.imshow("Frame", frame)
     	# show the frame to our screen
@@ -82,6 +87,7 @@ def detect_ball():
     	# if the 'q' key is pressed, stop the loop
     	if key == ord("q"):
                 break
+
 
     	# find contours in the mask and initialize the current
     	# (x, y) center of the ball
@@ -104,8 +110,10 @@ def detect_ball():
                     #the object is close enough
                     text = "s\n"
                     send_msg(text)
+
                     print("close. stop")
                     continue
+
 
                 if 700 <= center[0] and center[0] <= 1100:
                     text = "p {}\n".format(5000)
@@ -117,16 +125,20 @@ def detect_ball():
                     #the object is right
                     #ex. 1500
                     text = "r {}\n".format((center[0]-900) * 100)
+
                     send_msg(text)
                     print("right")
                     continue
+
                 else:
                     #the object is left
                     #ex. 100
                     text = "r {}\n".format((center[0]-900) * 100)
+
                     send_msg(text)
                     print("left")
                     continue 
+
 
                 # only proceed if the radius meets a minimum size
                 if (radius < 300) & (radius > 10 ) :
@@ -139,15 +151,17 @@ def detect_ball():
                     #Save The Data Points
         else:
             #not found
+
             print("not found")
             text = "s"
+
             send_msg(text)
             continue
     	# update the points queue
     	pts.appendleft(center)
 
     	# loop over the set of tracked points
-        
+
     	for i in range(1, len(pts)):
                 # if either of the tracked points are None, ignore
                 # them
@@ -159,10 +173,6 @@ def detect_ball():
                 thickness = int(np.sqrt(args["buffer"] / float(i + 1)) * 2.5)
                 cv2.line(frame, pts[i - 1], pts[i], (0, 0, 255), thickness)
         
-
-
-
-
 def server_and_call_main():
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     host = "127.0.0.1"
