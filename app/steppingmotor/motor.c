@@ -144,7 +144,7 @@ int main(int argc, char ** argv) {
             // printf("*** Speed %ld ***\n", speed);
         }
 
-        if (strcmp(av[0], "r") == 0 || strcmp(av[0], "l") == 0) {
+        if (strcmp(av[0], "r") == 0) {
             long sp = atol(av[1]);
             L6470_speed_change(speed, 0);
             speed = 0;

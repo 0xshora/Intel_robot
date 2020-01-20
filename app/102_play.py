@@ -39,10 +39,11 @@ THR_BOXSIZE = 20000
 # length[2] : side right
 # length[3] : side left
 
-
 def detect_ball():
-    greenLower = (50, 120, 80)
-    greenUpper = (80, 150, 90)
+    greenLower = (30, 120, 6)
+    greenUpper = (80, 210, 250)
+#    greenLower = (50, 120, 50)
+#    greenUpper = (80, 210, 90)
     #pts = deque(maxlen=args["buffer"])
     camera = cv2.VideoCapture(0)
 
@@ -64,8 +65,8 @@ def detect_ball():
     	# resize the frame, blur it, and convert it to the HSV
     	# color space
 
-
-    	frame = imutils.resize(frame, width=100)
+        mywidth = 100
+    	frame = imutils.resize(frame, width = mywidth)
 
 
     	# blurred = cv2.GaussianBlur(frame, (11, 11), 0)
@@ -109,33 +110,33 @@ def detect_ball():
                 if radius >= 200:
                     #the object is close enough
                     text = "s\n"
-                    send_msg(text)
+                    mysend_msg(text)
 
                     print("close. stop")
                     continue
 
 
-                if 700 <= center[0] and center[0] <= 1100:
+                if mywidth/2-mywidth/4 <= center[0] and center[0] <= mywidth/2+mywidth/4:
                     text = "p {}\n".format(5000)
-                    send_msg(text)
+                    mysend_msg(text)
                     print("forward")
                     continue
 
-                elif center[0] >= 900:
+                elif center[0] >= mywidth/2+mywidth/4:
                     #the object is right
                     #ex. 1500
-                    text = "r {}\n".format((center[0]-900) * 100)
+                    text = "r {}\n".format(5000)
 
-                    send_msg(text)
+                    mysend_msg(text)
                     print("right")
                     continue
 
                 else:
                     #the object is left
                     #ex. 100
-                    text = "r {}\n".format((center[0]-900) * 100)
+                    text = "r {}\n".format(-5000)
 
-                    send_msg(text)
+                    mysend_msg(text)
                     print("left")
                     continue 
 
@@ -155,7 +156,7 @@ def detect_ball():
             print("not found")
             text = "s"
 
-            send_msg(text)
+            mysend_msg(text)
             continue
     	# update the points queue
     	pts.appendleft(center)
@@ -211,6 +212,59 @@ def server_and_call_main():
 
     return from_client
 
+msgcnt = [0, 0, 0]
+boundary = [2, 1, 50]
+previous = 0
+def mysend_msg(msg):
+    global previous
+    global msgcnt
+    global boundary
+    c = msg[0]
+    if c == "p":
+        msgcnt[0] += 1
+    elif c == "r":
+        msgcnt[1] += 1
+    elif c == "s":
+        msgcnt[2] += 1
+
+    for i in range(3):
+        if msgcnt[i] > boundary[i]:
+            if c == "s" and previous != 2:
+                msgcnt[i] =  0
+                previous = 2
+                break
+            if c == "s" and previous == 2:
+                send_msg(msg)
+                previous = -1
+                break
+            if c == "s" and previous == -1:
+                break
+            send_msg(msg)
+            print("********************", msg)
+            msgcnt = [0, 0, 0]
+            previous = i
+
+from mutagen.mp3 import MP3 as mp3
+import pygame
+import time
+def sound(msg):
+    c = msg[0]
+    filename = ""
+    if c == "p":
+        filename = '/home/ri/Intel_robot/data/wav_file/Proceed.mp3'
+    if c == "r" and msg[2] == "-":
+        filename = '/home/ri/Intel_robot/data/wav_file/Left.mp3'
+    if c == "r" and msg[2] != "-":
+        filename = '/home/ri/Intel_robot/data/wav_file/Right.mp3'
+    if c == "s":
+        filename = '/home/ri/Intel_robot/data/wav_file/Stop.mp3'
+
+    pygame.mixer.init()
+    pygame.mixer.music.load(filename)
+    mp3_length = mp3(filename).info.length
+    pygame.mixer.music.play(1)
+    time.sleep(mp3_length + 0.25)
+    pygame.mixer.music.stop()
 
 def send_msg(msg):
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -219,6 +273,7 @@ def send_msg(msg):
     s.connect((host, port))
     # s.sendall(msg.encode(encoding='ascii'))
     s.send(msg)
+    sound(msg)
 
 
 def is_escape_flg(length):
