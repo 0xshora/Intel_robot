@@ -132,28 +132,28 @@ def imageProcessing():
             img_dist, img_label = cv2.distanceTransformWithLabels(255-hs_and, cv2.cv.CV_DIST_L2, 5)
         else:
             img_dist, img_label = cv2.distanceTransformWithLabels(255-hs_and, cv2.DIST_L2, 5)
-            img_label = np.uint8(img_label) & hs_and
+        img_label = np.uint8(img_label) & hs_and
 
-            img_label_not_zero = img_label[img_label != 0]
+        img_label_not_zero = img_label[img_label != 0]
 
-            if len(img_label_not_zero) != 0:
-                m = stats.mode(img_label_not_zero)[0]
-            else:
-                m = 0
-            hand = np.uint8(img_label == m)*255
-            hand_vector = getImageVector(hand)
-            result = clf.predict(hand_vector)
-            global recognizedHand
-            recognizedHand = result[0]
+        if len(img_label_not_zero) != 0:
+            m = stats.mode(img_label_not_zero)[0]
+        else:
+            m = 0
+        hand = np.uint8(img_label == m)*255
+        hand_vector = getImageVector(hand)
+        result = clf.predict(hand_vector)
+        global recognizedHand
+        recognizedHand = result[0]
 
                 # 手と判定されている領域を表示
-            cv2.imshow('hand', hand)
+        cv2.imshow('hand', hand)
 
                 # waitを入れる
-            key = cv2.waitKey(1) 
+        key = cv2.waitKey(1) 
 
-            if appliStop == True:
-                  break
+        if appliStop == True:
+            break
     cv2.destroyAllWindows()
     app.jankenStop()
     app.quit()
@@ -274,8 +274,8 @@ class Application(tk.Frame):
             self.message_canvas.delete('all')
             self.message_canvas.create_text(200, 15, text=message_text)
             # 「じゃんけんぽん」という音声を再生
-            args = ['mpg321', '-q', 'ml-sound/jankenpon.mp3']
-            process = subprocess.Popen(args).wait()
+            #args = ['mpg321', '-q', 'ml-sound/jankenpon.mp3']
+            #process = subprocess.Popen(args).wait()
             # メッセージ領域に「ぽん！」と表示
             message_text = 'ぽん！'
             self.message_canvas.delete('all')
