@@ -48,10 +48,10 @@ def send_line(file_name=None):
         files = {"imageFile": open(file_name, "rb")}
 
     if not file_name:
-        requests.post("https://notify-api.line.me/api/notify", headers={"Authorization": "Bearer a7hLMHEgyEIwHa2DlIg8I7mrmuwpz24dO4e0JNcAHGY"}, params={"message": "a"}, files=files)
+        requests.post("https://notify-api.line.me/api/notify", headers={"Authorization": "Bearer a7hLMHEgyEIwHa2DlIg8I7mrmuwpz24dO4e0JNcAHGY"}, params={"message": "start detection!"}, files=files)
 
     else:
-        requests.post("https://notify-api.line.me/api/notify", headers={"Authorization": "Bearer a7hLMHEgyEIwHa2DlIg8I7mrmuwpz24dO4e0JNcAHGY"}, params={"message": "a"})
+        requests.post("https://notify-api.line.me/api/notify", headers={"Authorization": "Bearer a7hLMHEgyEIwHa2DlIg8I7mrmuwpz24dO4e0JNcAHGY"}, params={"message": "start detection!"})
 
 if __name__ == '__main__':
     main()
