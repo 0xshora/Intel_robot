@@ -41,7 +41,23 @@ THR_BOXSIZE = 20000
 #used in send_msg
 stopflg = 0
 
-def detect_ball():
+face_cascade = cv2.CascadeClassifier('../data/haarcascades/haarcascade_frontalface_default.xml')
+
+def cascade(img):
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    global face_cascade
+
+    boxes = face_cascade.detectMultiScale(gray, scaleFactor=1.05, minSize=(30, 30))
+    return boxes
+
+def cal_center_size(rect):
+    if len(rect) == 0:
+        return 0, 0
+    center = (rect[3] - rect[1]) / 2 + rect[1]
+    size = (rect[3] - rect[1]) * (rect[4] - rect[2])
+    return center, size
+
+def detect_face():
     stopflg = 0
     greenLower = (30, 120, 6)
     greenUpper = (80, 210, 250)
@@ -95,22 +111,25 @@ def detect_ball():
 
     	# find contours in the mask and initialize the current
     	# (x, y) center of the ball
-    	cnts = cv2.findContours(mask.copy(), cv2.RETR_EXTERNAL,
-    		cv2.CHAIN_APPROX_SIMPLE)[-2]
+    	# cnts = cv2.findContours(mask.copy(), cv2.RETR_EXTERNAL,
+    	# 	cv2.CHAIN_APPROX_SIMPLE)[-2]
     	center = None
+        box = cascade(frame)
+        if len(box) != 0:
+            center, size = cal_center_size(box)
     	# only proceed if at least one contour was found
-    	if len(cnts) > 0:
+    	if center != None:
                 # find the largest contour in the mask, then use
                 # it to compute the minimum enclosing circle and
                 # centroid
-                c = max(cnts, key=cv2.contourArea)
-                ((x, y), radius) = cv2.minEnclosingCircle(c)
-                M = cv2.moments(c)
-                center = (int(M["m10"] / M["m00"]), int(M["m01"] / M["m00"]))
-                print(center)
-                print("radius:" + str(radius))
+                # c = max(cnts, key=cv2.contourArea)
+                # ((x, y), radius) = cv2.minEnclosingCircle(c)
+                # M = cv2.moments(c)
+                # center = (int(M["m10"] / M["m00"]), int(M["m01"] / M["m00"]))
+                print("center:" + center)
+                print("size:" + str(size))
 
-                if radius >= 7:
+                if size >= 1000:
                     #the object is close enough
                     text = "s\n"
                     mysend_msg(text)
@@ -119,13 +138,13 @@ def detect_ball():
                     continue
 
 
-                if mywidth/2-mywidth/4 <= center[0] and center[0] <= mywidth/2+mywidth/4:
+                if mywidth/2-mywidth/4 <= center and center <= mywidth/2+mywidth/4:
                     text = "p {}\n".format(5000)
                     mysend_msg(text)
                     print("forward")
                     continue
 
-                elif center[0] >= mywidth/2+mywidth/4:
+                elif center >= mywidth/2+mywidth/4:
                     #the object is right
                     #ex. 1500
                     text = "r {}\n".format(5000)
@@ -143,22 +162,13 @@ def detect_ball():
                     print("left")
                     continue 
 
-
-                # only proceed if the radius meets a minimum size
-                if (radius < 300) & (radius > 10 ) :
-                    # draw the circle and centroid on the frame,
-                    # then update the list of tracked points
-                    cv2.circle(frame, (int(x), int(y)), int(radius),
-                            (0, 255, 255), 2)
-                    cv2.circle(frame, center, 5, (0, 0, 255), -1)
-
-                    #Save The Data Points
         else:
             #not found
 
             print("not found")
             text = "s"
 
+            center = None
             mysend_msg(text)
             continue
     	# update the points queue
@@ -197,7 +207,7 @@ def server_and_call_main():
                 distance = from_client.split()
                 # call main method
                 #main(length = distance)
-                detect_ball(length = distance)
+                detect_face(length = distance)
                 # sleep(0.1)
                 #print("sinal=>{}".format(from_client))
                 # to_client = "signal[{}]".format(from_client)
@@ -271,7 +281,6 @@ def sound(msg):
     pygame.mixer.music.stop()
 
 def show(msg):
-    """
     if msg[0] == "s":
         cv2.destroyAllWindows()
         img = cv2.imread("/home/ri/sent/tantei.png")
@@ -279,7 +288,7 @@ def show(msg):
     if msg[0] == "p" or msg[0] == "r":
         img = cv2.imread("/home/ri/sent/smile.png")
         cv2.imshow("color",img)
-    """
+
 
 def send_msg(msg):
     global stopflg
@@ -316,4 +325,4 @@ def avoid_function(roll_sp=100):
 
 if __name__ == '__main__':
     #server_and_call_main()
-    detect_ball()
+    detect_face()
