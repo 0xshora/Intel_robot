@@ -109,6 +109,12 @@ int main(int argc, char ** argv) {
         exit(1);
     }
 
+    char **av;
+    av = malloc(sizeof(char *) * MAXCOM);
+
+    for (i = 0; i < MAXCOM; i++) {
+        av[i] = malloc(sizeof(char) * MAXCHAR);
+    }
     while (1) {
         clit_len = sizeof(clit_addr);
         if ((new_sockfd = accept(sockfd, (struct sockaddr * ) & clit_addr, & clit_len)) < 0) {
@@ -118,15 +124,12 @@ int main(int argc, char ** argv) {
         }
 
         char buf[256];
+        memset(buf, 0, 256);
         int buf_len;
         int ac = 0;
-        char **av;
-        av = malloc(sizeof(char *) * MAXCOM);
-        int i;
         for (i = 0; i < MAXCOM; i++) {
-            av[i] = malloc(sizeof(char) * MAXCHAR);
+            memset(av[i], 0, MAXCHAR);
         }
-        memset(buf, 0, 256);
 
         if ((buf_len = read(new_sockfd, buf, 256)) < 0) {
             fprintf(stderr, "read() failed\n");

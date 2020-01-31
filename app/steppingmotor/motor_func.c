@@ -194,12 +194,12 @@ void L6470_turn_speed_change(long speed, int postspeed)
 
 void L6470_speed_change(long speed, int postspeed)
 {
+    /*
 	if ((int)speed == 0) {
-
         L6470_softstop();
         L6470_softhiz();
         return ;
-    }
+    }*/
     if (postspeed > MAX_SPEED)
     {
         postspeed = MAX_SPEED;
@@ -232,11 +232,12 @@ void L6470_speed_change(long speed, int postspeed)
 		L6470_softhiz();
 	}
 
-
+    /*
     L6470_SPI_CHANNEL = 0;
     L6470_run(speed);
     L6470_SPI_CHANNEL = 1;
     L6470_run(-1 * speed);
+    */
 }
 
 

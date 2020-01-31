@@ -1,9 +1,11 @@
 import cv2
 import requests
+import subprocess
+import os
 
 def main():
     avg = None
-    cap = cv2.VideoCapture(1)
+    cap = cv2.VideoCapture(0)
     while (cap.isOpened()):
         ret, frame = cap.read()
         if not ret:
@@ -29,12 +31,15 @@ def main():
                 max_area = area
                 target = cnt
 
-        if max_area >= 1500:
+        if max_area >= 8000:
             cv2.imwrite('tmp.jpg', frame)
             files = {"imageFile": open("tmp.jpg", "rb")}
             send_line(file_name='tmp.jpg')
+            cap.release()
             # start following
-
+            print("execute : python2 ../201_main.py")
+            os.chdir('../')
+            subprocess.call(["python2", "201_main.py"])
             break
 
         key = cv2.waitKey(30)
@@ -48,10 +53,10 @@ def send_line(file_name=None):
         files = {"imageFile": open(file_name, "rb")}
 
     if not file_name:
-        requests.post("https://notify-api.line.me/api/notify", headers={"Authorization": "Bearer a7hLMHEgyEIwHa2DlIg8I7mrmuwpz24dO4e0JNcAHGY"}, params={"message": "start detection!"}, files=files)
+        requests.post("https://notify-api.line.me/api/notify", headers={"Authorization": "Bearer a7hLMHEgyEIwHa2DlIg8I7mrmuwpz24dO4e0JNcAHGY"}, params={"message": "start following!"}, files=files)
 
     else:
-        requests.post("https://notify-api.line.me/api/notify", headers={"Authorization": "Bearer a7hLMHEgyEIwHa2DlIg8I7mrmuwpz24dO4e0JNcAHGY"}, params={"message": "start detection!"})
+        requests.post("https://notify-api.line.me/api/notify", headers={"Authorization": "Bearer a7hLMHEgyEIwHa2DlIg8I7mrmuwpz24dO4e0JNcAHGY"}, params={"message": "start following!"})
 
 if __name__ == '__main__':
     main()

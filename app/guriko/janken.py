@@ -15,6 +15,25 @@ try:
 except ImportError: # for Python 3
     import tkinter as tk
 
+#def server_and_call_main():
+#    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+#    host = "127.0.0.1"
+#    port = "50002"
+#    s.bind((host,port))
+#    s.listen(1)
+#
+#    clients = []
+#
+#   try:
+#        s.settimeout(10)
+#        connection, address = s.accept()
+#        clients.append((connection,address))
+#        while(true):
+#            try:
+#                connection.settimeout(3)
+#                from_client = connection.recv(4096).decode()
+#                distance = from_client.split()
+#                # from here
 
 version = cv2.__version__.split(".")
 CVversion = int(version[0])

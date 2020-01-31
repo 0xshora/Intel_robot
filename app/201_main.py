@@ -51,10 +51,11 @@ def cascade(img):
     return boxes
 
 def cal_center_size(rect):
+    print(rect)
     if len(rect) == 0:
         return 0, 0
-    center = (rect[3] - rect[1]) / 2 + rect[1]
-    size = (rect[3] - rect[1]) * (rect[4] - rect[2])
+    center = rect[0] + (rect[2]/2)
+    size = rect[2] * rect[3]
     return center, size
 
 def detect_face():
@@ -84,7 +85,7 @@ def detect_face():
     	# resize the frame, blur it, and convert it to the HSV
     	# color space
 
-        mywidth = 100
+        mywidth = 150
     	frame = imutils.resize(frame, width = mywidth)
 
 
@@ -93,7 +94,7 @@ def detect_face():
 
     	# construct a mask for the color "green", then perform
     	# a series of dilations and erosions to remove any small
-    	# blobs left in the mask
+    	# blobs left in the mask:
     	mask = cv2.inRange(hsv, greenLower, greenUpper)
     	mask = cv2.erode(mask, None, iterations=2)
     	mask = cv2.dilate(mask, None, iterations=2)
@@ -116,7 +117,7 @@ def detect_face():
     	center = None
         box = cascade(frame)
         if len(box) != 0:
-            center, size = cal_center_size(box)
+            center, size = cal_center_size(box[0])
     	# only proceed if at least one contour was found
     	if center != None:
                 # find the largest contour in the mask, then use
@@ -126,16 +127,19 @@ def detect_face():
                 # ((x, y), radius) = cv2.minEnclosingCircle(c)
                 # M = cv2.moments(c)
                 # center = (int(M["m10"] / M["m00"]), int(M["m01"] / M["m00"]))
-                print("center:" + center)
+                print("center:" + str(center))
                 print("size:" + str(size))
 
-                if size >= 1000:
+                if size >= 3000:
                     #the object is close enough
                     text = "s\n"
                     mysend_msg(text)
+                    # time.sleep(5)
+                    # text = "e\n"
+                    # mysend_msg(text)
 
                     print("close. stop")
-                    continue
+                    exit(0)
 
 
                 if mywidth/2-mywidth/4 <= center and center <= mywidth/2+mywidth/4:
@@ -165,7 +169,7 @@ def detect_face():
         else:
             #not found
 
-            print("not found")
+            #print("not found")
             text = "s"
 
             center = None
@@ -226,7 +230,7 @@ def server_and_call_main():
     return from_client
 
 msgcnt = [0, 0, 0]
-boundary = [2, 1, 50]
+boundary = [2, 1, 10]
 previous = 0
 
 def mysend_msg(msg):
@@ -240,6 +244,8 @@ def mysend_msg(msg):
         msgcnt[1] += 1
     elif c == "s":
         msgcnt[2] += 1
+    elif c == "e":
+        send_msg(msg)
 
     for i in range(3):
         if msgcnt[i] > boundary[i]:

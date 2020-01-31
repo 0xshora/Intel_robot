@@ -117,7 +117,8 @@ def detect_ball():
 
                     print("close. stop")
                     continue
-
+                if radius <= 3:
+                    continue
 
                 if mywidth/2-mywidth/4 <= center[0] and center[0] <= mywidth/2+mywidth/4:
                     text = "p {}\n".format(5000)
@@ -216,9 +217,41 @@ def server_and_call_main():
     return from_client
 
 msgcnt = [0, 0, 0]
-boundary = [2, 1, 50]
-previous = 0
+boundary = [3, 3, 50]
+previous = "s\n"
 
+def mysend_msg(msg):
+    global previous
+    global msgcnt
+    global boundary
+    print("previous:", previous)
+    c = msg[0]
+    if c == "p":
+        msgcnt[0] += 1
+    elif c == "r":
+        msgcnt[1] += 1
+    elif c == "s":
+        msgcnt[2] += 1
+
+    for i in range(3):
+        if msgcnt[i] > boundary[i]:
+            if msg != previous:
+            #if previous commmand is not stop
+                send_msg(msg)
+                msgcnt[i] =  0
+                previous = msg
+                break
+            if msg == previous:
+            #if previous command is stop, the second is unnecessary
+                # send_msg(msg)
+                msgcnt[i] = 0
+                previous = msg
+                break
+            send_msg(msg)
+            print("********************", msg)
+            #msgcnt = [0, 0, 0]
+            #previous = msg
+"""
 def mysend_msg(msg):
     global previous
     global msgcnt
@@ -234,12 +267,15 @@ def mysend_msg(msg):
     for i in range(3):
         if msgcnt[i] > boundary[i]:
             if c == "s" and previous != 2:
+            #if previous commmand is not stop
+                send_msg(msg)
                 msgcnt[i] =  0
                 previous = 2
                 break
             if c == "s" and previous == 2:
-                send_msg(msg)
-                previous = -1
+            #if previous command is stop, the second is unnecessary
+                # send_msg(msg)
+                previous = 2
                 break
             if c == "s" and previous == -1:
                 break
@@ -247,7 +283,7 @@ def mysend_msg(msg):
             print("********************", msg)
             msgcnt = [0, 0, 0]
             previous = i
-
+"""
 from mutagen.mp3 import MP3 as mp3
 import pygame
 import time
@@ -288,17 +324,9 @@ def send_msg(msg):
     port = 50001
     s.connect((host, port))
     # s.sendall(msg.encode(encoding='ascii'))
-    if msg[0] == "s":
-        if stopflg == 0:
-            s.send(msg)
-            sound(msg)
-            stopflg = 1
-    else:
-        s.send(msg)
-        sound(msg)
-        stopflg = 0
+    s.send(msg)
+    sound(msg)
     show(msg)
-
 
 def is_escape_flg(length):
     flg = 0
