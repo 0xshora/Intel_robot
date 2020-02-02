@@ -12,6 +12,12 @@ This is a laboratory work for the department of Computer Science at Keio
   direction: ltr;
 }
 </style>
+
+
+<h1>PDF.js 'Hello, base64!' example</h1>
+
+<canvas id="the-canvas"></canvas>
+
 <script>
   // atob() is used to convert base64 encoded PDF to binary-like data.
 // (See also https://developer.mozilla.org/en-US/docs/Web/API/WindowBase64/
@@ -71,8 +77,4 @@ loadingTask.promise.then(function(pdf) {
   console.error(reason);
 });
 </script>
-
-<h1>PDF.js 'Hello, base64!' example</h1>
-
-<canvas id="the-canvas"></canvas>
 
