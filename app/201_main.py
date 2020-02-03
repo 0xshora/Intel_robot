@@ -164,7 +164,7 @@ def detect_face():
 
                     mysend_msg(text)
                     print("left")
-                    continue 
+                    continue
 
         else:
             #not found
@@ -190,7 +190,7 @@ def detect_face():
                 # draw the connecting lines
                 thickness = int(np.sqrt(args["buffer"] / float(i + 1)) * 2.5)
                 cv2.line(frame, pts[i - 1], pts[i], (0, 0, 255), thickness)
-        
+
 def server_and_call_main():
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     host = "127.0.0.1"
@@ -237,6 +237,39 @@ def mysend_msg(msg):
     global previous
     global msgcnt
     global boundary
+    print("previous:", previous)
+    c = msg[0]
+    if c == "p":
+        msgcnt[0] += 1
+    elif c == "r":
+        msgcnt[1] += 1
+    elif c == "s":
+        msgcnt[2] += 1
+
+    for i in range(3):
+        if msgcnt[i] > boundary[i]:
+            if msg != previous:
+            #if previous commmand is not stop
+                send_msg(msg)
+                msgcnt[i] =  0
+                previous = msg
+                break
+            if msg == previous:
+            #if previous command is stop, the second is unnecessary
+                # send_msg(msg)
+                msgcnt[i] = 0
+                previous = msg
+                break
+            send_msg(msg)
+            print("********************", msg)
+            #msgcnt = [0, 0, 0]
+            #previous = msg
+
+"""
+def mysend_msg(msg):
+    global previous
+    global msgcnt
+    global boundary
     c = msg[0]
     if c == "p":
         msgcnt[0] += 1
@@ -263,6 +296,7 @@ def mysend_msg(msg):
             print("********************", msg)
             msgcnt = [0, 0, 0]
             previous = i
+"""
 
 from mutagen.mp3 import MP3 as mp3
 import pygame
@@ -295,7 +329,7 @@ def show(msg):
         img = cv2.imread("/home/ri/sent/smile.png")
         cv2.imshow("color",img)
 
-
+"""
 def send_msg(msg):
     global stopflg
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -313,7 +347,18 @@ def send_msg(msg):
         sound(msg)
         stopflg = 0
     show(msg)
+"""
 
+def send_msg(msg):
+    global stopflg
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    host = '127.0.0.1'
+    port = 50001
+    s.connect((host, port))
+    # s.sendall(msg.encode(encoding='ascii'))
+    s.send(msg)
+    sound(msg)
+    show(msg)
 
 def is_escape_flg(length):
     flg = 0
